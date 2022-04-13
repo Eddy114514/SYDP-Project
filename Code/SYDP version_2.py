@@ -21,35 +21,35 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
-        img_CreatNew = Image.open('CreatNew_Icon.png')
+        img_CreatNew = Image.open('Picture\\CreatNew_Icon.png')
         img_CreatNew = img_CreatNew.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
-        img_Open = Image.open('Open_Icon.png')
+        img_Open = Image.open('Picture\\Open_Icon.png')
         img_Open = img_Open.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_Open = ImageTk.PhotoImage(img_Open)
 
-        img_Findbest = Image.open('FindBest_icon.png')
+        img_Findbest = Image.open('Picture\\FindBest_icon.png')
         img_Findbest = img_Findbest.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
 
-        img_Return = Image.open('Menu_Icon.png')
+        img_Return = Image.open('Picture\\Menu_Icon.png')
         img_Return = img_Return.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
 
-        img_Add = Image.open('Add_Icon.png')
+        img_Add = Image.open('Picture\\Add_Icon.png')
         img_Add = img_Add.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
 
-        img_NextPage = Image.open('NextPage_Icon.png')
+        img_NextPage = Image.open('Picture\\NextPage_Icon.png')
         img_NextPage = img_NextPage.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
 
-        img_BackPage = Image.open('BackPage_Icon.png')
+        img_BackPage = Image.open('Picture\\BackPage_Icon.png')
         img_BackPage = img_BackPage.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
 
-        img_Save = Image.open('Save_Icon.png')
+        img_Save = Image.open('Picture\\Save_Icon.png')
         img_Save = img_Save.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
 
