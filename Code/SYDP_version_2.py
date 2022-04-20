@@ -656,109 +656,237 @@ class Calculation():
     def Coordinatie_Generate(self):
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
-        CurveFbyInch, CuvreF_Symbol = self.Formula_Generate()
-        Coordinate_Inside_Y = []
-        Coordinate_Outside_Y = []
-        Coordinate_Inside_X = []
-        Coordinate_Outside_X = []
-        Coordinate_Inside_Z, Coordinate_Outside_Z = self.Coordinatie_Z_Generate()
-        print(len(CurveFbyInch))
-        interval = 0.1
+        CurveList_Inside, CurveList_Outside = self.Formula_Generate()
+        Coordinate_Inside = []
+        Coordinate_Outside = []
 
-        for num in range(0, len(self.EWidthF)):
-            CI = []
-            CO = []
-            WI = []
-            WO = []
-            for function in CurveFbyInch[num]:
-                if(function == float("NaN")):
-                    CI.append([0, 0])
-                elif(function != float("NaN")):
-                    CIP = []
-                    CIN = []
-                    COP = []
-                    CON = []
-                    WIP = []
-                    WIN = []
-                    WOP = []
-                    WON = []
-                    for w in np.arange(0, self.SemiWidth[num]+Interval, interval):
-                        CCI = function[0](w)
-                        CIP.append(CCI)
-                        CIN.append(CCI*-1)
-                        WIP.append(w)
-                        WIN.append(w*-1)
-                    if(num == 2):
-                        for wt in np.arange(0, self.SemiWidth[num]+Interval, interval):
-                            CCO = function[1](w+self.Thickness)
-                            COP.append(CCO)
-                            CON.append(CCO*-1)
-                            WOP.append(wt)
-                            WOP.append(wt*-1)
-                    elif(num != 2):
-                        for wt in np.arange(0, self.SemiWidth[num]+Interval+self.Thickness, interval):
-                            CCO = function[1](w+self.Thickness)
-                            COP.append(CCO)
-                            CON.append(CCO*-1)
-                            WOP.append(wt)
-                            WOP.append(wt*-1)
+        print(len(CurveList_Inside))
+        interval = 1
 
-                CI.append([CIP, CIN])
-                CO.append([COP, CON])
-                WI.append([WIP, WIN])
-                WO.append([WOP, WON])
-            Coordinate_Inside_Y.append(CI)
-            Coordinate_Outside_Y.append(CO)
-            Coordinate_Inside_X.append(WI)
-            Coordinate_Outside_X.append(WO)
-        print("Y", Coordinate_Inside_Y)
-        print("X", Coordinate_Inside_X)
-        print("Z", Coordinate_Inside_Z)
+        Z_value = 0
 
-    def Coordinatie_Z_Generate(self):
-        ZI = []
-        ZO = []
-        length = 0
-        interval = 0.1
-        for i in self.Length:
-            length += i
-        for k in np.arange(0, length+interval, interval):
-            ZI.append(k)
-        for j in np.arange(0, length+self.Thickness*2+interval, interval):
-            ZO.append(j)
+        for num in range(0, len(self.Length)):
+            CI_List = []
+            CO_List = []
+            for formula, formula_out in zip(CurveList_Inside[num], CurveList_Outside[num]):
+                X_List = []
+                Y_List = []
+                Z_List = []
 
-        return(ZI, ZO)
+                X_save = []
+                Y_save = []
+                Z_save = []
+
+                X_List_Out = []
+                Y_List_Out = []
+                Z_List_Out = []
+
+                if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+                    print("Constant section")
+
+                    for width in np.arange(0, self.SemiWidth[num], interval):
+                        print("X:", width)
+                        X_List.append(width+self.SemiWidth[num])
+                        Y_List.append(
+                            CurveList_Inside[1][0](abs(width)))
+                        Z_List.append(Z_value)
+                        X_save.append(width)
+                        Y_save.append(
+                            CurveList_Inside[1][0](abs(width)))
+                        Z_save.append(Z_value)
+
+                        if(width+interval >= self.SemiWidth[num]):
+                            X_List.append(self.Width[num])
+                            Y_List.append(self.Depth[num])
+                            Z_List.append(Z_value)
+
+                            X_save.append(self.SemiWidth[num])
+                            Y_save.append(
+                                CurveList_Inside[1][0](abs(width)))
+                            Z_save.append(Z_value)
+
+                    X_save = X_save[::-1]
+
+                    for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
+                        X_List.insert(0, x)
+                        Y_List.insert(0, y)
+                        Z_List.insert(0, z)
+
+                    CI_List.append([X_List, Y_List, Z_List])
+
+                    # bug to fix
+                    for width_Out in np.arange(0, self.SemiWidth[num]+self.Thickness/2, interval):
+                        print("X:", width_Out)
+                        X_List_Out.append(width_Out+self.SemiWidth[num])
+                        Y_List_Out.append(
+                            CurveList_Outside[1][0](abs(width_Out)))
+                        Z_List_Out.append(Z_value)
+                        X_save.append(width_Out)
+                        Y_save.append(
+                            CurveList_Inside[1][0](abs(width_Out)))
+                        Z_save.append(Z_value)
+                        if(width_Out+interval >= self.SemiWidth[num]+self.Thickness/2):
+                            X_List_Out.append(
+                                self.SemiWidth[num]+self.Thickness/2)
+                            Y_List_Out.append(self.Depth[num]+self.Thickness)
+                            Z_List_Out.append(Z_value)
+
+                            X_save.append(self.SemiWidth[num]+self.Thickness/2)
+                            Y_save.append(self.Depth[num]+self.Thickness)
+                            Z_save.append(Z_value)
+
+                    X_save = X_save[::-1]
+                    for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
+                        X_List_Out.insert(0, x)
+                        Y_List_Out.insert(0, y)
+                        Z_List_Out.insert(0, z)
+
+                    CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
+
+                elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
+                    print("sign front or end")
+                    print("formula", formula[1])
+                    if(formula[0] == 0 and formula[1] == 0):
+                        print("Equal 0 ,1")
+                        print(formula[1])
+                        X_List.append(0)
+                        Y_List.append(0)
+                        Z_List.append(0)
+                        CI_List.append([X_List, Y_List, Z_List])
+                    if(formula[0] != 0 and formula[1] != 0):
+
+                        for width in np.arange(0, formula[2], interval):
+                            X_List.append(width+formula[2])
+                            Y_List.append(formula[0](abs(width)))
+                            Z_List.append(Z_value)
+
+                            X_save.append(width)
+                            Y_save.append(formula[0](abs(width)))
+                            Z_save.append(Z_value)
+
+                            if(width+interval >= formula[2]):
+                                X_List.append(2*formula[2])
+                                Y_List.append(formula[3])
+                                Z_List.append(Z_value)
+
+                                X_save.append(formula[2])
+                                Y_save.append(formula[3])
+                                Z_save.append(Z_value)
+
+                        X_save = X_save[::-1]
+                        for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
+                            X_List.insert(0, x)
+                            Y_List.insert(0, y)
+                            Z_List.insert(0, z)
+
+                        CI_List.append([X_List, Y_List, Z_List])
+
+                    print("formula_Out", formula_out[1])
+                    if(formula_out[0] == 0 and formula_out[1] == 0):
+                        print("Equal 0 ,2")
+                        print(formula_out[1])
+                        X_List_Out.append(0)
+                        Y_List_Out.append(0)
+                        Z_List_Out.append(0)
+                        CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
+                    if(formula_out[0] != 0 and formula_out[1] != 0):
+                        for width_Out in np.arange(0, formula_out[2], interval):
+                            X_List_Out.append(width_Out+formula_out[2])
+                            Y_List_Out.append(
+                                formula_out[0](abs(width_Out)))
+                            Z_List_Out.append(Z_value)
+
+                            X_save.append(width_Out)
+                            Y_save.append(
+                                formula_out[0](abs(width_Out)))
+                            Z_save.append(Z_value)
+
+                            if(width_Out+interval >= formula_out[2]):
+                                X_List_Out.append(2*formula_out[2])
+                                Y_List_Out.append(formula_out[3])
+                                Z_List_Out.append(Z_value)
+
+                                X_save.append(formula_out[2])
+                                Y_save.append(formula_out[3])
+                                Z_save.append(Z_value)
+
+                        X_save = X_save[::-1]
+                        for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
+                            X_List_Out.insert(0, x)
+                            Y_List_Out.insert(0, y)
+                            Z_List_Out.insert(0, z)
+
+                        CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
+                Z_value += interval
+
+            Coordinate_Inside.append(CI_List)
+            Coordinate_Outside.append(CO_List)
+
+        print("First section")
+        for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
+            print("Formula : %s" % (j[1]))
+            for x, y, z in zip(i[0], i[1], i[2]):
+                print("X: %s, Y:%s, Z:%s" % (x, y, z))
+            print("\n")
+        print("Second Section")
+        for i in Coordinate_Inside[1]:
+            print("Formula : %s" % (CurveList_Inside[1][1]))
+            for x, y, z in zip(i[0], i[1], i[2]):
+                print("X: %s, Y:%s, Z:%s" % (x, y, z))
+            print("\n")
+        print("Third Section")
+        for i, j in zip(Coordinate_Inside[2], CurveList_Inside[2]):
+            print("Formula : %s" % (j[1]))
+            for x, y, z in zip(i[0], i[1], i[2]):
+                print("X: %s, Y:%s, Z:%s" % (x, y, z))
+            print("\n")
 
     def Formula_Generate(self):
-        CurveFbyInch = []
-        CuvreF_Symbol = []
+        CurveFbyInch_Inside = []
+        CurveFbyInch_Outside = []
         SymX = Symbol('x')
-        interval = 0.1
-        for num in range(0, len(self.EWidthF)):
-            CurveF = []
-            CurveS = []
-            if(self.WidthFList[num] == -1 and self.WidthFList_Outside[num] == -1 and self.DepthFList[num] == -1 and self.DepthFList_Outside[num] == -1):
-                CurveF = [lambda x:self.Depth[num]*(x/self.SemiWidth[num])**self.ECurveF[num],
-                          lambda x: (self.Depth[num]+self.Thickness)*(x/(self.SemiWidth[num]+self.Thickness))**self.ECurveF[num]]
-                CurveS = [self.Depth[num]*(SymX/self.SemiWidth[num])**self.ECurveF[num],
-                          (self.Depth[num]+self.Thickness)*(SymX/(self.SemiWidth[num]+self.Thickness))**self.ECurveF[num]]
-                CurveFbyInch.append(CurveF)
-                CuvreF_Symbol.append(CurveS)
+        interval = 1
 
-            elif(self.WidthFList[num] != -1 and self.WidthFList_Outside[num] != -1 and self.DepthFList[num] != -1 and self.DepthFList_Outside[num] != -1):
-                for le in np.arange(0, self.Length[num]+interval, interval):
-                    Width = self.WidthFList[num](le)
-                    Width_O = self.WidthFList_Outside[num](le)
-                    Depth = self.DepthFList[num](le)
-                    Depth_O = self.DepthFList_Outside[num](le)
+        for num in range(len(self.Length)):
+            CL_In = []
+            CL_Out = []
 
-                    CurveF = [lambda x:Depth*(x/Width)**self.ECurveF[num],
-                              lambda x: (Depth_O+self.Thickness)*(x/(Width_O+self.Thickness))**self.ECurveF[num]]
-                    CurveS = [Depth*(SymX/Width)**self.ECurveF[num], (Depth_O+self.Thickness)*(
-                        SymX/(Width_O+self.Thickness))**self.ECurveF[num]]
-                    CurveFbyInch.append(CurveF)
-                    CuvreF_Symbol.append(CurveS)
-        return(CurveFbyInch, CuvreF_Symbol)
+            if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+                CL_In = [lambda x: self.Depth[num]*(x/self.SemiWidth[num])**self.ECurveF[num],
+                         self.Depth[num]*(SymX/self.SemiWidth[num])**self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]
+                CL_Out = [lambda x: (self.Depth[num]+self.Thickness)*(x/(self.SemiWidth[num]+self.Thickness))**self.ECurveF[num],
+                          (self.Depth[num]+self.Thickness)*(SymX/(self.SemiWidth[num]+self.Thickness))**self.ECurveF[num], (self.SemiWidth[num]+self.Thickness), (self.Depth[num]+self.Thickness)]
+            elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
+
+                for length in np.arange(0, self.Length[num]+interval, interval):
+                    Width = self.WidthFList[num](length)
+                    Depth = self.DepthFList[num](length)
+
+                    if(abs(length - 0) == 0):
+                        CL_In.append([0, 0])
+                    elif(abs(length - 0) != 0):
+                        CL_In.append([lambda x: Depth*(x/Width)**self.ECurveF[num],
+                                     Depth*(SymX/Width)**self.ECurveF[num], Width, Depth])
+
+                for length_out in np.arange(0, self.Length[num]+self.Thickness+interval, interval):
+                    Width_O = self.WidthFList_Outside[num](length_out)
+                    Depth_O = self.DepthFList_Outside[num](length_out)
+                    if(abs(length_out-0) == 0):
+                        CL_Out.append([0, 0])
+                    if(abs(length_out-0) != 0):
+                        CL_Out.append([lambda x: Depth_O*(x/Width_O)**self.ECurveF[num],
+                                      Depth_O*(SymX/Width_O)**self.ECurveF[num], Width_O, Depth_O])
+
+            CurveFbyInch_Inside.append(CL_In)
+            CurveFbyInch_Outside.append(CL_Out)
+
+        # reverse the end to make it pare with the canoe body
+        CurveFbyInch_Inside[2].reverse()
+        CurveFbyInch_Outside[2].reverse()
+
+        print(CurveFbyInch_Inside[0])
+
+        return(CurveFbyInch_Inside, CurveFbyInch_Outside)
 
 
 class CanoeDataBase():
