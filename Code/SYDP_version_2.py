@@ -673,82 +673,88 @@ class Calculation():
                 Y_List = []
                 Z_List = []
 
-                X_save = []
-                Y_save = []
-                Z_save = []
+                X1_save = []
+                Y1_save = []
+                Z1_save = []
+
+                X2_save = []
+                Y2_save = []
+                Z2_save = []
+
+                X3_save = []
+                Y3_save = []
+                Z3_save = []
+
+                X4_save = []
+                Y4_save = []
+                Z4_save = []
 
                 X_List_Out = []
                 Y_List_Out = []
                 Z_List_Out = []
 
                 if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
-                    print("Constant section")
 
                     for width in np.arange(0, self.SemiWidth[num], interval):
-                        print("X:", width)
                         X_List.append(width+self.SemiWidth[num])
                         Y_List.append(
                             CurveList_Inside[1][0](abs(width)))
                         Z_List.append(Z_value)
-                        X_save.append(width)
-                        Y_save.append(
+                        X1_save.append(width)
+                        Y1_save.append(
                             CurveList_Inside[1][0](abs(width)))
-                        Z_save.append(Z_value)
+                        Z1_save.append(Z_value)
 
                         if(width+interval >= self.SemiWidth[num]):
                             X_List.append(self.Width[num])
                             Y_List.append(self.Depth[num])
                             Z_List.append(Z_value)
 
-                            X_save.append(self.SemiWidth[num])
-                            Y_save.append(
+                            X1_save.append(self.SemiWidth[num])
+                            Y1_save.append(
                                 CurveList_Inside[1][0](abs(width)))
-                            Z_save.append(Z_value)
+                            Z1_save.append(Z_value)
 
-                    X_save = X_save[::-1]
+                    X1_save = X1_save[::-1]
 
-                    for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
-                        X_List.insert(0, x)
-                        Y_List.insert(0, y)
-                        Z_List.insert(0, z)
+                    for x1, y1, z1 in zip(X1_save[1:len(X1_save)], Y1_save[1:len(Y1_save)], Z1_save[0:len(Z1_save)-1]):
+                        X_List.insert(0, x1)
+                        Y_List.insert(0, y1)
+                        Z_List.insert(0, z1)
 
                     CI_List.append([X_List, Y_List, Z_List])
 
                     # bug to fix
                     for width_Out in np.arange(0, self.SemiWidth[num]+self.Thickness/2, interval):
-                        print("X:", width_Out)
                         X_List_Out.append(width_Out+self.SemiWidth[num])
                         Y_List_Out.append(
                             CurveList_Outside[1][0](abs(width_Out)))
                         Z_List_Out.append(Z_value)
-                        X_save.append(width_Out)
-                        Y_save.append(
+                        X2_save.append(width_Out)
+                        Y2_save.append(
                             CurveList_Inside[1][0](abs(width_Out)))
-                        Z_save.append(Z_value)
+                        Z2_save.append(Z_value)
                         if(width_Out+interval >= self.SemiWidth[num]+self.Thickness/2):
                             X_List_Out.append(
                                 self.SemiWidth[num]+self.Thickness/2)
                             Y_List_Out.append(self.Depth[num]+self.Thickness)
                             Z_List_Out.append(Z_value)
 
-                            X_save.append(self.SemiWidth[num]+self.Thickness/2)
-                            Y_save.append(self.Depth[num]+self.Thickness)
-                            Z_save.append(Z_value)
+                            X2_save.append(
+                                self.SemiWidth[num]+self.Thickness/2)
+                            Y2_save.append(self.Depth[num]+self.Thickness)
+                            Z2_save.append(Z_value)
 
-                    X_save = X_save[::-1]
-                    for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
-                        X_List_Out.insert(0, x)
-                        Y_List_Out.insert(0, y)
-                        Z_List_Out.insert(0, z)
+                    X2_save = X2_save[::-1]
+                    for x2, y2, z2 in zip(X2_save[1:len(X2_save)], Y2_save[1:len(Y2_save)], Z2_save[0:len(Z2_save)-1]):
+                        X_List_Out.insert(0, x2)
+                        Y_List_Out.insert(0, y2)
+                        Z_List_Out.insert(0, z2)
 
                     CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
 
                 elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
-                    print("sign front or end")
-                    print("formula", formula[1])
                     if(formula[0] == 0 and formula[1] == 0):
-                        print("Equal 0 ,1")
-                        print(formula[1])
                         X_List.append(0)
                         Y_List.append(0)
                         Z_List.append(0)
@@ -760,61 +766,59 @@ class Calculation():
                             Y_List.append(formula[0](abs(width)))
                             Z_List.append(Z_value)
 
-                            X_save.append(width)
-                            Y_save.append(formula[0](abs(width)))
-                            Z_save.append(Z_value)
+                            X3_save.append(width)
+                            Y3_save.append(formula[0](abs(width)))
+                            Z3_save.append(Z_value)
 
                             if(width+interval >= formula[2]):
                                 X_List.append(2*formula[2])
                                 Y_List.append(formula[3])
                                 Z_List.append(Z_value)
 
-                                X_save.append(formula[2])
-                                Y_save.append(formula[3])
-                                Z_save.append(Z_value)
+                                X3_save.append(formula[2])
+                                Y3_save.append(formula[3])
+                                Z3_save.append(Z_value)
 
-                        X_save = X_save[::-1]
-                        for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
-                            X_List.insert(0, x)
-                            Y_List.insert(0, y)
-                            Z_List.insert(0, z)
+                        X3_save = X3_save[::-1]
+                        for x3, y3, z3 in zip(X3_save[1:len(X3_save)], Y3_save[1:len(Y3_save)], Z3_save[0:len(Z3_save)-1]):
+                            X_List.insert(0, x3)
+                            Y_List.insert(0, y3)
+                            Z_List.insert(0, z3)
 
                         CI_List.append([X_List, Y_List, Z_List])
 
-                    print("formula_Out", formula_out[1])
                     if(formula_out[0] == 0 and formula_out[1] == 0):
-                        print("Equal 0 ,2")
-                        print(formula_out[1])
                         X_List_Out.append(0)
                         Y_List_Out.append(0)
                         Z_List_Out.append(0)
                         CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
                     if(formula_out[0] != 0 and formula_out[1] != 0):
+
                         for width_Out in np.arange(0, formula_out[2], interval):
                             X_List_Out.append(width_Out+formula_out[2])
                             Y_List_Out.append(
                                 formula_out[0](abs(width_Out)))
                             Z_List_Out.append(Z_value)
 
-                            X_save.append(width_Out)
-                            Y_save.append(
+                            X4_save.append(width_Out)
+                            Y4_save.append(
                                 formula_out[0](abs(width_Out)))
-                            Z_save.append(Z_value)
+                            Z4_save.append(Z_value)
 
                             if(width_Out+interval >= formula_out[2]):
                                 X_List_Out.append(2*formula_out[2])
                                 Y_List_Out.append(formula_out[3])
                                 Z_List_Out.append(Z_value)
 
-                                X_save.append(formula_out[2])
-                                Y_save.append(formula_out[3])
-                                Z_save.append(Z_value)
+                                X4_save.append(formula_out[2])
+                                Y4_save.append(formula_out[3])
+                                Z4_save.append(Z_value)
 
-                        X_save = X_save[::-1]
-                        for x, y, z in zip(X_save[1:len(X_save)], Y_save[1:len(Y_save)], Z_save[0:len(Z_save)-1]):
-                            X_List_Out.insert(0, x)
-                            Y_List_Out.insert(0, y)
-                            Z_List_Out.insert(0, z)
+                        X4_save = X4_save[::-1]
+                        for x4, y4, z4 in zip(X4_save[1:len(X4_save)], Y4_save[1:len(Y4_save)], Z4_save[0:len(Z4_save)-1]):
+                            X_List_Out.insert(0, x4)
+                            Y_List_Out.insert(0, y4)
+                            Z_List_Out.insert(0, z4)
 
                         CO_List.append([X_List_Out, Y_List_Out, Z_List_Out])
                 Z_value += interval
@@ -822,24 +826,14 @@ class Calculation():
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
 
-        print("First section")
-        for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
-            print("Formula : %s" % (j[1]))
-            for x, y, z in zip(i[0], i[1], i[2]):
-                print("X: %s, Y:%s, Z:%s" % (x, y, z))
-            print("\n")
-        print("Second Section")
-        for i in Coordinate_Inside[1]:
-            print("Formula : %s" % (CurveList_Inside[1][1]))
-            for x, y, z in zip(i[0], i[1], i[2]):
-                print("X: %s, Y:%s, Z:%s" % (x, y, z))
-            print("\n")
-        print("Third Section")
-        for i, j in zip(Coordinate_Inside[2], CurveList_Inside[2]):
-            print("Formula : %s" % (j[1]))
-            for x, y, z in zip(i[0], i[1], i[2]):
-                print("X: %s, Y:%s, Z:%s" % (x, y, z))
-            print("\n")
+        # Debug Useage
+        """print("First Section")
+        for a, b in zip(Coordinate_Outside[0], CurveList_Outside[0]):
+            print(" Outside Formula : %s" % (b[1]))
+            for q, w, e in zip(a[0], a[1], a[2]):
+                print("Outside :X: %s, Y:%s, Z:%s" % (
+                    q, w, e))
+            print("\n")"""
 
     def Formula_Generate(self):
         CurveFbyInch_Inside = []
@@ -883,8 +877,6 @@ class Calculation():
         # reverse the end to make it pare with the canoe body
         CurveFbyInch_Inside[2].reverse()
         CurveFbyInch_Outside[2].reverse()
-
-        print(CurveFbyInch_Inside[0])
 
         return(CurveFbyInch_Inside, CurveFbyInch_Outside)
 
