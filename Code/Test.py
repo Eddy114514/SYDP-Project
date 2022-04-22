@@ -1,22 +1,41 @@
-import numpy
+from mpl_toolkits import mplot3d
+from matplotlib import pyplot
+import numpy as np
 from stl import mesh
 
-# Using an existing stl file:
+# Define the 8 vertices of the cube
+vertices = np.array([
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 1, 0], ])
+# Define the 12 triangles composing the cube
+faces = np.array([
+    [0, 1, 2]])
 
-# Or creating a new mesh (make sure not to overwrite the `mesh` import by
-# naming it `mesh`):
-VERTICE_COUNT = 100
-data = numpy.zeros(VERTICE_COUNT, dtype=mesh.Mesh.dtype)
-your_mesh = mesh.Mesh(data, remove_empty_areas=False)
+# Create the mesh
+cube = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
+for i, f in enumerate(faces):
+    print(i)
+    print(f)
+    for j in range(3):
+        cube.vectors[i][j] = vertices[f[j], :]
+        print(vertices[f[j], :])
 
-# The mesh normals (calculated automatically)
-your_mesh.normals
-# The mesh vectors
-your_mesh.v0, your_mesh.v1, your_mesh.v2
-# Accessing individual points (concatenation of v0, v1 and v2 in triplets)
-assert (your_mesh.points[0][0:3] == your_mesh.v0[0]).all()
-assert (your_mesh.points[0][3:6] == your_mesh.v1[0]).all()
-assert (your_mesh.points[0][6:9] == your_mesh.v2[0]).all()
-assert (your_mesh.points[1][0:3] == your_mesh.v0[1]).all()
 
-your_mesh.save('new_stl_file.stl')
+# Create a new plot
+figure = pyplot.figure()
+axes = mplot3d.Axes3D(figure)
+
+# Render the cube
+axes.add_collection3d(mplot3d.art3d.Poly3DCollection(cube.vectors))
+
+# Auto scale to the mesh size
+scale = cube.points.flatten()
+axes.auto_scale_xyz(scale, scale, scale)
+axes.set_xlabel("X axis")
+axes.set_ylabel("Y axis")
+axes.set_zlabel("Z axis")
+
+
+# Show the plot to the screen
+pyplot.show()
