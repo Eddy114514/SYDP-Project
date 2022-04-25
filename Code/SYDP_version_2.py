@@ -663,13 +663,13 @@ class Calculation():
         for num in range(0, len(self.ECurveF)):
             for c_set in CI[num]:
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
-                    V_I.append([x, y, z])
+                    add = (self.Depth[num]+self.Thickness)-y
+                    V_I.append([x, y+add, z+self.Thickness])
             for c_set_o in CO[num]:
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
                     V_O.append([x, y, z])
 
-        for i in V_O:
-            print(i)
+
 
         #mix the Vi and VO
 
