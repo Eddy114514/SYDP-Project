@@ -6,70 +6,46 @@ from scipy.integrate import quad
 from PIL import Image, ImageTk
 from sympy import *
 
-
-v_listi = []
-v_listo = []
-vz = []
-vzo = []
-v_list = []
-
-faces = []
-for i in range(0, 10):
-    v_listi.append([i, 0, i**2])
-for k in range(0, 11):
-    v_listo.append([k, 0, k**2])
-
-for i in range(0, 10):
-    vzo.append([i, 1, i**2])
-for k in range(0, 11):
-    vz.append([k, 1, k**2])
-
-for o in v_listo:
-    v_list.append(o)
-for o in v_listi:
-    v_list.append(o)
-for o in vzo:
-    v_list.append(o)
-for o in vz:
-    v_list.append(o)
-
-vv_list = [v_listo, v_listi, vzo, vz]
-for i in vv_list:
-    print(len(i))
-
-# Define the 8 vertices of the cube
-vertices = np.array(v_list)
-# Define the 12 triangles composing the cube
-lensave = 0
-count = 0
-for j in range(0, len(v_list)):
-
-    # create curve
-    if(j == lensave):
-        print("yes")
-        print(len(vv_list[count]))
-        for k in range(lensave, lensave+len(vv_list[count])-2):
-            faces.append([k, k+1, k+2])
-            print([k, k+1, k+2])
-        lensave += len(vv_list[count])
-        count += 1
-    #creat surface
-    print(lensave)
-
-len = [len(vv_list[0]), len(vv_list[1])+len(vv_list[0]), len(vv_list[2])+len(vv_list[1])
-       + len(vv_list[0]), len(vv_list[3])+len(vv_list[2])+len(vv_list[1])+len(vv_list[0])]
+vert = []
+vert_o = []
+def f(x): return 14*(x/10)**5
+def fo(x): return 15*(x/11)**5
 
 
-faces = np.array(faces)
-print(faces)
+for i in range(2):
+    v = []
+    vo = []
+    for i in range(0, 12):
+        if(i <= 10):
+            v.append([i, f(i), 0])
+        vo.append([i, fo(i), 0])
+    vert.append(v)
+    vert_o.append(vo)
+
+
+print(len(vert[0]))
+print(len(vert_o[1]))
+
+# Sign Front and Back
+face_counter = 0
+cube = mesh.Mesh(np.zeros(len(vert[0])-1, dtype=mesh.Mesh.dtype))
+for i in range(len(vert[0])-1):
+    cube.vectors[i][0] = vert[0][i]
+    cube.vectors[i][1] = vert[1][i]
+    cube.vectors[i][2] = vert[0][i+1]
+
+
+"""
 
 # Create the mesh
-cube = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
-for i, f in enumerate(faces):
 
+for i, f in enumerate(faces):
     for j in range(3):
         cube.vectors[i][j] = vertices[f[j], :]
-cube.save('cube.stl')
+
+"""
+
+#cube.save('cube.stl')
 
 # Create a new plot
 figure = pyplot.figure()
