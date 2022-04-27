@@ -654,35 +654,31 @@ class Calculation():
         vertices = self.Mesh_Generate()
 
     def Mesh_Generate(self):
-        CI, CO = self.Coordinatie_Generate()
+        CI, CO = self.Coordinatie_Generate("3D")
 
         Vectors_I = []
         Vectors_O = []
 
         for num in range(0, len(self.ECurveF)):
-            V_I = []
-            V_O = []
             for c_set in CI[num]:
                 Set = []
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
                     add = (self.Depth[num]+self.Thickness) - c_set[1][-1]
                     Set.append([x, y+add, z+self.Thickness])
-                V_I.append(Set)
+                Vectors_I.append(Set)
 
             for c_set_o in CO[num]:
                 Set = []
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
-                    Set.append([x, y, z])
-                V_O.append(Set)
-
-            Vectors_I.append(V_I)
-            Vectors_O.append(V_O)
+                    add = (self.Depth[num]+self.Thickness) - c_set_o[1][-1]
+                    Set.append([x, y+add, z])
+                Vectors_O.append(Set)
 
         #mix the Vi and VO
 
-        print(Vectors_I[0])
+        print(Vectors_O)
 
-    def Coordinatie_Generate(self):
+    def Coordinatie_Generate(self, ModeString):
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
@@ -704,11 +700,11 @@ class Calculation():
                     for L_index in np.arange(0, self.Length[num], interval):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
 
-                            CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value)
+                            CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value, ModeString)
                         CI_List.append([X_List, Y_List, Z_List])
                         if(L_index + interval >= self.Length[num]):
                             X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                                CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value+interval)
+                                CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value+interval, ModeString)
                             CI_List.append([X_List, Y_List, Z_List])
                         Z_value += interval
 
@@ -721,7 +717,7 @@ class Calculation():
                     elif(CurveList_Inside[num][dataIndex][0] != 0):
 
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                            CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value)
+                            CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value, ModeString)
                         CI_List.append([X_List, Y_List, Z_List])
                 Z_value += interval
 
@@ -729,12 +725,12 @@ class Calculation():
                 if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
                     for L_Index_O in np.arange(0, self.Length[num], interval):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O)
+                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
                         CO_List.append([X_List, Y_List, Z_List])
 
                         if(L_Index_O + interval > self.Length[num]):
                             X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                                CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O+interval)
+                                CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O+interval, ModeString)
                             CO_List.append([X_List, Y_List, Z_List])
 
                         Z_value_O += interval
@@ -745,20 +741,28 @@ class Calculation():
 
                     if(CurveList_Outside[num][dataIndex_O][0] != 0 and dataIndex_O+interval < len(CurveList_Outside[num])):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O)
+                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
                         CO_List.append([X_List, Y_List, Z_List])
 
-                    if(dataIndex_O+interval >= len(CurveList_Outside[num])):
+                    if((dataIndex_O ==len(CurveList_Outside[num])-1 or dataIndex_O == 0) and (num == 0 or num == len(CurveList_Inside[num])-1)):
+                        print("PASS One")
+                        print(dataIndex_O)
+                        print(num)
+                        if(num == 0 and dataIndex_O == len(CurveList_Outside[num])-1):
+                            print("ADD First section")
+                            Z_value_O += self.Thickness-interval
+                            if(CurveList_Outside[num][dataIndex_O][0] != 0):
+                                X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
+                                    CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
+                                CO_List.append([X_List, Y_List, Z_List])
+                        elif(num == len(CurveList_Inside[num])-1 and dataIndex_O == 0):
+                            print("ADD Second Section")
+                            Z_value_O += self.Thickness-interval
+                            if(CurveList_Outside[num][dataIndex_O][0] != 0):
+                                X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
+                                    CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
+                                CO_List.append([X_List, Y_List, Z_List])
 
-                        Z_value_O += self.Thickness-interval
-
-                        if(CurveList_Outside[num][dataIndex_O][0] != 0):
-                            X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                                CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O)
-                            CO_List.append([X_List, Y_List, Z_List])
-                        elif(CurveList_Outside[num][dataIndex_O][0] == 0):
-                            CO_List.append(
-                                [[0], [0], [Z_value_O]])
 
                     elif(CurveList_Outside[num][dataIndex_O][0] == 0):
                         CO_List.append([[0], [0], [Z_value_O]])
@@ -769,7 +773,6 @@ class Calculation():
             Coordinate_Outside.append(CO_List)
 
         # Used to Debug
-
         """
         print("First Section")
 
@@ -800,7 +803,7 @@ class Calculation():
         print(len(Coordinate_Inside[1]))
         print(len(Coordinate_Inside[2]))
 
-
+        """
         print("First Section")
 
         for i, j in zip(Coordinate_Outside[0], CurveList_Outside[0]):
@@ -829,11 +832,11 @@ class Calculation():
         print(len(Coordinate_Outside[0]))
         print(len(Coordinate_Outside[1]))
         print(len(Coordinate_Outside[2]))
-        """
+
 
         return (Coordinate_Inside, Coordinate_Outside)
 
-    def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue):
+    def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
 
         xlist = []
         ylist = []
@@ -842,16 +845,41 @@ class Calculation():
 
         SymX = Symbol('x')
 
-        for i in np.arange(0, width, interval):
+        if(ModeString == "3D"):
+            # Find the largest Width, confirm the Width step interval
+            Max_Width = 0
 
-            xlist.append(i)
-            ylist.append(function.subs(SymX, i))
-            zlist.append(zvalue)
+            for W in self.SemiWidth:
+                if(W > Max_Width):
+                    Max_Width = W
 
-            if(i + interval >= width):
-                xlist.append(width)
-                ylist.append(function.subs(SymX, width))
+            L_Width = Max_Width
+            step_interval = width/L_Width
+
+            for i in range(0, int(L_Width)+1):
+                w = step_interval * i
+
+                xlist.append(w)
+                ylist.append(function.subs(SymX, w))
                 zlist.append(zvalue)
+
+                if(w < width and (i+1)*step_interval > width):
+
+                    xlist.append(width)
+                    ylist.append(function.subs(SymX, width))
+                    zlist.append(zvalue)
+
+        elif(ModeString == "Construction"):
+            for i in np.arange(0, width, interval):
+
+                xlist.append(i)
+                ylist.append(function.subs(SymX, i))
+                zlist.append(zvalue)
+
+                if(i + interval >= width):
+                    xlist.append(width)
+                    ylist.append(function.subs(SymX, width))
+                    zlist.append(zvalue)
 
         nxlist = xlist[1:]
 
