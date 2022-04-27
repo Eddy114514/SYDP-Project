@@ -656,22 +656,31 @@ class Calculation():
     def Mesh_Generate(self):
         CI, CO = self.Coordinatie_Generate()
 
-        Vertices = []
-        V_I = []
-        V_O = []
+        Vectors_I = []
+        Vectors_O = []
 
         for num in range(0, len(self.ECurveF)):
+            V_I = []
+            V_O = []
             for c_set in CI[num]:
+                Set = []
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
-                    add = (self.Depth[num]+self.Thickness)-y
-                    V_I.append([x, y+add, z+self.Thickness])
+                    add = (self.Depth[num]+self.Thickness) - c_set[1][-1]
+                    Set.append([x, y+add, z+self.Thickness])
+                V_I.append(Set)
+
             for c_set_o in CO[num]:
+                Set = []
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
-                    V_O.append([x, y, z])
+                    Set.append([x, y, z])
+                V_O.append(Set)
 
-
+            Vectors_I.append(V_I)
+            Vectors_O.append(V_O)
 
         #mix the Vi and VO
+
+        print(Vectors_I[0])
 
     def Coordinatie_Generate(self):
         SymX = Symbol('x')
