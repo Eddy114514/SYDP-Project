@@ -523,20 +523,48 @@ class Calculation():
             self.Note.append(2)
             self.SignFunction_ThreeBodyHull()
 
+    def BuildLambad_Width(self, index):
+        return (lambda x: self.SemiWidth[index]*(x/self.Length[index])**self.EWidthF[index])
+
+    def BuildLambad_Depth(self, index):
+        return(lambda x: self.Depth[index]*(x/self.Length[index])**self.EDepthF[index])
+
+    def BuildLambad_Width_O(self, index):
+        return(lambda x: (
+            self.SemiWidth[index]+self.Thickness)*(x/(self.Length[index]+self.Thickness))**self.EWidthF[index])
+
+    def BuildLambad_Depth_O(self, index):
+        return(lambda x: (self.Depth[index]+self.Thickness)*(x/(self.Length[index]+self.Thickness))**self.EDepthF[index])
+
+    def BuildLambad_Width_Semi(self):
+        SemiLength = self.Length[0]/2
+        return(lambda x: self.SemiWidth[0]*(x/SemiLength)**self.EWidthF[0])
+
+    def BuildLambad_Depth_Semi(self):
+        SemiLength = self.Length[0]/2
+        return(lambda x: self.Depth[0]*(x/SemiLength)**self.EDepthF[0])
+
+    def BuildLambad_Width_Semi_O(self):
+        SemiLength = self.Length[0]/2
+        return(lambda x: (
+            self.SemiWidth[0]+self.Thickness)*(x/(SemiLength+self.Thickness))**self.EWidthF[0])
+
+    def BuildLambad_Depth_Semi_O(self):
+        SemiLength = self.Length[0]/2
+        return(lambda x: (
+            self.Depth[0]+self.Thickness)*(x/(SemiLength+self.Thickness))**self.EDepthF[0])
+
     def SignFunction_SymmetryHull(self):
         self.Note.append(20)
 
         self.SymmetryBoolean = True
 
-        SemiLength = self.Length[0]/2
-        self.WidthFList.append(
-            lambda x: self.SemiWidth[0]*(x/SemiLength)**self.EWidthF[0])
-        self.WidthFList_Outside.append(lambda x: (
-            self.SemiWidth[0]+self.Thickness)*(x/(SemiLength+self.Thickness))**self.EWidthF[0])
-        self.DepthFList.append(
-            lambda x: self.Depth[0]*(x/SemiLength)**self.EDepthF[0])
-        self.DepthFList_Outside.append(lambda x: (
-            self.Depth[0]+self.Thickness)*(x/(SemiLength+self.Thickness))**self.EDepthF[0])
+        self.WidthFList.append(self.BuildLambad_Width_Semi()
+                               )
+        self.WidthFList_Outside.append(self.BuildLambad_Width_Semi_O())
+        self.DepthFList.append(self.BuildLambad_Depth_Semi()
+                               )
+        self.DepthFList_Outside.append(self.BuildLambad_Depth_Semi_O())
 
     def SignFunction_TwoBodyHull(self):
 
@@ -546,13 +574,13 @@ class Calculation():
         else:
             self.Note.append(21)
 
-        for length, sw, depth, EWF, EDF in zip(self.Length, self.SemiWidth, self.Depth, self.EWidthF, self.EDepthF):
-            self.WidthFList.append(lambda x: sw*(x/length)**EWF)
-            self.WidthFList_Outside.append(lambda x: (
-                sw+self.Thickness)*(x/(length+self.Thickness))**EWF)
-            self.DepthFList.append(lambda x: depth*(x/length)**EDF)
-            self.DepthFList_Outside.append(lambda x: (
-                depth+self.Thickness)*(x/(length+self.Thickness))**EDF)
+        for index in range(0, len(self.EDepthF)):
+            self.WidthFList.append(self.BuildLambad_Width(index))
+            self.WidthFList_Outside.append(self.BuildLambad_Width_O(index))
+            self.DepthFList.append(self.BuildLambad_Depth(index)
+                                   )
+            self.DepthFList_Outside.append(self.BuildLambad_Depth_O(index)
+                                           )
 
     def SignFunction_ThreeBodyHull(self):
 
@@ -576,14 +604,12 @@ class Calculation():
 
         for index in range(0, len(self.EDepthF)):
             if(self.EWidthF[index] != 0 and self.EDepthF[index] != 0):
-                self.WidthFList.append(
-                    lambda x: self.SemiWidth[index]*(x/self.Length[index])**self.EWidthF[index])
-                self.WidthFList_Outside.append(lambda x: (
-                    self.SemiWidth[index]+self.Thickness)*(x/(self.Length[index]+self.Thickness))**self.EWidthF[index])
-                self.DepthFList.append(
-                    lambda x: self.Depth[index]*(x/self.Length[index])**self.EDepthF[index])
-                self.DepthFList_Outside.append(lambda x: (
-                    self.Depth[index]+self.Thickness)*(x/(self.Length[index]+self.Thickness))**self.EDepthF[index])
+                self.WidthFList.append(self.BuildLambad_Width(index))
+                self.WidthFList_Outside.append(self.BuildLambad_Width_O(index))
+                self.DepthFList.append(self.BuildLambad_Depth(index)
+                                       )
+                self.DepthFList_Outside.append(self.BuildLambad_Depth_O(index)
+                                               )
             elif(self.EWidthF[index] == 0 and self.EDepthF[index] == 0):
                 self.WidthFList.append(-1)
                 self.WidthFList_Outside.append(-1)
@@ -594,13 +620,12 @@ class Calculation():
         self.Note.append(24)
         # Sign Function for Front
         self.WidthFList.append(
-            lambda x: self.SemiWidth[0]*(x/self.Length[0])**self.EWidthF[0])
-        self.WidthFList_Outside.append(lambda x: (
-            self.SemiWidth[0]+self.Thickness)*(x/(self.Length[0]+self.Thickness))**self.EWidthF[0])
-        self.DepthFList.append(
-            lambda x: self.Depth[0]*(x/self.Length[0])**self.EDepthF[0])
-        self.DepthFList_Outside.append(lambda x: (
-            self.Depth[0]+self.Thickness)*(x/(self.Length[0]+self.Thickness))**self.EDepthF[0])
+            self.BuildLambad_Width(0))
+        self.WidthFList_Outside.append(
+            self.BuildLambad_Width_O(0))
+        self.DepthFList.append(self.BuildLambad_Depth(0)
+                               )
+        self.DepthFList_Outside.append(self.BuildLambad_Depth_O(0))
         # Confirm Cross-sectional data for Middle Section
 
     def Concret_Volume(self):
@@ -685,9 +710,10 @@ class Calculation():
                 F_L.append(Point4_Set)
             Face_List.append(F_L)
 
-        Inter, Cover = self.Vertical_Horizontal_Mesh_Generate(V_List)
+        Inter, Cover, Cover_H = self.Vertical_Horizontal_Mesh_Generate(V_List)
         Face_List.append(Inter)
         Face_List.append(Cover)
+        Face_List.append(Cover_H)
 
         for l in Face_List:
             for p in l:
@@ -750,19 +776,29 @@ class Calculation():
                 Diff = abs(set[1]-self.CoverLength)
                 Index_Save = set
 
+        l = 0
+        numlist = []
+        c = 0
+        for j in self.Length:
+            l += j
+            numlist.append(c)
+            c += 1
+
         if(len(self.WidthFList) == 1):
-            Index_Save.append(0)
+            Index_Save.append(numlist[0])
+
         elif(len(self.WidthFList) > 1):
 
             if(Index_Save[0] <= self.Length[0]):
-                Index_Save.append(0)
+                Index_Save.append(numlist[0])
+                if(l-Index_Save[0] >= l-self.Length[0]):
+                    Index_Save.append(numlist[-1])
 
             elif(Index_Save[0] > self.Length[0]):
                 save = self.Length[0]
-                l = 0
-                for j in self.Length:
-                    l += j
-                BackIndex = Index_Save[0]+l
+
+                BackIndex = l-Index_Save[0]+self.Thickness*2
+                print("BackIndex", BackIndex)
 
                 for num in range(1, len(self.Length)):
                     if(Index_Save[0] <= save+self.Length[num] and Index_Save[0] > save-self.Length[num]):
@@ -770,13 +806,16 @@ class Calculation():
                         Index_Save.append(num)
                     save += self.Length[num]
 
-                save = 0
+                save = self.Length[0]
 
-                for num in range(1, len(self.Length)):
-                    if(BackIndex <= save+self.Length[num] and BackIndex > save-self.Length[num]):
+                for numb in range(1, len(self.Length)):
+                    print(numb)
+                    print(
+                        BackIndex, save+self.Length[numb], "||", BackIndex, save-self.Length[numb])
+                    if(BackIndex <= save+self.Length[numb] and BackIndex > save-self.Length[numb]):
 
-                        Index_Save.append(num)
-                    save += self.Length[num]
+                        Index_Save.append(numb)
+                    save += self.Length[numb]
 
         print("Cover Index :", Index_Save)
 
@@ -792,6 +831,7 @@ class Calculation():
 
         F_L = []
         F_L1 = []
+        F_L2 = []
         LP = []
         LN = []
         Length_List = []
@@ -821,22 +861,77 @@ class Calculation():
         Index_Save = self.PairCoverLength(Length_List)
         for index in range(1, len(Vertex_I[:Index_Save[0]+1])):
             F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-        for index in range(int(len(LP) - self.CoverLength), len(LP)):
+        for index in range(int(len(LP)-2 - self.CoverLength), len(LP)):
 
             F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
 
+        F1 = self.WidthFList_Outside[Index_Save[2]]
+        F2 = self.DepthFList_Outside[Index_Save[2]]
+        F3 = self.WidthFList_Outside[Index_Save[3]]
+        F4 = self.DepthFList_Outside[Index_Save[3]]
+
+        if(F1 == -1):
+            def F1(x): return self.SemiWidth[Index_Save[2]]
+
+        if(F2 == -1):
+            def F2(x): return self.Depth[Index_Save[3]]
+
+        if(F3 == -1):
+            def F3(x): return self.SemiWidth[Index_Save[2]]
+
+        if(F4 == -1):
+            def F4(x): return self.Depth[Index_Save[3]]
+
+        X = F1(self.CoverLength)
+        Y = F2(self.CoverLength)
+        X1 = F3(self.CoverLength)
+        Y1 = F4(self.CoverLength)
+
         if(Index_Save[1] != self.CoverLength and Index_Save[1] < self.CoverLength):
-            X = self.WidthFList_Outside[Index_Save[2]](self.CoverLength)
-            Y = self.DepthFList_Outside[Index_Save[2]](self.CoverLength)
-            X1 = self.WidthFList_Outside[Index_Save[3]](self.CoverLength)
-            Y1 = self.DepthFList_Outside[Index_Save[3]](self.CoverLength)
+            print("Add CoverLength Index")
+
             Z = self.CoverLength
 
             F_L1.append([[LP[-1], [X, Y, Z], LN[-1], [-1*X, Y, Z]]])
             F_L1.append(
-                [[LP[-1], [X1, Y1, TotalL-Z], LN[-1], [-1*X1, Y1, TotalL-Z]]])
+                [[LP[-1], [X1, Y1, TotalL-Z], LN[-1], [-1*X1, Y1, TotalL+2*self.Thickness-Z]]])
 
-        return(F_L, F_L1)
+        Cover_FList = [self.Single_Formula_Generate(
+            X, Y, Index_Save[2]), self.Single_Formula_Generate(X1, Y1, Index_Save[3])]
+        XSave = [X, X1]
+        YSave = [Y, Y1]
+        ZSave = [self.CoverLength, TotalL+2*self.Thickness-self.CoverLength]
+        Numlist = [Index_Save[2], Index_Save[3]]
+        interval = 1
+        Coor_LP = []
+        Coor_LN = []
+
+        for formula, Xset, Zset, Num in zip(Cover_FList, XSave, ZSave, Numlist):
+            Xl, Yl, Zl, = self.CrossSection_Coordinate_Generate(
+                Xset, interval, formula, Zset, "3D")
+            CoorSet_P = []
+            CoorSet_N = []
+            add = (self.Depth[Num]+self.Thickness) - Yl[-1]
+            for x, y, z in zip(Xl, Yl, Zl):
+                if(x >= 0):
+                    CoorSet_P.append([x, y+add, z])
+                if(x <= 0):
+                    CoorSet_N.append([x, y+add, z])
+            Coor_LP.append(CoorSet_P)
+            CoorSet_N.reverse()
+            Coor_LN.append(CoorSet_N)
+
+        Fset = []
+        for setp, setn in zip(Coor_LP, Coor_LN):
+            for i in range(1, len(setp)):
+                Fset.append([setp[i-1], setp[i], setn[i-1], setn[i]])
+            F_L2.append(Fset)
+
+        return(F_L, F_L1, F_L2)
+
+    def Single_Formula_Generate(self, width, depth, num):
+        SymX = Symbol('x')
+        return (depth*(SymX/width)**self.ECurveF[num])
 
     def Mesh_Generate(self):
         CI, CO = self.Coordinatie_Generate("3D")
@@ -864,6 +959,13 @@ class Calculation():
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
+        for i in CurveList_Inside[0]:
+            print(i)
+
+        print("\n")
+        for i in CurveList_Inside[1]:
+            print(i)
+
         Coordinate_Inside = []
         Coordinate_Outside = []
 
@@ -922,11 +1024,6 @@ class Calculation():
 
                 elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
 
-                    if(CurveList_Outside[num][dataIndex_O][0] != 0 and dataIndex_O+interval < len(CurveList_Outside[num])):
-                        X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
-                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
-                        CO_List.append([X_List, Y_List, Z_List])
-
                     if((dataIndex_O == len(CurveList_Outside[num])-1 and num == 0) or (dataIndex_O == 0 and num == len(self.Length)-1)):
 
                         if(num == 0 and dataIndex_O == len(CurveList_Outside[num])-1):
@@ -942,6 +1039,11 @@ class Calculation():
                                     CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
                                 CO_List.append([X_List, Y_List, Z_List])
 
+                    elif(CurveList_Outside[num][dataIndex_O][0] != 0 and dataIndex_O+interval < len(CurveList_Outside[num])):
+                        X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
+                            CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
+                        CO_List.append([X_List, Y_List, Z_List])
+
                     elif(CurveList_Outside[num][dataIndex_O][0] == 0):
                         CO_List.append([[0], [0], [Z_value_O]])
 
@@ -951,7 +1053,7 @@ class Calculation():
             Coordinate_Outside.append(CO_List)
 
         # Used to Debug
-        """
+
         print("First Section")
 
         for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
@@ -968,6 +1070,25 @@ class Calculation():
             for a, b, c in zip(i[0], i[1], i[2]):
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
             print("\n")
+        """
+
+            print("First Section")
+
+        for i, j in zip(Coordinate_Outside[0], CurveList_Outside[0]):
+            print("Outside Fucnction: %s" % (j[0]))
+            print("\n")
+            for a, b, c in zip(i[0], i[1], i[2]):
+                print("X: %s || Y: %s || Z: %s" % (a, b, c))
+            print("\n")
+
+        print("Second Section")
+
+        for i in Coordinate_Outside[1]:
+            for a, b, c in zip(i[0], i[1], i[2]):
+                print("X: %s || Y: %s || Z: %s" % (a, b, c))
+            print("\n")
+
+
 
         print("Third Section")
         print(len(Coordinate_Inside[0]))
@@ -984,21 +1105,7 @@ class Calculation():
         print(len(Coordinate_Inside[2]))
 
 
-        print("First Section")
 
-        for i, j in zip(Coordinate_Outside[0], CurveList_Outside[0]):
-            print("Outside Fucnction: %s" % (j[0]))
-            print("\n")
-            for a, b, c in zip(i[0], i[1], i[2]):
-                print("X: %s || Y: %s || Z: %s" % (a, b, c))
-            print("\n")
-
-        print("Second Section")
-
-        for i in Coordinate_Outside[1]:
-            for a, b, c in zip(i[0], i[1], i[2]):
-                print("X: %s || Y: %s || Z: %s" % (a, b, c))
-            print("\n")
 
         print("Third Section")
 
@@ -1013,7 +1120,6 @@ class Calculation():
         print(len(Coordinate_Outside[1]))
         print(len(Coordinate_Outside[2]))
         """
-
         return (Coordinate_Inside, Coordinate_Outside)
 
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
@@ -1094,8 +1200,9 @@ class Calculation():
 
                     CL_In.append(
                         [Depth*(SymX/Width)**self.ECurveF[num], Width, Depth])
-
+                    print(length, interval, self.Length[num])
                     if(length + interval >= self.Length[num]):
+                        print("APpend")
                         Width = self.WidthFList[num](self.Length[num])
                         Depth = self.DepthFList[num](self.Length[num])
                         CL_In.append(
