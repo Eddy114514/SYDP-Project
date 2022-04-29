@@ -660,6 +660,9 @@ class Calculation():
         print("k")
 
     def Model_Generate(self):
+        if(len(self.Length) == 1):
+            self.Symmetriclize()
+
         V_List = self.Mesh_Generate()
         Face_List = []
         Face_Num = 0
@@ -672,6 +675,7 @@ class Calculation():
             for C_Index in range(1, len(V_set)):
                 inner = V_set[C_Index-1]
                 outter = V_set[C_Index]
+
                 Point4_Set = []
                 for P4 in range(1, len(inner)):
                     Point4_Set.append(
@@ -706,7 +710,29 @@ class Calculation():
                         cube.vectors[face_Counter][num] = set[num]
                         cube.vectors[face_Counter+1][num] = set[num+1]
                     face_Counter += 2
+        cube.rotate([0.0, 1, 0.0], math.radians(90))
+        cube.rotate([1, 0.0, 0.0], math.radians(-1*90))
+
         cube.save('cube.stl')
+
+        # Create a new plot
+        figure = pyplot.figure()
+        axes = mplot3d.Axes3D(figure)
+
+        # Render the cube
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(cube.vectors))
+
+        # Auto scale to the mesh size
+        scale = cube.points.flatten()
+        axes.auto_scale_xyz(scale, scale, scale)
+        axes.set_xlabel("X axis")
+        axes.set_ylabel("Y axis")
+        axes.set_zlabel("Z axis")
+
+        # Show the plot to the screen
+        pyplot.show()
+
+        print("Model Generated")
 
     def PairCoverLength(self, Length_List):
         Index_Save_List = []
@@ -750,7 +776,7 @@ class Calculation():
                         Index_Save.append(num)
                     save += self.Length[num]
 
-        print(Index_Save)
+        print("Cover Index :", Index_Save)
 
         return (Index_Save)
 
@@ -779,9 +805,9 @@ class Calculation():
 
         for index in range(1, len(Vertex_I)):
             F_L.append([[Vertex_I[index-1][0], Vertex_I[index][0],
-                       Vertex_O[index-1][0], Vertex_O[index][0]]])
+                         Vertex_O[index-1][0], Vertex_O[index][0]]])
             F_L.append([[Vertex_I[index-1][1], Vertex_I[index][1],
-                       Vertex_O[index-1][1], Vertex_O[index][1]]])
+                         Vertex_O[index-1][1], Vertex_O[index][1]]])
 
             # X,Y,Z
             Length_List.append(Vertex_O[index-1][0][2])
@@ -791,17 +817,11 @@ class Calculation():
 
         # Pair with the Cover Length
         Index_Save = self.PairCoverLength(Length_List)
-        cc = 0
         for index in range(1, len(Vertex_I[:Index_Save[0]+1])):
-            print(cc)
             F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-            cc += 1
-        cc = 0
         for index in range(int(len(LP) - self.CoverLength), len(LP)):
-            print(cc)
-            print([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+
             F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-            cc += 1
 
         if(Index_Save[1] != self.CoverLength and Index_Save[1] < self.CoverLength):
             X = self.WidthFList_Outside[Index_Save[2]](self.CoverLength)
@@ -855,7 +875,7 @@ class Calculation():
             CI_List = []
             CO_List = []
 
-            for dataIndex in range(0, len(CurveList_Inside[num])):
+            for dataIndex in range(0, int(self.Length[num])+1):
                 if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
                     for L_index in np.arange(0, self.Length[num], interval):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
@@ -940,12 +960,15 @@ class Calculation():
 
         print("Second Section")
 
-        for i in Coordinate_Inside[1]:
+        for i, j in zip(Coordinate_Inside[1], CurveList_Inside[1]):
+            print("Inside Fucnction: %s" % (j[0]))
             for a, b, c in zip(i[0], i[1], i[2]):
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
             print("\n")
 
         print("Third Section")
+        print(len(Coordinate_Inside[0]))
+        print(len(Coordinate_Inside[1]))
 
         for i, j in zip(Coordinate_Inside[2], CurveList_Inside[2]):
             print("Inside Fucnction: %s" % (j[0]))
@@ -954,8 +977,7 @@ class Calculation():
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
             print("\n")
 
-        print(len(Coordinate_Inside[0]))
-        print(len(Coordinate_Inside[1]))
+
         print(len(Coordinate_Inside[2]))
 
 
@@ -1051,24 +1073,17 @@ class Calculation():
         CurveFbyInch_Outside = []
         SymX = Symbol('x')
         interval = 1
-        print(self.Num)
         for num in range(self.Num):
-            print(num)
             CL_In = []
             CL_Out = []
 
-            print(self.EWidthF)
-            print(self.EDepthF)
-
             if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
                 CL_In = [[self.Depth[num]*(SymX/self.SemiWidth[num])
-                         ** self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]]
+                          ** self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]]
                 CL_Out = [[(self.Depth[num]+self.Thickness)*(SymX/(self.SemiWidth[num]+self.Thickness))
-                          ** self.ECurveF[num], (self.SemiWidth[num]+self.Thickness), (self.Depth[num]+self.Thickness)]]
+                           ** self.ECurveF[num], (self.SemiWidth[num]+self.Thickness), (self.Depth[num]+self.Thickness)]]
 
             elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
-
-                print("In")
 
                 for length in np.arange(0, self.Length[num], interval):
                     Width = self.WidthFList[num](length)
@@ -1097,21 +1112,44 @@ class Calculation():
                             self.Length[num]+self.Thickness)
                         CL_Out.append(
                             [Depth_O*(SymX/Width_O)**self.ECurveF[num], Width_O, Depth_O])
-            print(CL_In)
             CurveFbyInch_Inside.append(CL_In)
             CurveFbyInch_Outside.append(CL_Out)
-
-        if(len(self.Length) == 1):
-            print("Symmetriclize")
-            CurveFbyInch_Inside.append(CurveFbyInch_Inside[0])
-            CurveFbyInch_Outside.append(CurveFbyInch_Outside[0])
-            self.Num += 1
 
         # reverse the end to make it pare with the canoe body
         CurveFbyInch_Inside[-1].reverse()
         CurveFbyInch_Outside[-1].reverse()
 
         return(CurveFbyInch_Inside, CurveFbyInch_Outside)
+
+    def Symmetriclize(self):
+        self.Num += 1
+        self.Length.append(self.Length[0]/2)
+        self.Length[0] = self.Length[1]
+        self.Width.append(self.Width[0])
+        self.SemiWidth.append(self.SemiWidth[0])
+        self.Depth.append(self.Depth[0])
+        self.ECurveF.append(self.ECurveF[0])
+        self.EWidthF.append(self.EWidthF[0])
+        self.EDepthF.append(self.EDepthF[0])
+
+        self.WidthFList.append(self.WidthFList[0])
+        self.WidthFList_Outside.append(self.WidthFList_Outside[0])
+        self.DepthFList.append(self.DepthFList[0])
+        self.DepthFList_Outside.append(self.DepthFList_Outside[0])
+
+        print(self.Length)
+        print(self.Width)
+        print(self.SemiWidth)
+        print(self.Depth)
+
+        print(self.ECurveF)
+        print(self.EWidthF)
+        print(self.EDepthF)
+
+        print(self.WidthFList)
+        print(self.WidthFList_Outside)
+        print(self.DepthFList)
+        print(self.DepthFList_Outside)
 
 
 class CanoeDataBase():
