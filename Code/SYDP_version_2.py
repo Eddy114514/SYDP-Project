@@ -743,6 +743,9 @@ class Calculation():
 
         cube.save('cube.stl')
 
+        print("Model Generated")
+        # For Debug
+
         # Create a new plot
         figure = pyplot.figure()
         axes = mplot3d.Axes3D(figure)
@@ -759,8 +762,6 @@ class Calculation():
 
         # Show the plot to the screen
         pyplot.show()
-
-        print("Model Generated")
 
     def PairCoverLength(self, Length_List):
         Index_Save_List = []
@@ -788,34 +789,27 @@ class Calculation():
             Index_Save.append(numlist[0])
 
         elif(len(self.WidthFList) > 1):
+            Len_Sum = [0]
+            Sum = 0
+            ThicknessL = self.Length
+            ThicknessL[0] = ThicknessL[0]+self.Thickness
+            ThicknessL[-1] = ThicknessL[-1]+self.Thickness
+            for length in ThicknessL:
+                Sum += length
+                Len_Sum.append(Sum)
 
-            if(Index_Save[0] <= self.Length[0]):
-                Index_Save.append(numlist[0])
-                if(l-Index_Save[0] >= l-self.Length[0]):
-                    Index_Save.append(numlist[-1])
+            Index_S = 0
+            Index_SB = 0
 
-            elif(Index_Save[0] > self.Length[0]):
-                save = self.Length[0]
+            for index in range(1, len(Len_Sum)):
+                if(Index_Save[0] > Len_Sum[index-1] and Index_Save[0] < Len_Sum[index]):
+                    Index_Save.append(index-1)
 
-                BackIndex = l-Index_Save[0]+self.Thickness*2
-                print("BackIndex", BackIndex)
+            Back_Index = Sum - self.CoverLength
 
-                for num in range(1, len(self.Length)):
-                    if(Index_Save[0] <= save+self.Length[num] and Index_Save[0] > save-self.Length[num]):
-
-                        Index_Save.append(num)
-                    save += self.Length[num]
-
-                save = self.Length[0]
-
-                for numb in range(1, len(self.Length)):
-                    print(numb)
-                    print(
-                        BackIndex, save+self.Length[numb], "||", BackIndex, save-self.Length[numb])
-                    if(BackIndex <= save+self.Length[numb] and BackIndex > save-self.Length[numb]):
-
-                        Index_Save.append(numb)
-                    save += self.Length[numb]
+            for index in range(1, len(Len_Sum)):
+                if(Back_Index > Len_Sum[index-1] and Back_Index < Len_Sum[index]):
+                    Index_Save.append(index-1)
 
         print("Cover Index :", Index_Save)
 
@@ -899,7 +893,6 @@ class Calculation():
         Cover_FList = [self.Single_Formula_Generate(
             X, Y, Index_Save[2]), self.Single_Formula_Generate(X1, Y1, Index_Save[3])]
         XSave = [X, X1]
-        YSave = [Y, Y1]
         ZSave = [self.CoverLength, TotalL+2*self.Thickness-self.CoverLength]
         Numlist = [Index_Save[2], Index_Save[3]]
         interval = 1
@@ -959,12 +952,6 @@ class Calculation():
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
-        for i in CurveList_Inside[0]:
-            print(i)
-
-        print("\n")
-        for i in CurveList_Inside[1]:
-            print(i)
 
         Coordinate_Inside = []
         Coordinate_Outside = []
@@ -1053,6 +1040,7 @@ class Calculation():
             Coordinate_Outside.append(CO_List)
 
         # Used to Debug
+        """
 
         print("First Section")
 
@@ -1070,7 +1058,6 @@ class Calculation():
             for a, b, c in zip(i[0], i[1], i[2]):
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
             print("\n")
-        """
 
             print("First Section")
 
@@ -1200,9 +1187,7 @@ class Calculation():
 
                     CL_In.append(
                         [Depth*(SymX/Width)**self.ECurveF[num], Width, Depth])
-                    print(length, interval, self.Length[num])
                     if(length + interval >= self.Length[num]):
-                        print("APpend")
                         Width = self.WidthFList[num](self.Length[num])
                         Depth = self.DepthFList[num](self.Length[num])
                         CL_In.append(
