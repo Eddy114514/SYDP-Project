@@ -677,7 +677,9 @@ class Calculation():
                 outter = V_set[C_Index]
 
                 Point4_Set = []
+
                 for P4 in range(1, len(inner)):
+
                     Point4_Set.append(
                         [inner[P4-1], inner[P4], outter[P4-1], outter[P4]])
                 F_L.append(Point4_Set)
@@ -875,9 +877,10 @@ class Calculation():
             CI_List = []
             CO_List = []
 
-            for dataIndex in range(0, int(self.Length[num])+1):
+            for dataIndex in range(0, len(CurveList_Inside[num])):
                 if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
                     for L_index in np.arange(0, self.Length[num], interval):
+
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
 
                             CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value, ModeString)
