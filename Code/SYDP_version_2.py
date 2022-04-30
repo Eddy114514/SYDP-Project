@@ -765,9 +765,23 @@ class Calculation():
 
     def PairCoverLength(self, Length_List):
         Index_Save_List = []
+        ISL_B = []
+
+        Sum = 0
+        ThicknessL = self.Length
+        ThicknessL[0] = ThicknessL[0]+self.Thickness
+        ThicknessL[-1] = ThicknessL[-1]+self.Thickness
+        Len_Sum = [0]
+        for length in ThicknessL:
+            Sum += length
+            Len_Sum.append(Sum)
+        Sum += 1
+
         for Len in range(len(Length_List)):
             if(int(Length_List[Len]) == int(self.CoverLength)):
                 Index_Save_List.append([Len, Length_List[Len]])
+            if(int(Length_List[Len]) == int(Sum-self.CoverLength)):
+                ISL_B.append([Len, Length_List[Len]])
 
         # Confirm the Index
         Index_Save = 0
@@ -776,40 +790,24 @@ class Calculation():
             if(abs(set[1]-self.CoverLength) < Diff):
                 Diff = abs(set[1]-self.CoverLength)
                 Index_Save = set
+        BS = 0
+        Diff_B = math.inf
+        for set in ISL_B:
+            if(abs(set[1]-(Sum-self.CoverLength)) < Diff_B):
+                Diff = abs(set[1]-(Sum-self.CoverLength))
+                BS = set[0]
 
-        l = 0
-        numlist = []
-        c = 0
-        for j in self.Length:
-            l += j
-            numlist.append(c)
-            c += 1
+        for index in range(1, len(Len_Sum)):
+            if(Index_Save[0] > Len_Sum[index-1] and Index_Save[0] < Len_Sum[index]):
+                Index_Save.append(index-1)
 
-        if(len(self.WidthFList) == 1):
-            Index_Save.append(numlist[0])
+        Back_Index = Sum - self.CoverLength
 
-        elif(len(self.WidthFList) > 1):
-            Len_Sum = [0]
-            Sum = 0
-            ThicknessL = self.Length
-            ThicknessL[0] = ThicknessL[0]+self.Thickness
-            ThicknessL[-1] = ThicknessL[-1]+self.Thickness
-            for length in ThicknessL:
-                Sum += length
-                Len_Sum.append(Sum)
+        for index_O in range(1, len(Len_Sum)):
+            if(Back_Index >= Len_Sum[index_O-1] and Back_Index < Len_Sum[index_O]):
+                Index_Save.append(index_O-1)
 
-            Index_S = 0
-            Index_SB = 0
-
-            for index in range(1, len(Len_Sum)):
-                if(Index_Save[0] > Len_Sum[index-1] and Index_Save[0] < Len_Sum[index]):
-                    Index_Save.append(index-1)
-
-            Back_Index = Sum - self.CoverLength
-
-            for index in range(1, len(Len_Sum)):
-                if(Back_Index > Len_Sum[index-1] and Back_Index < Len_Sum[index]):
-                    Index_Save.append(index-1)
+        Index_Save.append(BS)
 
         print("Cover Index :", Index_Save)
 
@@ -829,11 +827,13 @@ class Calculation():
         LP = []
         LN = []
         Length_List = []
+
         # Get Vectors for Inside and Outside
         for VI in V_List[0]:
             Vertex_I.append([VI[0], VI[-1]])
         for VO in V_List[1]:
             Vertex_O.append([VO[0], VO[-1]])
+
         # Out put number
         for diff in range(int((len(Vertex_O)-len(Vertex_I))/2)):
             Vertex_I.insert(0, Vertex_I[0])
@@ -852,12 +852,8 @@ class Calculation():
             LN.append(set[0])
 
         # Pair with the Cover Length
+        BI = 1+TotalL+2*self.Thickness-self.CoverLength
         Index_Save = self.PairCoverLength(Length_List)
-        for index in range(1, len(Vertex_I[:Index_Save[0]+1])):
-            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-        for index in range(int(len(LP)-2 - self.CoverLength), len(LP)):
-
-            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
 
         F1 = self.WidthFList_Outside[Index_Save[2]]
         F2 = self.DepthFList_Outside[Index_Save[2]]
@@ -881,6 +877,25 @@ class Calculation():
         X1 = F3(self.CoverLength)
         Y1 = F4(self.CoverLength)
 
+        Index_B = len(Vertex_I[Index_Save[0]:])
+        for index in range(1, len(Vertex_I[:Index_Save[0]+1])):
+            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+
+        TempSave = 0
+        TempSave1 = 0
+        if(LP[Index_B+1][2] != BI):
+            TempSave = LP[Index_B+1][2]
+            TempSave1 = LN[Index_B+1][2]
+            LP[Index_B+1][2] = BI
+            LN[Index_B+1][2] = BI
+
+        for index in range(Index_B+1, len(LP)):
+            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+
+        if(TempSave > 0):
+            LP[Index_B+1][2] = TempSave
+            LN[Index_B+1][2] = TempSave1
+
         if(Index_Save[1] != self.CoverLength and Index_Save[1] < self.CoverLength):
             print("Add CoverLength Index")
 
@@ -893,7 +908,7 @@ class Calculation():
         Cover_FList = [self.Single_Formula_Generate(
             X, Y, Index_Save[2]), self.Single_Formula_Generate(X1, Y1, Index_Save[3])]
         XSave = [X, X1]
-        ZSave = [self.CoverLength, TotalL+2*self.Thickness-self.CoverLength]
+        ZSave = [self.CoverLength, BI]
         Numlist = [Index_Save[2], Index_Save[3]]
         interval = 1
         Coor_LP = []
