@@ -750,14 +750,20 @@ class Calculation():
             for face in list:
                 for set in face:
                     #Sign Two faces
-                    for num in range(3):
-                        cube.vectors[face_Counter][num] = set[num]
-                        cube.vectors[face_Counter+1][num] = set[num+1]
-                    face_Counter += 2
-        cube.rotate([0.0, 1, 0.0], math.radians(90))
-        cube.rotate([1, 0.0, 0.0], math.radians(-1*90))
 
-        cube.save('cube.stl')
+                    cube.vectors[face_Counter][0] = set[0]
+                    cube.vectors[face_Counter][1] = set[1]
+                    cube.vectors[face_Counter][2] = set[2]
+                    cube.vectors[face_Counter+1][0] = set[3]
+                    cube.vectors[face_Counter+1][1] = set[2]
+                    cube.vectors[face_Counter+1][2] = set[1]
+
+                    face_Counter += 2
+
+        cube.rotate([0.0, 0.5, 0.0], math.radians(90))
+        cube.rotate([0.5, 0.0, 0.0], math.radians(-1*90))
+
+        cube.save('Canoe.stl')
 
         print("Model Generated")
         # For Debug
@@ -1035,8 +1041,8 @@ class Calculation():
             Coordinate_Outside.append(CO_List)
 
         # Used to Debug
-
         """
+
         print("First Section")
 
         for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
