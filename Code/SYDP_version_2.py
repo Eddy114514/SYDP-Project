@@ -693,33 +693,22 @@ class Calculation():
         V_List = self.Mesh_Generate()
 
         Vertex_I, Vertex_O, LenList = self.Vertex_Generating(V_List)
-        CoverList = [self.CoverLength+self.Thickness,
+        CoverList = [self.CoverLength,
                      sum(self.Length)-self.CoverLength+self.Thickness*2]
 
-        formatSave = []
         Index_Set = []
 
         for FLBL in CoverList:
             Set_Index = self.PairCoverLength(LenList, FLBL)
-            formula, W = self.Single_Formula_Generate(
-                self.CoverLength, Set_Index[1])
-
-            X, Y, Z = self.CrossSection_Coordinate_Generate(
-                W, interval, formula, FLBL, "3D")
-
-            if(LenList[Set_Index[0]] != FLBL):
+            Index_Set.append(Set_Index[2])
+            if(Set_Index[0] == True):
+                print(Set_Index)
+                formula, W = self.Single_Formula_Generate(
+                    self.CoverLength, Set_Index[1])
+                X, Y, Z = self.CrossSection_Coordinate_Generate(
+                    W, interval, formula, FLBL, "3D")
                 Format = self.XYZ_Format_Generating(X, Y, Z, Set_Index[1])
-                formatSave.append(Format)
-                if(FLBL == CoverList[0]):
-                    V_List[0].insert(Set_Index[0], Format)
-                elif(FLBL == CoverList[-1]):
-                    V_List[0].insert(Set_Index[0]+1, Format)
-
-        if(len(V_List[0]) < len(V_List[1])):
-            V_List = self.Add_To_Equal(V_List)
-
-        for format in formatSave:
-            Index_Set.append(V_List[0].index(format))
+                V_List[0].insert(Set_Index[2], Format)
 
         Face_List = []
         Face_Num = 0
@@ -790,14 +779,6 @@ class Calculation():
         # Show the plot to the screen
         pyplot.show()
 
-    def Add_To_Equal(self, V_List):
-        for add in range(len(V_List[1])-len(V_List[0]), 2):
-            print("Add for Two")
-            V_List[0].append(V_List[0][-1])
-            V_List[0].insert(V_List[0][0])
-
-        return (V_List)
-
     def XYZ_Format_Generating(self, X, Y, Z, num):
 
         Formate = []
@@ -824,9 +805,9 @@ class Calculation():
         return(Vertex_I, Vertex_O, Length_List)
 
     def PairCoverLength(self, LenList, find):
-        NearbyList = []
         Diff = math.inf
-        NearbyList = []
+        Sign_Boolean = False
+        ReturnSet = []
 
         Sum = 0
         Len_Sum = [0]
@@ -834,32 +815,30 @@ class Calculation():
             Sum += length
             Len_Sum.append(Sum)
 
-        for Index, Compare in enumerate(LenList):
+        FindSign = find not in LenList
+        print(FindSign)
 
-            if(int(Compare) == int(find)):
-                NearbyList.append([Compare, Index])
-
-        ReturnSet = []
-        for Len, Target in enumerate(NearbyList):
-
-            if(find >= Target[0]):
-
-                if(Len == len(NearbyList)-1):
-                    print("Find|%s| > Target[0]|%s|, at Index|%s|" % (
-                        find, Target[0], Len))
-                    ReturnSet.append(Target[1]+1)
-            elif(find < Target[0]):
-
-                if(Len == 0):
-                    print("Find|%s| < Target[0]|%s|, at Index|%s|" % (
-                        find, Target[0], Len))
-                    ReturnSet.append(Target[1])
-
-        for num in range(1, len(Len_Sum)):
-            if(find > Len_Sum[num-1] and find <= Len_Sum[num]):
-                ReturnSet.append(num-1)
-        print(ReturnSet)
-        return(ReturnSet)
+        if(FindSign == False):
+            print("in")
+            ReturnSet.append(Sign_Boolean)
+            for num in range(1, len(Len_Sum)):
+                if(find > Len_Sum[num-1] and find <= Len_Sum[num]):
+                    ReturnSet.append(num-1)
+            ReturnSet.append(LenList.index(find))
+            print(ReturnSet)
+            return(ReturnSet)
+        if(FindSign == True):
+            print("Not in")
+            Sign_Boolean = True
+            ReturnSet.append(Sign_Boolean)
+            for num in range(1, len(Len_Sum)):
+                if(find > Len_Sum[num-1] and find <= Len_Sum[num]):
+                    ReturnSet.append(num-1)
+            LenList.append(find)
+            LenList.sort()
+            ReturnSet.append(LenList.index(find))
+            print(ReturnSet)
+            return(ReturnSet)
 
     def Vertical_Horizontal_Mesh_Generate(self, V_List, IndexSet):
         Vertex_I = []
@@ -877,6 +856,13 @@ class Calculation():
         for VO in V_List[1]:
             Vertex_O.append([VO[0], VO[-1]])
 
+        for add in range(int((len(Vertex_O)-len(Vertex_I))/2)):
+            print("Add")
+            Vertex_I.append(Vertex_I[-1])
+            Vertex_I.insert(0, Vertex_I[0])
+            IndexSet[0] = IndexSet[0]+1
+            IndexSet[1] = IndexSet[1]+1
+
         for index in range(1, len(Vertex_I)):
             F_L.append([[Vertex_I[index-1][0], Vertex_I[index][0],
                          Vertex_O[index-1][0], Vertex_O[index][0]]])
@@ -887,18 +873,17 @@ class Calculation():
             LP.append(set[1])
             LN.append(set[0])
 
-        for index in range(1, IndexSet[0]):
+        for index in range(1, IndexSet[0]+1):
+            print([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+        print("\n")
+        for index in range(IndexSet[1]+1, len(LP)):
             print([[LP[index-1], LP[index], LN[index-1], LN[index]]])
             F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
 
-        for index in range(IndexSet[1]+1, len(LP)):
-            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-
-        IndexSet[1] = IndexSet[1]-1
         for I in IndexSet:
             CN = []
             CP = []
-            print("\n")
             for Coordinate in V_List[0][I]:
                 if(Coordinate[0] <= 0.0):
                     CN.append(Coordinate)
@@ -971,8 +956,10 @@ class Calculation():
             CI_List = []
             CO_List = []
             for dataIndex in range(0, len(CurveList_Inside[num])):
-                if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+                if(num == 1 and dataIndex == 0):
                     Z_value -= interval
+                if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+
                     for L_index in np.arange(0, self.Length[num], interval):
 
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
@@ -1000,8 +987,9 @@ class Calculation():
                 Z_value += interval
 
             for dataIndex_O in range(0, len(CurveList_Outside[num])):
-                if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+                if(num == 1 and dataIndex_O == 0):
                     Z_value_O -= interval
+                if(self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
                     for L_Index_O in np.arange(0, self.Length[num], interval):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
