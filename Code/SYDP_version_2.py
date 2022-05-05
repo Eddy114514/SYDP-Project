@@ -693,8 +693,8 @@ class Calculation():
         V_List = self.Mesh_Generate()
 
         Vertex_I, Vertex_O, LenList = self.Vertex_Generating(V_List)
-        CoverList = [self.CoverLength,
-                     sum(self.Length)-self.CoverLength+self.Thickness*2]
+        CoverList = [self.CoverLength, self.CoverLength-self.Thickness,
+                     sum(self.Length)-self.CoverLength+self.Thickness*2, sum(self.Length)-self.CoverLength+self.Thickness*3]
 
         Index_Set = []
 
@@ -702,7 +702,6 @@ class Calculation():
             Set_Index = self.PairCoverLength(LenList, FLBL)
             Index_Set.append(Set_Index[2])
             if(Set_Index[0] == True):
-                print(Set_Index)
                 formula, W = self.Single_Formula_Generate(
                     self.CoverLength, Set_Index[1])
                 X, Y, Z = self.CrossSection_Coordinate_Generate(
@@ -729,13 +728,13 @@ class Calculation():
                             [inner[P4-1], inner[P4], outter[P4-1], outter[P4]])
                     F_L.append(Point4_Set)
                 if(Number == 0):
-                    if(outter[0][2] > CoverList[0] and outter[0][2] <= CoverList[1]):
+                    if(outter[0][2] > CoverList[0] and outter[0][2] <= CoverList[2]):
                         for P4 in range(1, len(inner)):
                             Point4_Set.append(
                                 [inner[P4], inner[P4-1],
                                  outter[P4], outter[P4-1]])
                         F_L.append(Point4_Set)
-                    if(outter[0][2] <= CoverList[0] or outter[0][2] > CoverList[1]):
+                    if(outter[0][2] <= CoverList[0] or outter[0][2] > CoverList[2]):
                         for P4 in range(1, len(inner)):
                             Point4_Set.append(
                                 [inner[P4-1], inner[P4],
@@ -747,7 +746,7 @@ class Calculation():
         Inter, Cover, Cover_H = self.Vertical_Horizontal_Mesh_Generate(
             V_List, Index_Set)
         Face_List.append(Inter)
-        Face_List.append(Cover)
+
         Face_List.append(Cover_H)
 
         for l in Face_List:
@@ -758,13 +757,13 @@ class Calculation():
 
         cube = mesh.Mesh(np.zeros(Face_Num, dtype=mesh.Mesh.dtype))
 
-        #Resigning the Coordinate
+        # Resigning the Coordinate
 
         face_Counter = 0
         for list in Face_List:
             for face in list:
                 for set in face:
-                    #Sign Two faces
+                    # Sign Two faces
                     for num in range(3):
                         cube.vectors[face_Counter][num] = set[num]
                         cube.vectors[face_Counter+1][num] = set[(num+1)*-1]
@@ -874,11 +873,16 @@ class Calculation():
             Vertex_O.append([VO[0], VO[-1]])
 
         for add in range(int((len(Vertex_O)-len(Vertex_I))/2)):
-            print("Add")
+            print("Add_I")
             Vertex_I.append(Vertex_I[-1])
             Vertex_I.insert(0, Vertex_I[0])
             IndexSet[0] = IndexSet[0]+1
             IndexSet[1] = IndexSet[1]+1
+
+        for add in range(int((len(Vertex_I)-len(Vertex_O))/2)):
+            print("Add_O")
+            Vertex_O.append(Vertex_O[-1])
+            Vertex_O.insert(0, Vertex_O[0])
 
         for index in range(1, len(Vertex_I)):
             F_L.append([[Vertex_I[index][0], Vertex_I[index-1][0],
@@ -905,12 +909,12 @@ class Calculation():
                     CP.append(Coordinate)
             CP.reverse()
             Set = []
-            if(Number == 0):
+            if(Number == 0 or Number == 3):
                 for Index in range(1, len(CP)):
                     Set.append([CP[Index], CP[Index-1],
                                 CN[Index], CN[Index-1]])
                 F_L2.append(Set)
-            if(Number == 1):
+            if(Number == 2 or Number == 1):
                 for Index in range(1, len(CP)):
                     Set.append([CP[Index-1], CP[Index],
                                 CN[Index-1], CN[Index]])
