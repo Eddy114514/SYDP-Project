@@ -713,7 +713,7 @@ class Calculation():
         Face_List = []
         Face_Num = 0
 
-        for V_set in V_List:
+        for Number, V_set in enumerate(V_List):
             F_L = []
             for add in range(len(V_set[1])-1):
                 V_set[0].append(V_set[0][0])
@@ -723,10 +723,25 @@ class Calculation():
                 outter = V_set[C_Index]
 
                 Point4_Set = []
-                for P4 in range(1, len(inner)):
-                    Point4_Set.append(
-                        [inner[P4-1], inner[P4], outter[P4-1], outter[P4]])
-                F_L.append(Point4_Set)
+                if(Number == 1):
+                    for P4 in range(1, len(inner)):
+                        Point4_Set.append(
+                            [inner[P4-1], inner[P4], outter[P4-1], outter[P4]])
+                    F_L.append(Point4_Set)
+                if(Number == 0):
+                    if(outter[0][2] > CoverList[0] and outter[0][2] <= CoverList[1]):
+                        for P4 in range(1, len(inner)):
+                            Point4_Set.append(
+                                [inner[P4], inner[P4-1],
+                                 outter[P4], outter[P4-1]])
+                        F_L.append(Point4_Set)
+                    if(outter[0][2] <= CoverList[0] or outter[0][2] > CoverList[1]):
+                        for P4 in range(1, len(inner)):
+                            Point4_Set.append(
+                                [inner[P4-1], inner[P4],
+                                 outter[P4-1], outter[P4]])
+                        F_L.append(Point4_Set)
+
             Face_List.append(F_L)
 
         Inter, Cover, Cover_H = self.Vertical_Horizontal_Mesh_Generate(
@@ -750,13 +765,9 @@ class Calculation():
             for face in list:
                 for set in face:
                     #Sign Two faces
-
-                    cube.vectors[face_Counter][0] = set[0]
-                    cube.vectors[face_Counter][1] = set[1]
-                    cube.vectors[face_Counter][2] = set[2]
-                    cube.vectors[face_Counter+1][0] = set[3]
-                    cube.vectors[face_Counter+1][1] = set[2]
-                    cube.vectors[face_Counter+1][2] = set[1]
+                    for num in range(3):
+                        cube.vectors[face_Counter][num] = set[num]
+                        cube.vectors[face_Counter+1][num] = set[(num+1)*-1]
 
                     face_Counter += 2
 
@@ -870,8 +881,8 @@ class Calculation():
             IndexSet[1] = IndexSet[1]+1
 
         for index in range(1, len(Vertex_I)):
-            F_L.append([[Vertex_I[index-1][0], Vertex_I[index][0],
-                         Vertex_O[index-1][0], Vertex_O[index][0]]])
+            F_L.append([[Vertex_I[index][0], Vertex_I[index-1][0],
+                         Vertex_O[index][0], Vertex_O[index-1][0]]])
             F_L.append([[Vertex_I[index-1][1], Vertex_I[index][1],
                          Vertex_O[index-1][1], Vertex_O[index][1]]])
 
@@ -880,14 +891,11 @@ class Calculation():
             LN.append(set[0])
 
         for index in range(1, IndexSet[0]+1):
-            print([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-        print("\n")
+            F_L1.append([[LP[index], LP[index-1], LN[index], LN[index-1]]])
         for index in range(IndexSet[1]+1, len(LP)):
-            print([[LP[index-1], LP[index], LN[index-1], LN[index]]])
-            F_L1.append([[LP[index-1], LP[index], LN[index-1], LN[index]]])
+            F_L1.append([[LP[index], LP[index-1], LN[index], LN[index-1]]])
 
-        for I in IndexSet:
+        for Number, I in enumerate(IndexSet):
             CN = []
             CP = []
             for Coordinate in V_List[0][I]:
@@ -897,10 +905,16 @@ class Calculation():
                     CP.append(Coordinate)
             CP.reverse()
             Set = []
-            for Index in range(1, len(CP)):
-                print([[CP[Index-1], CP[Index], CN[Index-1], CN[Index]]])
-                Set.append([CP[Index-1], CP[Index], CN[Index-1], CN[Index]])
-            F_L2.append(Set)
+            if(Number == 0):
+                for Index in range(1, len(CP)):
+                    Set.append([CP[Index], CP[Index-1],
+                                CN[Index], CN[Index-1]])
+                F_L2.append(Set)
+            if(Number == 1):
+                for Index in range(1, len(CP)):
+                    Set.append([CP[Index-1], CP[Index],
+                                CN[Index-1], CN[Index]])
+                F_L2.append(Set)
 
         return(F_L, F_L1, F_L2)
 
