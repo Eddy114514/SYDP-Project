@@ -335,7 +335,7 @@ class MainGUI_CreatNEW():
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
 
         self.CCO.CalDataReturn()
-        self.CCO.Model_Generate()
+        self.CCO.Concret_Volume()
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if(booleanTable and NumCount < 4):
@@ -529,6 +529,13 @@ class Calculation():
     def BuildLambad_Depth(self, index):
         return(lambda x: self.Depth[index]*(x/self.Length[index])**self.EDepthF[index])
 
+    def BuildLambad_Width_O_A(self, index):
+        return(lambda x: (
+            self.SemiWidth[index]+self.Thickness)*(x/(self.Length[index]))**self.EWidthF[index])
+
+    def BuildLambad_Depth_O_A(self, index):
+        return(lambda x: (self.Depth[index]+self.Thickness)*(x/(self.Length[index]))**self.EDepthF[index])
+
     def BuildLambad_Width_O(self, index):
         return(lambda x: (
             self.SemiWidth[index]+self.Thickness)*(x/(self.Length[index]+self.Thickness))**self.EWidthF[index])
@@ -618,15 +625,45 @@ class Calculation():
 
     def SignFunction_ThreeBodyHUll_Asymmetric(self):
         self.Note.append(24)
-        # Sign Function for Front
-        self.WidthFList.append(
-            self.BuildLambad_Width(0))
-        self.WidthFList_Outside.append(
-            self.BuildLambad_Width_O(0))
-        self.DepthFList.append(self.BuildLambad_Depth(0)
-                               )
-        self.DepthFList_Outside.append(self.BuildLambad_Depth_O(0))
         # Confirm Cross-sectional data for Middle Section
+        B2 = self.Cal_FormulaPoint_Asymmetric()
+        self.Length[1] = self.Length[1]+B2
+        # Pair Bakc section base on the Middle
+        self.Width[2] == self.Width[1]
+        self.Depth[2] == self.Depth[1]
+        self.SemiWidth[2] == self.SemiWidth[1]
+        # Sign Function for Front and Middle
+        for Index in range(len(self.Num)):
+            self.WidthFList.append(
+                self.BuildLambad_Width(Index))
+            self.WidthFList_Outside.append(
+                self.BuildLambad_Width_O_A(Index))
+            self.DepthFList.append(self.BuildLambad_Depth(Index)
+                                   )
+            self.DepthFList_Outside.append(self.BuildLambad_Depth_O_A(Index))
+
+    def Cal_FormulaPoint_Asymmetric(self):
+        B2 = (self.Length[0]-(self.Length[1]*(self.SemiWidth[0]/self.SemiWidth[1])**(
+            1/self.ECurveF[1])))/((self.SemiWidth[0]/self.SemiWidth[1])**(1/self.ECurveF[1])-1)
+        print(B2)
+        return(B2)
+
+    def Sign_CurveFormula(self, k):
+        return(lambda x: (
+            self.WidthFList[k](x)*self.DepthFList[k](x)))
+
+    def Sign_CurveFormula_Out(self, k):
+        return(lambda x: (
+            self.WidthFList_Outside[k](x)*self.DepthFList_Outside[k](x)))
+
+    def Sign_CurveFormula_Constant(self, k):
+
+        return(lambda x: (
+            ((self.SemiWidth[k]**self.ECurveF[k])*x)/(self.Depth[k]))**(1/self.ECurveF[k]))
+
+    def Sign_CurveFormula_Constant_Out(self, k):
+        return(lambda x: (
+            (((self.SemiWidth[k]+self.Thickness)**self.ECurveF[k])*x)/(self.Depth[k]+self.Thickness))**(1/self.ECurveF[k]))
 
     def Concret_Volume(self):
 
@@ -640,18 +677,15 @@ class Calculation():
         if(self.Note[2] != 24):
             for k in range(0, len(self.WidthFList)):
                 if(self.WidthFList[k] == -1 and self.DepthFList[k] == -1 and self.WidthFList_Outside[k] == -1 and self.DepthFList_Outside[k] == -1):
-                    SwDFunction_List.append(lambda x: (
-                        ((self.SemiWidth[k]**self.ECurveF[k])*x)/(self.Depth[k]))**(1/self.ECurveF[k]))
-                    SwD_Out_Function_List.append(lambda x: (
-                        (((self.SemiWidth[k]+self.Thickness)**self.ECurveF[k])*x)/(self.Depth[k]+self.Thickness))**(1/self.ECurveF[k]))
+                    SwDFunction_List.append(self.Sign_CurveFormula_Constant(k))
+                    SwD_Out_Function_List.append(
+                        self.Sign_CurveFormula_Constant_Out(k))
 
                 elif(self.WidthFList[k] != -1 and self.DepthFList[k] != -1 and self.WidthFList_Outside[k] != -1 and self.DepthFList_Outside[k] != -1):
-                    SwDFunction_List.append(lambda x: (
-                        self.WidthFList[k](x)*self.DepthFList[k](x)))
-                    SwD_Out_Function_List.append(lambda x: (
-                        self.WidthFList_Outside[k](x)*self.DepthFList_Outside[k](x)))
+                    SwDFunction_List.append(self.Sign_CurveFormula(k))
+                    SwD_Out_Function_List.append(self.Sign_CurveFormula_Out(k))
 
-            if(len(self.WidthFList) == -1 and len(self.DepthFList) == -1):
+            if(len(self.WidthFList) == 1 and len(self.DepthFList) == 1):
 
                 Volume_Inside_List.append(2*2
                                           * ((self.ECurveF[0])/(self.ECurveF[0]+1))
@@ -660,7 +694,7 @@ class Calculation():
                                            * ((self.ECurveF[0])/(self.ECurveF[0]+1))
                                            * quad(SwD_Out_Function_List[0], 0, self.Length[0]/2+self.Thickness)[0])
 
-            elif(len(self.WidthFList) != -1 and len(self.DepthFList) != -1):
+            elif(len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
                 for index in range(0, len(self.WidthFList)):
                     if(self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
                         Volume_Inside_List.append(
@@ -673,7 +707,25 @@ class Calculation():
                         Volume_Outside_List.append(2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(
                             SwD_Out_Function_List[index], 0, self.Length[index]+self.Thickness)[0])
         elif(self.Note[2] == 24):
-            print("fuck")
+
+            B2 = self.Cal_FormulaPoint_Asymmetric()
+            for k in range(0, len(self.WidthFList)):
+                SwDFunction_List.append(self.Sign_CurveFormula(k))
+                SwD_Out_Function_List.append(
+                    self.Sign_CurveFormula_Out(k))
+
+            for index in range(0, len(self.WidthFList)):
+                if(index == 1):
+                    Volume_Inside_List.append(
+                        2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(SwDFunction_List[index], B2, self.Length[index]+B2)[0])
+                    Volume_Outside_List.append(2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(
+                        SwD_Out_Function_List[index], B2, self.Length[index]+B2)[0])
+
+                if(index != 1):
+                    Volume_Inside_List.append(
+                        2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(SwDFunction_List[index], 0, self.Length[index])[0])
+                    Volume_Outside_List.append(2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(
+                        SwD_Out_Function_List[index], 0, self.Length[index]+self.Thickness)[0])
 
         for i, j in zip(Volume_Inside_List, Volume_Outside_List):
             Volume_Inside += i
@@ -1199,6 +1251,7 @@ class Calculation():
     def Formula_Generate(self):
         CurveFbyInch_Inside = []
         CurveFbyInch_Outside = []
+        B2 =self.Cal_FormulaPoint_Asymmetric()
         SymX = Symbol('x')
         interval = 1
         for num in range(self.Num):
@@ -1210,6 +1263,35 @@ class Calculation():
                           ** self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]]
                 CL_Out = [[(self.Depth[num]+self.Thickness)*(SymX/(self.SemiWidth[num]+self.Thickness))
                            ** self.ECurveF[num], (self.SemiWidth[num]+self.Thickness), (self.Depth[num]+self.Thickness)]]
+
+            elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0 and self.Num == 3 and num == 1):
+                for length in np.arange(B2, self.Length[num], interval):
+                    Width = self.WidthFList[num](length)
+                    Depth = self.DepthFList[num](length)
+
+                    CL_In.append(
+                        [Depth*(SymX/Width)**self.ECurveF[num], Width, Depth])
+                    if(length + interval >= self.Length[num]):
+                        Width = self.WidthFList[num](self.Length[num])
+                        Depth = self.DepthFList[num](self.Length[num])
+                        CL_In.append(
+                            [Depth*(SymX/Width)**self.ECurveF[num], Width, Depth])
+
+                for length_out in np.arange(B2, self.Length[num]+self.Thickness, interval):
+                    Width_O = self.WidthFList_Outside[num](length_out)
+                    Depth_O = self.DepthFList_Outside[num](length_out)
+
+                    CL_Out.append(
+                        [Depth_O*(SymX/Width_O)**self.ECurveF[num], Width_O, Depth_O])
+
+                    if(length_out + interval >= self.Length[num]+self.Thickness):
+                        Width_O = self.WidthFList_Outside[num](
+                            self.Length[num]+self.Thickness)
+                        Depth_O = self.DepthFList_Outside[num](
+                            self.Length[num]+self.Thickness)
+                        CL_Out.append(
+                            [Depth_O*(SymX/Width_O)**self.ECurveF[num], Width_O, Depth_O])
+
 
             elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
 
@@ -1239,6 +1321,7 @@ class Calculation():
                             self.Length[num]+self.Thickness)
                         CL_Out.append(
                             [Depth_O*(SymX/Width_O)**self.ECurveF[num], Width_O, Depth_O])
+
             CurveFbyInch_Inside.append(CL_In)
             CurveFbyInch_Outside.append(CL_Out)
 
@@ -1280,6 +1363,7 @@ class Calculation():
 
 
 class CanoeDataBase():
+    # Designed to connect to STL database
 
     def __init__(self, SectionDataDict, HullDataDict):
         self.SDD = SectionDataDict
