@@ -759,7 +759,7 @@ class Calculation():
         print(Volume_Inside)
         print(Volume_Outside)
 
-    def Styrofoam_Volume():
+    def Styrofoam_Volume(self):
         print("k")
 
     def Model_Generate(self):
@@ -1052,6 +1052,7 @@ class Calculation():
         return ([Vectors_I, Vectors_O])
 
     def Coordinatie_Generate(self, ModeString):
+        global L_index
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
