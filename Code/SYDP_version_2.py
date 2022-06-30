@@ -769,7 +769,9 @@ class Calculation():
         interval = 1
 
         V_List = self.Mesh_Generate()
-
+        if(self.Note[2] == 24):
+            # minus the B2
+            self.Length[1] = self.Length[1] - self.B2
         CoverList = [self.CoverLength-self.Thickness, self.CoverLength,
                      sum(self.Length)-self.CoverLength+self.Thickness*2, sum(self.Length)-self.CoverLength+self.Thickness*3]
 
@@ -1135,10 +1137,12 @@ class Calculation():
                                 CO_List.append([X_List, Y_List, Z_List])
                                 Z_value_O += self.Thickness-interval
 
-                    elif(CurveList_Outside[num][dataIndex_O][0] != 0 and dataIndex_O+interval < len(CurveList_Outside[num])):
+                    elif(CurveList_Outside[num][dataIndex_O][0] != 0 and dataIndex_O+interval <= len(CurveList_Outside[num])):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList_Outside[num][dataIndex_O][1], interval, CurveList_Outside[num][dataIndex_O][0], Z_value_O, ModeString)
                         CO_List.append([X_List, Y_List, Z_List])
+                        if(num == 1 and float(dataIndex_O+interval) == float(len(CurveList_Outside[num]))):
+                            Z_value_O -= interval
 
                     elif(CurveList_Outside[num][dataIndex_O][0] == 0):
                         CO_List.append([[0], [0], [Z_value_O]])
