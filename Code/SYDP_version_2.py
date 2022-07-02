@@ -1046,7 +1046,7 @@ class Calculation():
 
             for c_set_o in CO[num]:
                 Set = []
-                print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))
+                """print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))"""
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
                     add = (self.Depth[num]+self.Thickness) - c_set_o[1][-1]
                     Set.append([x, y+add, z])
@@ -1368,12 +1368,13 @@ class Calculation():
             for a in i:
                 print("Curve Inside : %s"%(a))
             print("SectionLength:%s"%(len(i)))
-        """
+        
         
         for i in CurveFbyInch_Outside:
             for a in i:
                 print("Curve Outside : %s"%(a))
             print("SectionLength:%s"%(len(i)))
+        """
         
        
                 
