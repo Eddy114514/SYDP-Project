@@ -1,13 +1,14 @@
-import tkinter as tk
-import numpy as np
-from scipy.integrate import quad
-from tkinter import messagebox
-from PIL import Image, ImageTk
-from sympy import *
-from mpl_toolkits import mplot3d
-from matplotlib import pyplot
-from stl import mesh
 import math
+import tkinter as tk
+from tkinter import messagebox
+
+import numpy as np
+from PIL import Image, ImageTk
+from matplotlib import pyplot
+from mpl_toolkits import mplot3d
+from scipy.integrate import quad
+from stl import mesh
+from sympy import *
 
 
 class MainGUI_Base():
@@ -481,11 +482,11 @@ class Calculation():
         self.Thickness = HDD[2]
         self.CrewWeight = HDD[3]
 
-        
+
 
         self.Num = len(self.Length)
 
-        
+
 
         self.SignFunction_Main()
 
@@ -550,7 +551,7 @@ class Calculation():
         SemiLength = self.Length[0]/2
         return(lambda x: (
             self.Depth[0]+self.Thickness)*(x/(SemiLength+self.Thickness))**self.EDepthF[0])
-    
+
     def DataPrint(self):
         print(self.Length)
         print(self.Width)
@@ -633,7 +634,7 @@ class Calculation():
         self.SemiWidth[2] = self.SemiWidth[1]
         self.DataPrint()
         # Sign Function for Front
-        
+
         self.WidthFList.append(
             self.BuildLambad_Width(0))
         self.WidthFList_Outside.append(
@@ -802,7 +803,7 @@ class Calculation():
                 inner = V_set[C_Index-1]
                 outter = V_set[C_Index]
                 Point4_Set = []
-                
+
                 if(Number == 1):
                     for P4 in range(1, len(inner)):
                         Point4_Set.append(
@@ -1233,7 +1234,7 @@ class Calculation():
         print(len(Coordinate_Outside[2]))
         
         """
-        
+
         return (Coordinate_Inside, Coordinate_Outside)
 
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
@@ -1304,7 +1305,7 @@ class Calculation():
 
             elif(self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0 and self.Num == 3 and num == 1):
                 for length in np.arange(self.B2, self.Length[num], interval):
-                    
+
                     Width = self.WidthFList[num](length)
                     Depth = self.Depth[1]
 
@@ -1363,7 +1364,7 @@ class Calculation():
         # reverse the end to make it pare with the canoe body
         CurveFbyInch_Inside[-1].reverse()
         CurveFbyInch_Outside[-1].reverse()
-        
+
         # Use For Debug
         """
         for i in CurveFbyInch_Inside:
@@ -1377,14 +1378,14 @@ class Calculation():
                 print("Curve Outside : %s"%(a))
             print("SectionLength:%s"%(len(i)))
         """
-        
-       
-                
-        
-        
-        
-            
-        
+
+
+
+
+
+
+
+
 
         return(CurveFbyInch_Inside, CurveFbyInch_Outside)
 
