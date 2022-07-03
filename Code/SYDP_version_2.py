@@ -797,6 +797,7 @@ class Calculation():
             for add in range(len(V_set[1])-1):
                 V_set[0].append(V_set[0][0])
                 V_set[-1].append(V_set[-1][0])
+                print(f"end point : {V_set[-1][0]}")
             for C_Index in range(1, len(V_set)):
                 inner = V_set[C_Index-1]
                 outter = V_set[C_Index]
@@ -1038,14 +1039,17 @@ class Calculation():
         for num in range(0, self.Num):
             for c_set in CI[num]:
                 Set = []
+                # For Debug
                 """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
                     add = (self.Depth[num]+self.Thickness) - c_set[1][-1]
                     Set.append([x, y+add, z+self.Thickness])
+                    """print(f"[{x},{y+add},{z+self.Thickness}]")"""
                 Vectors_I.append(Set)
 
             for c_set_o in CO[num]:
                 Set = []
+                # For Debug
                 """print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))"""
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
                     add = (self.Depth[num]+self.Thickness) - c_set_o[1][-1]
@@ -1100,6 +1104,8 @@ class Calculation():
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList_Inside[num][dataIndex][1], interval, CurveList_Inside[num][dataIndex][0], Z_value, ModeString)
                         CI_List.append([X_List, Y_List, Z_List])
+                        if(num == 1 and dataIndex+interval >= len(CurveList_Inside[num])):
+                            Z_value -= interval
                 Z_value += interval
 
             for dataIndex_O in range(0, len(CurveList_Outside[num])):
@@ -1153,7 +1159,7 @@ class Calculation():
             Coordinate_Outside.append(CO_List)
 
         # Used to Debug
-        
+
         """
         print("First Section")
 
@@ -1241,11 +1247,7 @@ class Calculation():
 
         if(ModeString == "3D"):
             # Find the largest Width, confirm the Width step interval
-            Max_Width = 0
-
-            for W in self.SemiWidth:
-                if(W > Max_Width):
-                    Max_Width = W
+            Max_Width = max(self.Width)
 
             L_Width = Max_Width
             step_interval = width/L_Width
