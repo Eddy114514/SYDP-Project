@@ -6,6 +6,7 @@ from scipy.integrate import quad
 from stl import mesh
 from sympy import *
 
+
 class Calculation():
 
     def __init__(self, CanoeDataBase_Object):
@@ -95,45 +96,41 @@ class Calculation():
             self.Note.append(2)
             self.SignFunction_ThreeBodyHull()
 
-    def BuildLambad_Width(self, index):
-        return (lambda x: self.SemiWidth[index] * (x / self.Length[index]) ** self.EWidthF[index])
-
     def BuildLambad_Depth(self, index):
         return (lambda x: self.Depth[index] * (x / self.Length[index]) ** self.EDepthF[index])
-
-    def BuildLambad_Width_O_A(self, index):
-        return (lambda x: (
-                                  self.SemiWidth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) **
-                          self.EWidthF[index])
-
-    def BuildLambad_Depth_O_A(self, index):
-        return (
-            lambda x: (self.Depth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) ** self.EDepthF[
-                index])
-
-    def BuildLambad_Width_O(self, index):
-        return (lambda x: (
-                                  self.SemiWidth[index] + self.Thickness) * (
-                                      x / (self.Length[index] + self.Thickness)) ** self.EWidthF[index])
 
     def BuildLambad_Depth_O(self, index):
 
         return (lambda x: (self.Depth[index] + self.Thickness) * (x / (self.Length[index] + self.Thickness)) **
                           self.EDepthF[index])
 
-    def BuildLambad_Width_Semi(self):
-        SemiLength = self.Length[0] / 2
-        return (lambda x: self.SemiWidth[0] * (x / SemiLength) ** self.EWidthF[0])
+    def BuildLambad_Depth_O_A(self, index):
+        return (
+            lambda x: (self.Depth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) ** self.EDepthF[
+                index])
 
     def BuildLambad_Depth_Semi(self):
         SemiLength = self.Length[0] / 2
         return (lambda x: self.Depth[0] * (x / SemiLength) ** self.EDepthF[0])
 
+    def BuildLambad_Width(self, index):
+        return (lambda x: self.SemiWidth[index] * (x / self.Length[index]) ** self.EWidthF[index])
+
+    def BuildLambad_Width_O(self, index):
+        return (lambda x: (self.SemiWidth[index] + self.Thickness) * (x / (self.Length[index] + self.Thickness)) **
+                          self.EWidthF[index])
+
+    def BuildLambad_Width_O_A(self, index):
+        return (lambda x: (self.SemiWidth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) **
+                          self.EWidthF[index])
+
+    def BuildLambad_Width_Semi(self):
+        SemiLength = self.Length[0] / 2
+        return (lambda x: self.SemiWidth[0] * (x / SemiLength) ** self.EWidthF[0])
+
     def BuildLambad_Width_Semi_O(self):
         SemiLength = self.Length[0] / 2
-        return (lambda x: (
-                                  self.SemiWidth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) **
-                          self.EWidthF[0])
+        return (lambda x: (self.SemiWidth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EWidthF[0])
 
     def BuildLambad_Depth_Semi_O(self):
         SemiLength = self.Length[0] / 2
@@ -276,12 +273,12 @@ class Calculation():
 
         return (lambda x: (
                                   ((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (
-                                      1 / self.ECurveF[k]))
+                                  1 / self.ECurveF[k]))
 
     def Sign_CurveFormula_Constant_Out(self, k):
         return (lambda x: (
                                   (((self.SemiWidth[k] + self.Thickness) ** self.ECurveF[k]) * x) / (
-                                      self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))
+                                  self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))
 
     def Canoe_Volume(self):
 
