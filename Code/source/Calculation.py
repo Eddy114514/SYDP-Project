@@ -265,15 +265,14 @@ class Calculation():
         return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k](x)))
 
+    def Sign_CurveFormula_Constant(self, k):
+        return (lambda x: (((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (1 / self.ECurveF[k]))
+
     def Sign_CurveFormula_Out(self, k):
         return (lambda x: (
                 self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k](x)))
 
-    def Sign_CurveFormula_Constant(self, k):
 
-        return (lambda x: (
-                                  ((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (
-                                  1 / self.ECurveF[k]))
 
     def Sign_CurveFormula_Constant_Out(self, k):
         return (lambda x: (
@@ -357,6 +356,8 @@ class Calculation():
 
     def Styrofoam_Volume(self):
         print("k")
+
+    # Model Construction
 
     def Model_Generate(self):
         if (len(self.Length) == 1):
@@ -472,6 +473,8 @@ class Calculation():
 
         # Show the plot to the screen
         pyplot.show()
+
+    # Model Construction tools
 
     def XYZ_Format_Generating(self, X, Y, Z, num):
 
