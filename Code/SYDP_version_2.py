@@ -336,7 +336,7 @@ class MainGUI_CreatNEW():
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
 
         self.CCO.CalDataReturn()
-        self.CCO.Concret_Volume()
+        self.CCO.Canoe_Volume()
         self.CCO.Model_Generate()
 
     def Addtable(self, booleanTable=0, NumCount=0):
@@ -672,9 +672,6 @@ class Calculation():
         self.B2 = round((self.Length[1]*SWvalue)/(1-SWvalue),10)
         self.B2_O =round(((self.Length[1])*SWvalue_O)/(1-SWvalue_O),10)
         self.B2_Diff = self.B2_O - self.B2
-        print("B2 Value =%s"%(self.B2))
-        print("B2_O Value =%s"%(self.B2_O))
-        print("B2_Diff Value =%s"%(self.B2_Diff))
 
     def Sign_CurveFormula(self, k):
         return(lambda x: (
@@ -693,7 +690,7 @@ class Calculation():
         return(lambda x: (
             (((self.SemiWidth[k]+self.Thickness)**self.ECurveF[k])*x)/(self.Depth[k]+self.Thickness))**(1/self.ECurveF[k]))
 
-    def Concret_Volume(self):
+    def Canoe_Volume(self):
 
         SwDFunction_List = []
         SwD_Out_Function_List = []
@@ -746,7 +743,7 @@ class Calculation():
                     Volume_Inside_List.append(
                         2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(SwDFunction_List[index], self.B2, self.Length[index]+self.B2)[0])
                     Volume_Outside_List.append(2*((self.ECurveF[index])/(self.ECurveF[index]+1))*quad(
-                        SwD_Out_Function_List[index], self.B2, self.Length[index]+self.B2)[0])
+                        SwD_Out_Function_List[index], self.B2_O, self.Length[index]+self.B2_Diff)[0])
 
                 if(index != 1):
                     Volume_Inside_List.append(
@@ -757,8 +754,10 @@ class Calculation():
         for i, j in zip(Volume_Inside_List, Volume_Outside_List):
             Volume_Inside += i
             Volume_Outside += j
+        Concret_Volume = Volume_Outside - Volume_Inside
         print(Volume_Inside)
         print(Volume_Outside)
+        print(Concret_Volume)
 
     def Styrofoam_Volume(self):
         print("k")
@@ -798,7 +797,6 @@ class Calculation():
             for add in range(len(V_set[1])-1):
                 V_set[0].append(V_set[0][0])
                 V_set[-1].append(V_set[-1][0])
-                print(f"end point : {V_set[-1][0]}")
             for C_Index in range(1, len(V_set)):
                 inner = V_set[C_Index-1]
                 outter = V_set[C_Index]
@@ -998,17 +996,13 @@ class Calculation():
                 for Index in range(1, len(CP)):
                     Set.append([CP[Index], CP[Index-1],
                                 CN[Index], CN[Index-1]])
-                    print([CP[Index], CP[Index-1],
-                           CN[Index], CN[Index-1]])
                 F_L2.append(Set)
-            print("\n")
             if(Number == 2 or Number == 0):
                 for Index in range(1, len(CP)):
 
                     Set.append([CP[Index-1], CP[Index],
                                 CN[Index-1], CN[Index]])
-                    print([CP[Index], CP[Index-1],
-                           CN[Index], CN[Index-1]])
+
                 F_L2.append(Set)
 
         return(F_L, F_L1, F_L2)
