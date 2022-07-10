@@ -239,9 +239,8 @@ class Calculation():
             self.BuildLambad_Width(1))
         self.WidthFList_Outside.append(
             self.BuildLambad_Width_O_A(1))
-        self.DepthFList.append(self.BuildLambad_Depth(1)
-                               )
-        self.DepthFList_Outside.append(self.BuildLambad_Depth_O_A(1))
+        self.DepthFList.append(self.Depth[1])
+        self.DepthFList_Outside.append((self.Depth[1]+self.Thickness))
 
         # Sign Function for end
 
@@ -267,6 +266,11 @@ class Calculation():
         return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k](x)))
 
+    def Sign_CurveFormula_A(self, k):
+        return (lambda x: (
+                self.WidthFList[k](x) * self.DepthFList[k]))
+
+
     def Sign_CurveFormula_Constant(self, k):
         return (lambda x: (((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (1 / self.ECurveF[k]))
 
@@ -274,6 +278,9 @@ class Calculation():
         return (lambda x: (
                 self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k](x)))
 
+    def Sign_CurveFormula_Out_A(self, k):
+        return (lambda x: (
+                self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k]))
 
 
     def Sign_CurveFormula_Constant_Out(self, k):
@@ -329,17 +336,27 @@ class Calculation():
         elif (self.Note[2] == 24):
 
             for k in range(0, len(self.WidthFList)):
-                SwDFunction_List.append(self.Sign_CurveFormula(k))
-                SwD_Out_Function_List.append(
-                    self.Sign_CurveFormula_Out(k))
+                if(k == 1):
+                    SwDFunction_List.append(self.Sign_CurveFormula_A(k))
+                    SwD_Out_Function_List.append(
+                        self.Sign_CurveFormula_Out_A(k))
+
+                else:
+                    SwDFunction_List.append(self.Sign_CurveFormula(k))
+                    SwD_Out_Function_List.append(
+                        self.Sign_CurveFormula_Out(k))
+
+
 
             for index in range(0, len(self.WidthFList)):
                 if (index == 1):
                     Volume_Inside_List.append(
+                        2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index]*
+                        quad(self.WidthFList[index], self.B2, self.Length[index] + self.B2)[0])
+                    Volume_Outside_List.append(
                         2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
-                        quad(SwDFunction_List[index], self.B2, self.Length[index] + self.B2)[0])
-                    Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
-                        SwD_Out_Function_List[index], self.B2_O, self.Length[index] + self.B2_Diff)[0])
+                        (self.Depth[index]+self.Thickness)*
+                        quad(self.WidthFList_Outside[index], self.B2_O, self.Length[index] + self.B2_O)[0])
 
                 if (index != 1):
                     Volume_Inside_List.append(

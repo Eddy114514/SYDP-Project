@@ -20,7 +20,6 @@ class DebugBase():
         # Test
         self.CCO.CalDataReturn()
         self.CCO.Canoe_Volume()
-        self.CCO.Model_Generate()
         # End the Program
         End = input("Enter 'space' to end the Program")
         if(End == ' '):
