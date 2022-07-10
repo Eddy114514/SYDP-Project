@@ -8,7 +8,7 @@ class DebugBase():
 
     def Debug(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\asset\\TestProfile\\{FileName}') as List:
+        with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
             read = List.read()
             Data = eval(read)
 
