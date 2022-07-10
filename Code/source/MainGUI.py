@@ -3,10 +3,7 @@ from tkinter import messagebox
 
 from PIL import Image, ImageTk
 
-
 # Import other files
-from CanoeDataBase import CanoeDataBase
-from Calculation import Calculation
 from HealthCheck import *
 
 
