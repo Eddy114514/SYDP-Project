@@ -136,7 +136,9 @@ class Calculation():
 
     def BuildLambad_Depth_Semi_O(self):
         SemiLength = self.Length[0] / 2
-        return (lambda x: (self.Depth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EDepthF[0])
+        return (lambda x: (
+                                  self.Depth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EDepthF[
+                              0])
 
     def DataPrint(self):
         print(self.Length)
@@ -261,25 +263,16 @@ class Calculation():
         self.B2_O = round(((self.Length[1]) * SWvalue_O) / (1 - SWvalue_O), 10)
         self.B2_Diff = self.B2_O - self.B2
 
-    def Sign_CurveFormula(self, k,flag = ''):
-        if(flag == 'a'):
-            return (lambda x: (
-                self.WidthFList[k](x) * self.Depth[k]))
-        else:
-            return (lambda x: (
+    def Sign_CurveFormula(self, k):
+        return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k](x)))
 
-    def Sign_CurveFormula_Constant(self, k, flag = ''):
+    def Sign_CurveFormula_Constant(self, k):
         return (lambda x: (((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (1 / self.ECurveF[k]))
 
-    def Sign_CurveFormula_Out(self, k,flag = ''):
-        if (flag == 'a'):
-            return (lambda x: (
-                self.WidthFList_Outside[k](x) * (self.Depth[k]+self.Thickness)))
-        else:
-            return (lambda x: (
-                    self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k](x)))
-
+    def Sign_CurveFormula_Out(self, k):
+        return (lambda x: (
+                self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k](x)))
 
 
 
@@ -336,16 +329,9 @@ class Calculation():
         elif (self.Note[2] == 24):
 
             for k in range(0, len(self.WidthFList)):
-                if(k==1):
-                    SwDFunction_List.append(self.Sign_CurveFormula(k,'a'))
-                    SwD_Out_Function_List.append(
-                        self.Sign_CurveFormula_Out(k,'a'))
-                else:
-                    SwDFunction_List.append(self.Sign_CurveFormula(k))
-                    SwD_Out_Function_List.append(
-                        self.Sign_CurveFormula_Out(k))
-
-
+                SwDFunction_List.append(self.Sign_CurveFormula(k))
+                SwD_Out_Function_List.append(
+                    self.Sign_CurveFormula_Out(k))
 
             for index in range(0, len(self.WidthFList)):
                 if (index == 1):
@@ -353,9 +339,9 @@ class Calculation():
                         2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
                         quad(SwDFunction_List[index], self.B2, self.Length[index] + self.B2)[0])
                     Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
-                        SwD_Out_Function_List[index], self.B2_O, self.Length[index] + self.B2_O)[0])
+                        SwD_Out_Function_List[index], self.B2_O, self.Length[index] + self.B2_Diff)[0])
 
-                elif (index != 1):
+                if (index != 1):
                     Volume_Inside_List.append(
                         2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
                         quad(SwDFunction_List[index], 0, self.Length[index])[0])
@@ -490,102 +476,7 @@ class Calculation():
         # Show the plot to the screen
         pyplot.show()
 
-    # Model Construction tools
 
-    def Formula_Generate(self):
-        CurveFbyInch_Inside = []
-        CurveFbyInch_Outside = []
-
-        SymX = Symbol('x')
-        interval = 1
-        for num in range(self.Num):
-            CL_In = []
-            CL_Out = []
-
-            if (self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
-                CL_In = [[self.Depth[num] * (SymX / self.SemiWidth[num])
-                          ** self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]]
-                CL_Out = [[(self.Depth[num] + self.Thickness) * (SymX / (self.SemiWidth[num] + self.Thickness))
-                           ** self.ECurveF[num], (self.SemiWidth[num] + self.Thickness),
-                           (self.Depth[num] + self.Thickness)]]
-
-            elif (self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0 and self.Num == 3 and num == 1):
-                for length in np.arange(self.B2, self.Length[num], interval):
-
-                    Width = self.WidthFList[num](length)
-                    Depth = self.Depth[1]
-
-                    CL_In.append(
-                        [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
-                    if (length + interval >= self.Length[num]):
-                        Width = self.WidthFList[num](self.Length[num])
-                        CL_In.append(
-                            [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
-
-                for length_out in np.arange(self.B2_O, self.Length[num] + self.B2_Diff, interval):
-                    Width_O = self.WidthFList_Outside[num](length_out)
-                    Depth_O = self.Depth[1] + self.Thickness
-
-                    CL_Out.append(
-                        [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
-
-                    if (length_out + interval >= self.Length[num] + self.B2_Diff):
-                        Width_O = self.WidthFList_Outside[num](
-                            self.Length[num] + self.B2_Diff)
-                        CL_Out.append(
-                            [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
-
-            elif (self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
-
-                for length in np.arange(0, self.Length[num], interval):
-                    Width = self.WidthFList[num](length)
-                    Depth = self.DepthFList[num](length)
-
-                    CL_In.append(
-                        [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
-                    if (length + interval >= self.Length[num]):
-                        Width = self.WidthFList[num](self.Length[num])
-                        Depth = self.DepthFList[num](self.Length[num])
-                        CL_In.append(
-                            [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
-
-                for length_out in np.arange(0, self.Length[num] + self.Thickness, interval):
-                    Width_O = self.WidthFList_Outside[num](length_out)
-                    Depth_O = self.DepthFList_Outside[num](length_out)
-
-                    CL_Out.append(
-                        [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
-
-                    if (length_out + interval >= self.Length[num] + self.Thickness):
-                        Width_O = self.WidthFList_Outside[num](
-                            self.Length[num] + self.Thickness)
-                        Depth_O = self.DepthFList_Outside[num](
-                            self.Length[num] + self.Thickness)
-                        CL_Out.append(
-                            [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
-
-            CurveFbyInch_Inside.append(CL_In)
-            CurveFbyInch_Outside.append(CL_Out)
-
-        # reverse the end to make it pare with the canoe body
-        CurveFbyInch_Inside[-1].reverse()
-        CurveFbyInch_Outside[-1].reverse()
-
-        # Use For Debug
-        """
-        for i in CurveFbyInch_Inside:
-            for a in i:
-                print("Curve Inside : %s"%(a))
-            print("SectionLength:%s"%(len(i)))
-
-
-        for i in CurveFbyInch_Outside:
-            for a in i:
-                print("Curve Outside : %s"%(a))
-            print("SectionLength:%s"%(len(i)))
-        """
-
-        return (CurveFbyInch_Inside, CurveFbyInch_Outside)
 
     def Coordinatie_Generate(self, ModeString):
         global L_index
@@ -776,6 +667,104 @@ class Calculation():
 
         return (Coordinate_Inside, Coordinate_Outside)
 
+
+    def Formula_Generate(self):
+        CurveFbyInch_Inside = []
+        CurveFbyInch_Outside = []
+
+        SymX = Symbol('x')
+        interval = 1
+        for num in range(self.Num):
+            CL_In = []
+            CL_Out = []
+
+            if (self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
+                CL_In = [[self.Depth[num] * (SymX / self.SemiWidth[num])
+                          ** self.ECurveF[num], self.SemiWidth[num], self.Depth[num]]]
+                CL_Out = [[(self.Depth[num] + self.Thickness) * (SymX / (self.SemiWidth[num] + self.Thickness))
+                           ** self.ECurveF[num], (self.SemiWidth[num] + self.Thickness),
+                           (self.Depth[num] + self.Thickness)]]
+
+            elif (self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0 and self.Num == 3 and num == 1):
+                for length in np.arange(self.B2, self.Length[num], interval):
+
+                    Width = self.WidthFList[num](length)
+                    Depth = self.Depth[1]
+
+                    CL_In.append(
+                        [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
+                    if (length + interval >= self.Length[num]):
+                        Width = self.WidthFList[num](self.Length[num])
+                        CL_In.append(
+                            [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
+
+                for length_out in np.arange(self.B2_O, self.Length[num] + self.B2_Diff, interval):
+                    Width_O = self.WidthFList_Outside[num](length_out)
+                    Depth_O = self.Depth[1] + self.Thickness
+
+                    CL_Out.append(
+                        [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
+
+                    if (length_out + interval >= self.Length[num] + self.B2_Diff):
+                        Width_O = self.WidthFList_Outside[num](
+                            self.Length[num] + self.B2_Diff)
+                        CL_Out.append(
+                            [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
+
+            elif (self.EWidthF[num] != 0.0 and self.EDepthF[num] != 0.0):
+
+                for length in np.arange(0, self.Length[num], interval):
+                    Width = self.WidthFList[num](length)
+                    Depth = self.DepthFList[num](length)
+
+                    CL_In.append(
+                        [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
+                    if (length + interval >= self.Length[num]):
+                        Width = self.WidthFList[num](self.Length[num])
+                        Depth = self.DepthFList[num](self.Length[num])
+                        CL_In.append(
+                            [Depth * (SymX / Width) ** self.ECurveF[num], Width, Depth])
+
+                for length_out in np.arange(0, self.Length[num] + self.Thickness, interval):
+                    Width_O = self.WidthFList_Outside[num](length_out)
+                    Depth_O = self.DepthFList_Outside[num](length_out)
+
+                    CL_Out.append(
+                        [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
+
+                    if (length_out + interval >= self.Length[num] + self.Thickness):
+                        Width_O = self.WidthFList_Outside[num](
+                            self.Length[num] + self.Thickness)
+                        Depth_O = self.DepthFList_Outside[num](
+                            self.Length[num] + self.Thickness)
+                        CL_Out.append(
+                            [Depth_O * (SymX / Width_O) ** self.ECurveF[num], Width_O, Depth_O])
+
+            CurveFbyInch_Inside.append(CL_In)
+            CurveFbyInch_Outside.append(CL_Out)
+
+        # reverse the end to make it pare with the canoe body
+        CurveFbyInch_Inside[-1].reverse()
+        CurveFbyInch_Outside[-1].reverse()
+
+        # Use For Debug
+        """
+        for i in CurveFbyInch_Inside:
+            for a in i:
+                print("Curve Inside : %s"%(a))
+            print("SectionLength:%s"%(len(i)))
+
+
+        for i in CurveFbyInch_Outside:
+            for a in i:
+                print("Curve Outside : %s"%(a))
+            print("SectionLength:%s"%(len(i)))
+        """
+
+        return (CurveFbyInch_Inside, CurveFbyInch_Outside)
+
+    # Model Construction tools
+
     def XYZ_Format_Generating(self, X, Y, Z, num):
 
         Formate = []
@@ -800,6 +789,40 @@ class Calculation():
             Length_List.append(Vertex_I[index][0][2])
 
         return (Vertex_I, Vertex_O, Length_List)
+
+    def PairCoverLength(self, LenList, find):
+        Diff = math.inf
+        Sign_Boolean = False
+        ReturnSet = []
+
+        Sum = 0
+        Len_Sum = [0]
+        for length in self.Length:
+            Sum += length
+            Len_Sum.append(Sum)
+
+        FindSign = find not in LenList
+        if (FindSign == False):
+            print("in")
+            ReturnSet.append(Sign_Boolean)
+            for num in range(1, len(Len_Sum)):
+                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
+                    ReturnSet.append(num - 1)
+            ReturnSet.append(LenList.index(find))
+            print(ReturnSet)
+            return (ReturnSet)
+        if (FindSign == True):
+            print("Not in")
+            Sign_Boolean = True
+            ReturnSet.append(Sign_Boolean)
+            for num in range(1, len(Len_Sum)):
+                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
+                    ReturnSet.append(num - 1)
+            LenList.append(find)
+            LenList.sort()
+            ReturnSet.append(LenList.index(find))
+            print(ReturnSet)
+            return (ReturnSet)
 
     def Vertical_Horizontal_Mesh_Generate(self, V_List, IndexSet):
         Vertex_I = []
@@ -872,58 +895,6 @@ class Calculation():
 
         return (F_L, F_L1, F_L2)
 
-    def PairCoverLength(self, LenList, find):
-        Diff = math.inf
-        Sign_Boolean = False
-        ReturnSet = []
-
-        Sum = 0
-        Len_Sum = [0]
-        for length in self.Length:
-            Sum += length
-            Len_Sum.append(Sum)
-
-        FindSign = find not in LenList
-        if (FindSign == False):
-            print("in")
-            ReturnSet.append(Sign_Boolean)
-            for num in range(1, len(Len_Sum)):
-                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
-                    ReturnSet.append(num - 1)
-            ReturnSet.append(LenList.index(find))
-            print(ReturnSet)
-            return (ReturnSet)
-        if (FindSign == True):
-            print("Not in")
-            Sign_Boolean = True
-            ReturnSet.append(Sign_Boolean)
-            for num in range(1, len(Len_Sum)):
-                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
-                    ReturnSet.append(num - 1)
-            LenList.append(find)
-            LenList.sort()
-            return (ReturnSet)
-            ReturnSet.append(LenList.index(find))
-            print(ReturnSet)
-
-    def Single_Formula_Generate(self, ZLength, num):
-        SymX = Symbol('x')
-
-        print(num)
-        F1 = self.WidthFList[num]
-        F2 = self.DepthFList[num]
-
-        if (F1 == -1):
-            def F1(x): return self.SemiWidth[num]
-
-        if (F2 == -1):
-            def F2(x): return self.Depth[num]
-
-        Width = F1(ZLength)
-        Depth = F2(ZLength)
-
-        return (Depth * (SymX / Width) ** self.ECurveF[num], Width)
-
     def Mesh_Generate(self):
         CI, CO = self.Coordinatie_Generate("3D")
 
@@ -950,6 +921,24 @@ class Calculation():
                     Set.append([x, y + add, z])
                 Vectors_O.append(Set)
         return ([Vectors_I, Vectors_O])
+
+    def Single_Formula_Generate(self, ZLength, num):
+        SymX = Symbol('x')
+
+        print(num)
+        F1 = self.WidthFList[num]
+        F2 = self.DepthFList[num]
+
+        if (F1 == -1):
+            def F1(x): return self.SemiWidth[num]
+
+        if (F2 == -1):
+            def F2(x): return self.Depth[num]
+
+        Width = F1(ZLength)
+        Depth = F2(ZLength)
+
+        return (Depth * (SymX / Width) ** self.ECurveF[num], Width)
 
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
 

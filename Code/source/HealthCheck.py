@@ -22,7 +22,9 @@ class DebugBase():
         self.CCO.Canoe_Volume()
         self.CCO.Model_Generate()
         # End the Program
-        sys.exit()
+        End = input("Enter 'space' to end the Program")
+        if(End == ' '):
+            sys.exit()
 
 
 
