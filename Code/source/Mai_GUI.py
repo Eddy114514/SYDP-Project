@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 # Import other files
 from CanoeDataBase import CanoeDataBase
 from Calculation import Calculation
+from HealthCheck import *
 
 
 class MainGUI_Base():
@@ -14,7 +15,28 @@ class MainGUI_Base():
         self.root = master
         self.root.geometry("800x800")
         self.root.title("Canoe Design Software")
-        MainGUI_Init(self.root)
+        self.HC = HealthCheckBase('Main_GUI')
+        isDebug = False
+        #isDebug = True# uncomment to enter debug mode
+        if(isDebug):
+            print("""keyword explain:
+            1. sym : mean test a symmetric hall 
+            2. lsh  : mean test a LongShort Hull
+            3. sch : mean test a Symmetric Constant Hull
+            4. ach : mean test a Asymmetric Constant Hull
+            5. ath  : mean test a Asymmetric Hull
+            """)
+
+            Profile = input("Enter the TestProfile: ")
+            ProfileList = ['sym,lsh,sch,ach,ath']
+            if(Profile not in ProfileList):
+                self.HC.ErrorReturn('TestProfile not in the list')
+            else:
+                self.D = DebugBase(Profile)
+                self.D.Debug(Profile)
+
+        else:
+            MainGUI_Init(self.root)
 
 
 class MainGUI_Init():
@@ -26,50 +48,54 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
-        img_CreatNew = Image.open('..\\asset\\CreatNew_Icon.png')
+        img_CreatNew = Image.open('../asset/Picture/CreatNew_Icon.png')
         img_CreatNew = img_CreatNew.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
-        img_Open = Image.open('..\\asset\\Open_Icon.png')
+        img_Open = Image.open('../asset/Picture/Open_Icon.png')
         img_Open = img_Open.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_Open = ImageTk.PhotoImage(img_Open)
 
-        img_Findbest = Image.open('..\\asset\\FindBest_icon.png')
+        img_Findbest = Image.open('../asset/Picture/FindBest_Icon.png')
         img_Findbest = img_Findbest.resize((80, 100), Image.ANTIALIAS)
         self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
 
-        img_Return = Image.open('..\\asset\\Menu_Icon.png')
+        img_Return = Image.open('../asset/Picture/Menu_Icon.png')
         img_Return = img_Return.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
 
-        img_Add = Image.open('..\\asset\\Add_Icon.png')
+        img_Add = Image.open('../asset/Picture/Add_Icon.png')
         img_Add = img_Add.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
 
-        img_NextPage = Image.open('..\\asset\\NextPage_Icon.png')
+        img_NextPage = Image.open('../asset/Picture/NextPage_Icon.png')
         img_NextPage = img_NextPage.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
 
-        img_BackPage = Image.open('..\\asset\\BackPage_Icon.png')
+        img_BackPage = Image.open('../asset/Picture/BackPage_Icon.png')
         img_BackPage = img_BackPage.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
 
-        img_Save = Image.open('..\\asset\\Save_Icon.png')
+        img_Save = Image.open('../asset/Picture/Save_Icon.png')
         img_Save = img_Save.resize((50, 50), Image.ANTIALIAS)
         MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
 
     def CreateWidgets(self):
 
-        username_label = tk.Label(self.MainGUI_Init_MainFrame, text="Canoe Design Program", font=(
+        #username_label
+        tk.Label(self.MainGUI_Init_MainFrame, text="Canoe Design Program", font=(
             "Time", 15, "bold")).pack(pady=10)
 
-        CreatNew_Button = tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_CreatNew, text="New Project", font=(
+        #CreatNew_Button
+        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_CreatNew, text="New Project", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_CreatNew).pack(pady=40)
 
-        Open_Button = tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Open, text="Open Project", font=(
+        #Open_Button
+        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Open, text="Open Project", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_Open).pack(pady=40)
 
-        CreatNew_Button = tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
+        #CreatNew_Button
+        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwicth_FindBest).pack(pady=0)
 
     def PgSwitch_CreatNew(self):
@@ -315,13 +341,17 @@ class MainGUI_CreatNEW():
         self.Thickness_entry = tk.Entry(self.MainGUI_InputTable_Two)
         self.CrewWeight_entry = tk.Entry(self.MainGUI_InputTable_Two)
 
-        CoverLenth_label = tk.Label(self.MainGUI_InputTable_Two, text="Cover Length :", font=(
+        #CoverLenth_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="Cover Length :", font=(
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
-        Density_label = tk.Label(self.MainGUI_InputTable_Two, text="Concret Density :", font=(
+        #Density_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="Concret Density :", font=(
             "Time", 12)).grid(column=0, row=2, sticky=tk.E, ipady=5, ipadx=5)
-        Thickness = tk.Label(self.MainGUI_InputTable_Two, text="Concret Thickness :", font=(
+        #Thickness_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="Concret Thickness :", font=(
             "Time", 12)).grid(column=0, row=3, sticky=tk.E, ipady=5, ipadx=5)
-        CrewWeight_label = tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
+        #CrewWeight_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
             "Time", 12)).grid(column=0, row=4, sticky=tk.E, ipadx=5, ipady=5)
 
         self.CoverLength_entry.grid(column=1, row=1, sticky=tk.W)
@@ -335,7 +365,6 @@ class MainGUI_CreatNEW():
 
         self.CCO.CalDataReturn()
         self.CCO.Canoe_Volume()
-        self.CCO.Model_Generate()
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if(booleanTable and NumCount < 4):

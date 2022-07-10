@@ -38,7 +38,9 @@ class CanoeDataBase():
     def DeletData_CDD(self):
         del self.SDD
         del self.HDD
-
+    def SaveDataToSQL(selfs):
+        #Save Data To SQL
+        print('work')
     def SaveDataIntoFile(self):
         #Save Data
         print("work")
