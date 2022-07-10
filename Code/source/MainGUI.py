@@ -14,8 +14,8 @@ class MainGUI_Base():
         self.root.title("Canoe Design Software")
         self.HC = HealthCheckBase('Main_GUI')
         isDebug = False
-        #isDebug = True# uncomment to enter debug mode
-        if(isDebug):
+        # isDebug = True# uncomment to enter debug mode
+        if (isDebug):
             print("""keyword explain:
             1. sym : mean test a symmetric hall 
             2. lsh  : mean test a LongShort Hull
@@ -25,8 +25,8 @@ class MainGUI_Base():
             """)
 
             Profile = input("Enter the TestProfile: ")
-            ProfileList = ['sym','lsh','sch','ach','ath']
-            if(Profile not in ProfileList):
+            ProfileList = ['sym', 'lsh', 'sch', 'ach', 'ath']
+            if (Profile not in ProfileList):
                 self.HC.ErrorReturn('TestProfile not in the list')
             else:
                 self.D = DebugBase(Profile)
@@ -37,6 +37,7 @@ class MainGUI_Base():
 
 
 class MainGUI_Init():
+
     def __init__(self, master):
         self.master = master
         self.MainGUI_Init_MainFrame = tk.Frame(self.master)
@@ -78,20 +79,19 @@ class MainGUI_Init():
         MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
 
     def CreateWidgets(self):
-
-        #username_label
+        # username_label
         tk.Label(self.MainGUI_Init_MainFrame, text="Canoe Design Program", font=(
             "Time", 15, "bold")).pack(pady=10)
 
-        #CreatNew_Button
+        # CreatNew_Button
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_CreatNew, text="New Project", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_CreatNew).pack(pady=40)
 
-        #Open_Button
+        # Open_Button
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Open, text="Open Project", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_Open).pack(pady=40)
 
-        #CreatNew_Button
+        # CreatNew_Button
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwicth_FindBest).pack(pady=0)
 
@@ -109,7 +109,6 @@ class MainGUI_Init():
 
 
 class MainGUI_CreatNEW():
-
     Num_Counter = 0
     Page_Counter = 0
 
@@ -124,7 +123,8 @@ class MainGUI_CreatNEW():
                               self.creatWidgets_PageTwo, self.creatWidgets_PageThree]
 
         self.FrameStoreList = [[self.MainGUI_InputTable, self.Return_Button], [
-            self.MainGUI_InputTable_Two, self.BackPage_Button], [self.MainGUI_DisplayTable_Three, self.BackPage_Button, self.Save_Button]]
+            self.MainGUI_InputTable_Two, self.BackPage_Button],
+                               [self.MainGUI_DisplayTable_Three, self.BackPage_Button, self.Save_Button]]
 
     def creatWidgets_PageMain(self):
 
@@ -138,16 +138,18 @@ class MainGUI_CreatNEW():
             "Time", 15, "bold")).pack(pady=10)
 
         self.NextPage_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage, command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter), self.NextPage()])
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
+                             self.NextPage()])
         self.NextPage_Button.pack(side="right", padx=10, pady=10)
 
     def creatWidgets_PageOne(self, SON, STR="Null"):
 
-        if(SON == False):
+        if (SON == False):
             self.MainGUI_InputTable = 0
             self.Return_Button = 0
 
-        if(SON == True):
+        if (SON == True):
 
             SectionDictObject = {}
             HullDictObject = []
@@ -168,17 +170,17 @@ class MainGUI_CreatNEW():
                 self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Return, command=self.Return)
             self.Return_Button.pack(side="left", padx=10, pady=10)
 
-            if(STR == "Update"):
+            if (STR == "Update"):
                 self.FrameStoreList[0][0] = self.MainGUI_InputTable
                 self.FrameStoreList[0][1] = self.Return_Button
 
     def creatWidgets_PageTwo(self, SON, STR="Null"):
 
-        if(SON == False):
+        if (SON == False):
             self.MainGUI_InputTable_Two = 0
             self.BackPage_Button = 0
 
-        if(SON == True):
+        if (SON == True):
             print("IN The Page TWO")
             self.MainGUI_InputTable_Two = tk.Frame(self.master)
             self.MainGUI_InputTable_Two.columnconfigure(0, weight=3)
@@ -189,19 +191,20 @@ class MainGUI_CreatNEW():
             self.MainGUI_InputTable_Two.columnconfigure(6, weight=3)
             self.MainGUI_InputTable_Two.pack(fill="x", pady=150)
             self.DataInputTable_PageTWO()
-            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage, command=lambda: [
-                                            self.PreviousPage_One()])
+            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
+                                             command=lambda: [
+                                                 self.PreviousPage_One()])
             self.BackPage_Button.pack(side="left", padx=10, pady=10)
-            if(STR == "Update"):
+            if (STR == "Update"):
                 self.FrameStoreList[1][0] = self.MainGUI_InputTable_Two
                 self.FrameStoreList[1][1] = self.BackPage_Button
 
     def creatWidgets_PageThree(self, SON, STR="Null"):
-        if(SON == False):
+        if (SON == False):
             self.MainGUI_DisplayTable_Three = 0
             self.BackPage_Button = 0
             self.Save_Button = 0
-        if(SON == True):
+        if (SON == True):
             self.CCO = Calculation(self.CDD)
 
             self.MainGUI_DisplayTable_Three = tk.Frame(self.master)
@@ -215,23 +218,25 @@ class MainGUI_CreatNEW():
 
             self.NextPage_Button.destroy()
 
-            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage, command=lambda: [
-                                            self.PreviousPage_Two()])
+            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
+                                             command=lambda: [
+                                                 self.PreviousPage_Two()])
             self.BackPage_Button.pack(side="left", padx=10, pady=10)
 
             self.Save_Button = tk.Button(
-                self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save, command=lambda: [self.CDD.SaveDataIntoFile()])
+                self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
+                command=lambda: [self.CDD.SaveDataIntoFile()])
             self.Save_Button.pack(side="right", padx=10, pady=10)
 
             self.DisplayTable_PageThree()
 
-            if(STR == "Update"):
+            if (STR == "Update"):
                 self.FrameStoreList[2][0] = self.MainGUI_DisplayTable_Three
                 self.FrameStoreList[2][1] = self.BackPage_Button
                 self.FrameStoreList[2][2] = self.Save_Button
 
     def DataInputTable(self, NumCount):
-        #Defind Input table
+        # Defind Input table
 
         Length_entry_1 = tk.Entry(self.MainGUI_InputTable)
         Width_entry_1 = tk.Entry(self.MainGUI_InputTable)
@@ -266,7 +271,7 @@ class MainGUI_CreatNEW():
 
         SectionTitle_Label = tk.Label(self.MainGUI_InputTable,
                                       text="Section %s" % (int(
-                                          NumCount/2)+1),
+                                          NumCount / 2) + 1),
                                       font=("Time", 15)).grid(column=NumCount,
                                                               row=1,
                                                               sticky=tk.E,
@@ -274,19 +279,19 @@ class MainGUI_CreatNEW():
 
         Length_label = tk.Label(self.MainGUI_InputTable,
                                 text="Canoe Length :", font=(
-                                    "Time", 12)).grid(column=NumCount, row=2,
-                                                      sticky=tk.E, ipady=5,
-                                                      ipadx=5)
+                "Time", 12)).grid(column=NumCount, row=2,
+                                  sticky=tk.E, ipady=5,
+                                  ipadx=5)
         Width_label = tk.Label(self.MainGUI_InputTable,
                                text="Canoe Width :", font=(
-                                   "Time", 12)).grid(column=NumCount, row=3,
-                                                     sticky=tk.E, ipady=5,
-                                                     ipadx=5)
+                "Time", 12)).grid(column=NumCount, row=3,
+                                  sticky=tk.E, ipady=5,
+                                  ipadx=5)
         Depth_label = tk.Label(self.MainGUI_InputTable,
                                text="Canoe Depth :", font=(
-                                   "Time", 12)).grid(column=NumCount, row=4,
-                                                     sticky=tk.E, ipady=5,
-                                                     ipadx=5)
+                "Time", 12)).grid(column=NumCount, row=4,
+                                  sticky=tk.E, ipady=5,
+                                  ipadx=5)
         ExponentCurve_label = tk.Label(self.MainGUI_InputTable,
                                        text="Exponent of Curve function :",
                                        font=(
@@ -307,30 +312,31 @@ class MainGUI_CreatNEW():
                                                              ipadx=5, ipady=5)
 
         self.EntryDict[NumCount
-                       / 2][0].grid(column=NumCount+1, row=2, sticky=tk.W)
+                       / 2][0].grid(column=NumCount + 1, row=2, sticky=tk.W)
         self.EntryDict[NumCount
-                       / 2][1].grid(column=NumCount+1, row=3, sticky=tk.W)
+                       / 2][1].grid(column=NumCount + 1, row=3, sticky=tk.W)
         self.EntryDict[NumCount
-                       / 2][2].grid(column=NumCount+1, row=4, sticky=tk.W)
+                       / 2][2].grid(column=NumCount + 1, row=4, sticky=tk.W)
         self.EntryDict[NumCount
-                       / 2][3].grid(column=NumCount+1, row=5, sticky=tk.W)
+                       / 2][3].grid(column=NumCount + 1, row=5, sticky=tk.W)
         self.EntryDict[NumCount
-                       / 2][4].grid(column=NumCount+1, row=6, sticky=tk.W)
+                       / 2][4].grid(column=NumCount + 1, row=6, sticky=tk.W)
         self.EntryDict[NumCount
-                       / 2][5].grid(column=NumCount+1, row=7, sticky=tk.W)
+                       / 2][5].grid(column=NumCount + 1, row=7, sticky=tk.W)
 
         self.AddNewTable_Button = tk.Button(
-            self.MainGUI_InputTable, image=MainGUI_Init.img_resized_Add, command=lambda: [self.Addtable(True, NumCount)])
+            self.MainGUI_InputTable, image=MainGUI_Init.img_resized_Add,
+            command=lambda: [self.Addtable(True, NumCount)])
         self.AddNewTable_Button.grid(
-            column=NumCount+2, row=2, sticky=tk.W, padx=10)
+            column=NumCount + 2, row=2, sticky=tk.W, padx=10)
 
-        if(NumCount == 4):
+        if (NumCount == 4):
             print("work5")
             self.Symmetry_CheckButton = tk.Checkbutton(
                 self.MainGUI_InputTable, command=lambda: [self.CDD.ConfigSYM()], text="Symmetricity: ", font=(
                     "Time", 12))
             self.Symmetry_CheckButton.grid(
-                column=NumCount+2, row=1, sticky=tk.W, padx=10)
+                column=NumCount + 2, row=1, sticky=tk.W, padx=10)
 
     def DataInputTable_PageTWO(self):
         self.CoverLength_entry = tk.Entry(self.MainGUI_InputTable_Two)
@@ -338,16 +344,16 @@ class MainGUI_CreatNEW():
         self.Thickness_entry = tk.Entry(self.MainGUI_InputTable_Two)
         self.CrewWeight_entry = tk.Entry(self.MainGUI_InputTable_Two)
 
-        #CoverLenth_Label
+        # CoverLenth_Label
         tk.Label(self.MainGUI_InputTable_Two, text="Cover Length :", font=(
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
-        #Density_Label
-        tk.Label(self.MainGUI_InputTable_Two, text="Concret Density :", font=(
+        # Density_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="Concrete Density :", font=(
             "Time", 12)).grid(column=0, row=2, sticky=tk.E, ipady=5, ipadx=5)
-        #Thickness_Label
-        tk.Label(self.MainGUI_InputTable_Two, text="Concret Thickness :", font=(
+        # Thickness_Label
+        tk.Label(self.MainGUI_InputTable_Two, text="Concrete Thickness :", font=(
             "Time", 12)).grid(column=0, row=3, sticky=tk.E, ipady=5, ipadx=5)
-        #CrewWeight_Label
+        # CrewWeight_Label
         tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
             "Time", 12)).grid(column=0, row=4, sticky=tk.E, ipadx=5, ipady=5)
 
@@ -365,17 +371,17 @@ class MainGUI_CreatNEW():
         self.CCO.Model_Generate()
 
     def Addtable(self, booleanTable=0, NumCount=0):
-        if(booleanTable and NumCount < 4):
+        if (booleanTable and NumCount < 4):
 
-            self.SaveData(NumCount/2, MainGUI_CreatNEW.Page_Counter)
+            self.SaveData(NumCount / 2, MainGUI_CreatNEW.Page_Counter)
             NumCount += 2
             self.AddNewTable_Button.destroy()
             self.DataInputTable(NumCount)
-            MainGUI_CreatNEW.Num_Counter = NumCount/2
+            MainGUI_CreatNEW.Num_Counter = NumCount / 2
             print(MainGUI_CreatNEW.Num_Counter)
 
-        elif(booleanTable and NumCount == 4):
-            self.SaveData(NumCount/2, MainGUI_CreatNEW.Page_Counter)
+        elif (booleanTable and NumCount == 4):
+            self.SaveData(NumCount / 2, MainGUI_CreatNEW.Page_Counter)
             self.AddNewTable_Button.destroy()
             print(MainGUI_CreatNEW.Num_Counter)
             messagebox.showinfo("information", "Reach The MAX Section Number")
@@ -384,7 +390,7 @@ class MainGUI_CreatNEW():
 
         print(Numcount, "Num is ")
 
-        if(Numcount <= 2 and Pagenum == 0):
+        if (Numcount <= 2 and Pagenum == 0):
             print("Enter First Dict", Numcount)
             Length_Canoe = float(self.EntryDict[Numcount][0].get())
             Width_Canoe = float(self.EntryDict[Numcount][1].get())
@@ -398,15 +404,15 @@ class MainGUI_CreatNEW():
 
             self.CDD.ConstructDict_SDD(Numcount, SectionDataList)
 
-        elif(Pagenum > 0):
+        elif (Pagenum > 0):
             print("Enter SEC Dict", Numcount)
             CoverLength = float(self.CoverLength_entry.get())
-            Concret_Density = float(self.Density_entry.get())
-            Concret_Thickness = float(self.Thickness_entry.get())
+            Concrete_Density = float(self.Density_entry.get())
+            Concrete_Thickness = float(self.Thickness_entry.get())
             CrewWeight = float(self.CrewWeight_entry.get())
 
-            HullDataList = [CoverLength, Concret_Density,
-                            Concret_Thickness, CrewWeight]
+            HullDataList = [CoverLength, Concrete_Density,
+                            Concrete_Thickness, CrewWeight]
 
             self.CDD.ConstructDict_HDD(HullDataList)
 
@@ -423,7 +429,7 @@ class MainGUI_CreatNEW():
         MainGUI_CreatNEW.Num_Counter += 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()
-        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter+1
+        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter + 1
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_One(self):
@@ -431,7 +437,7 @@ class MainGUI_CreatNEW():
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()
-        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter-1
+        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter - 1
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_Two(self):
@@ -439,11 +445,14 @@ class MainGUI_CreatNEW():
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()
-        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter-1
+        MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter - 1
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
         self.NextPage_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage, command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter), self.NextPage()])
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
+                             self.NextPage()])
         self.NextPage_Button.pack(side="right", padx=10, pady=10)
+
 
 if __name__ == "__main__":
     root = tk.Tk()

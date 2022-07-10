@@ -368,10 +368,10 @@ class Calculation():
         for i, j in zip(Volume_Inside_List, Volume_Outside_List):
             Volume_Inside += i
             Volume_Outside += j
-        Concret_Volume = Volume_Outside - Volume_Inside
+        Concrete_Volume = Volume_Outside - Volume_Inside
         print(Volume_Inside)
         print(Volume_Outside)
-        print(Concret_Volume)
+        print(Concrete_Volume)
 
     def Styrofoam_Volume(self):
         print("k")
