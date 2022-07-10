@@ -25,7 +25,7 @@ class MainGUI_Base():
             """)
 
             Profile = input("Enter the TestProfile: ")
-            ProfileList = ['sym,lsh,sch,ach,ath']
+            ProfileList = ['sym','lsh','sch','ach','ath']
             if(Profile not in ProfileList):
                 self.HC.ErrorReturn('TestProfile not in the list')
             else:
@@ -362,6 +362,7 @@ class MainGUI_CreatNEW():
 
         self.CCO.CalDataReturn()
         self.CCO.Canoe_Volume()
+        self.CCO.Model_Generate()
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if(booleanTable and NumCount < 4):

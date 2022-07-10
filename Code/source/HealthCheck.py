@@ -1,6 +1,6 @@
 from CanoeDataBase import CanoeDataBase
 from Calculation import Calculation
-
+import sys
 
 class DebugBase():
     def __init__(self, profile):
@@ -8,16 +8,22 @@ class DebugBase():
 
     def Debug(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\asset\\{FileName}') as List:
-            Data = eval(List.read())
+        with open(f'..\\asset\\TestProfile\\{FileName}') as List:
+            read = List.read()
+            Data = eval(read)
 
-        SectionDictObject = List[0]
-        HullDictObject = List[1]
+        SectionDictObject = Data[0]
+        HullDictObject = Data[1]
         self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
-        self.CCO = Calculation(self.CCO)
+        self.CCO = Calculation(self.CDD)
 
         # Test
+        self.CCO.CalDataReturn()
+        self.CCO.Canoe_Volume()
         self.CCO.Model_Generate()
+        # End the Program
+        sys.exit()
+
 
 
 class HealthCheckBase():
