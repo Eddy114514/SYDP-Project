@@ -14,7 +14,7 @@ class MainGUI_Base():
         self.root.title("Canoe Design Software")
         self.HC = HealthCheckBase('Main_GUI')
         isDebug = False
-        # isDebug = True# uncomment to enter debug mode
+        isDebug = True# uncomment to enter debug mode
         if (isDebug):
             print("""keyword explain:
             1. sym : mean test a symmetric hall 

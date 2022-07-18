@@ -352,11 +352,11 @@ class Calculation():
                 if (index == 1):
                     Volume_Inside_List.append(
                         2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index]*
-                        quad(self.WidthFList[index], self.B2, self.Length[index] + self.B2)[0])
+                        quad(self.WidthFList[index], self.B2, self.Length[index])[0])
                     Volume_Outside_List.append(
                         2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
                         (self.Depth[index]+self.Thickness)*
-                        quad(self.WidthFList_Outside[index], self.B2_O, self.Length[index] + self.B2_O)[0])
+                        quad(self.WidthFList_Outside[index], self.B2_O, self.Length[index] + self.B2_Diff)[0])
 
                 if (index != 1):
                     Volume_Inside_List.append(
@@ -366,6 +366,7 @@ class Calculation():
                         SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
 
         for i, j in zip(Volume_Inside_List, Volume_Outside_List):
+            print(f"Inside Volume: {i} || Outside Volume: {j}")
             Volume_Inside += i
             Volume_Outside += j
         Concrete_Volume = Volume_Outside - Volume_Inside
@@ -453,7 +454,7 @@ class Calculation():
 
         # Sign Front and Back
 
-        cube = mesh.Mesh(np.zeros(Face_Num, dtype=mesh.Mesh.dtype))
+        canoe = mesh.Mesh(np.zeros(Face_Num, dtype=mesh.Mesh.dtype))
 
         # Resigning the Coordinate
 
@@ -463,15 +464,15 @@ class Calculation():
                 for set in face:
                     # Sign Two faces
                     for num in range(3):
-                        cube.vectors[face_Counter][num] = set[num]
-                        cube.vectors[face_Counter + 1][num] = set[(num + 1) * -1]
+                        canoe.vectors[face_Counter][num] = set[num]
+                        canoe.vectors[face_Counter + 1][num] = set[(num + 1) * -1]
 
                     face_Counter += 2
 
-        cube.rotate([0.0, 0.5, 0.0], math.radians(90))
-        cube.rotate([0.5, 0.0, 0.0], math.radians(-1 * 90))
+        canoe.rotate([0.0, 0.5, 0.0], math.radians(90))
+        canoe.rotate([0.5, 0.0, 0.0], math.radians(-1 * 90))
 
-        cube.save('Canoe.stl')
+        canoe.save('Canoe.stl')
 
         print("Model Generated")
         # For Debug
@@ -480,11 +481,11 @@ class Calculation():
         figure = pyplot.figure()
         axes = mplot3d.Axes3D(figure)
 
-        # Render the cube
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(cube.vectors))
+        # Render the canoe
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(canoe.vectors))
 
         # Auto scale to the mesh size
-        scale = cube.points.flatten()
+        scale = canoe.points.flatten()
         axes.auto_scale_xyz(scale, scale, scale)
         axes.set_xlabel("X axis")
         axes.set_ylabel("Y axis")
@@ -496,7 +497,6 @@ class Calculation():
 
 
     def Coordinatie_Generate(self, ModeString):
-        global L_index
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
