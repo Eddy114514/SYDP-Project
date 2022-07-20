@@ -401,7 +401,7 @@ class Calculation():
 
         return sum(Volume_Inside_List)
 
-    def Styrofoam_Volume(self):
+    def Styrofoam_Volume(self, SwDFunction_List):
         if (self.Note[2] == 24):
             # minus the B2
             self.Length[1] = self.Length[1] - self.B2
