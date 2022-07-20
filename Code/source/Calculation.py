@@ -217,12 +217,16 @@ class Calculation():
         self.Note.append(24)
         # Confirm Cross-sectional data for Middle Section
         self.Set_FormulaPoint_Asymmetric()
-        self.Length[1] = self.Length[1] + self.B2
+
         # Pair Back section base on the Middle
         self.Width[2] = self.Width[1]
         self.Depth[2] = self.Depth[1]
         self.SemiWidth[2] = self.SemiWidth[1]
         self.DataPrint()
+        # For remain the consistency of the Data
+        self.Length[1] = self.Length[1] + self.B2
+
+
         # Sign Function for Front
 
         self.WidthFList.append(
@@ -289,15 +293,20 @@ class Calculation():
                                   self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))
 
     def Canoe_Volume(self):
+        # Process of Signing Function
+        SwDFunction_List, SwD_Out_Function_List = self.SignFunction_CanoeVolume()
+        # Volume
+        Volume_Inside = self.Inside_Volume(SwDFunction_List)
+        Volume_Outside = self.Outside_Volume(SwD_Out_Function_List)
+        Volume_Styrofoam = self.Styrofoam_Volume(SwDFunction_List)
+        Volume_Concrete = Volume_Outside - Volume_Inside
+        # Uncomment to Debug
+        print(Volume_Outside,Volume_Inside,Volume_Concrete)
 
+    def SignFunction_CanoeVolume(self):
         SwDFunction_List = []
         SwD_Out_Function_List = []
-        Volume_Inside_List = []
-        Volume_Outside_List = []
-        Volume_Inside = 0
-        Volume_Outside = 0
-
-        if (self.Note[2] != 24):
+        if (self.Note[2] != 24):  # Check if it is Asymmetric hall
             for k in range(0, len(self.WidthFList)):
                 if (self.WidthFList[k] == -1 and self.DepthFList[k] == -1 and self.WidthFList_Outside[k] == -1 and
                         self.DepthFList_Outside[k] == -1):
@@ -310,72 +319,96 @@ class Calculation():
                     SwDFunction_List.append(self.Sign_CurveFormula(k))
                     SwD_Out_Function_List.append(self.Sign_CurveFormula_Out(k))
 
-            if (len(self.WidthFList) == 1 and len(self.DepthFList) == 1):
-
-                Volume_Inside_List.append(2 * 2
-                                          * ((self.ECurveF[0]) / (self.ECurveF[0] + 1))
-                                          * quad(SwDFunction_List[0], 0, self.Length[0] / 2)[0])
-                Volume_Outside_List.append(2 * 2
-                                           * ((self.ECurveF[0]) / (self.ECurveF[0] + 1))
-                                           * quad(SwD_Out_Function_List[0], 0, self.Length[0] / 2 + self.Thickness)[0])
-
-            elif (len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
-                for index in range(0, len(self.WidthFList)):
-                    if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
-                        Volume_Inside_List.append(
-                            self.Length[index] * 2 * quad(SwDFunction_List[index], 0, self.Depth[index])[0])
-                        Volume_Outside_List.append(
-                            self.Length[index] * 2 *
-                            quad(SwD_Out_Function_List[index], 0, (self.Depth[index] + self.Thickness))[0])
-                    elif (self.WidthFList[index] != -1 and self.DepthFList[index] != -1):
-                        Volume_Inside_List.append(
-                            2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
-                            quad(SwDFunction_List[index], 0, self.Length[index])[0])
-                        Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
-                            SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
-        elif (self.Note[2] == 24):
+        elif (self.Note[2] == 24):  # Asymmetric hall
 
             for k in range(0, len(self.WidthFList)):
-                if(k == 1):
+                if (k == 1):
                     SwDFunction_List.append(self.Sign_CurveFormula_A(k))
                     SwD_Out_Function_List.append(
                         self.Sign_CurveFormula_Out_A(k))
-
                 else:
                     SwDFunction_List.append(self.Sign_CurveFormula(k))
                     SwD_Out_Function_List.append(
                         self.Sign_CurveFormula_Out(k))
 
+        return (SwDFunction_List,SwD_Out_Function_List)
+
+    def Outside_Volume(self,SwD_Out_Function_List):
+        Volume_Outside_List =[]
+        if (len(self.WidthFList) == 1 and len(self.DepthFList) == 1):
+            Volume_Outside_List.append(2 * 2
+                                       * ((self.ECurveF[0]) / (self.ECurveF[0] + 1))
+                                       * quad(SwD_Out_Function_List[0], 0, self.Length[0] / 2 + self.Thickness)[0])
+
+        elif (len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
+            if(self.Note[2] != 24): # Check if it is Asymmetric hall
+                for index in range(0, len(self.WidthFList)):
+                    if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
+                        Volume_Outside_List.append(
+                            self.Length[index] * 2 *
+                            quad(SwD_Out_Function_List[index], 0, (self.Depth[index] + self.Thickness))[0])
+                    elif (self.WidthFList[index] != -1 and self.DepthFList[index] != -1):
+                        Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
+                            SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
+            else:
+                # Asymmetric hall
+                for index in range(0, len(self.WidthFList)):
+                    if (index == 1):
+                        Volume_Outside_List.append(
+                            2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
+                            (self.Depth[index] + self.Thickness) *
+                            quad(self.WidthFList_Outside[index], self.B2_O, self.Length[index] + self.B2_Diff)[0])
+                    else:
+                        Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
+                            SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
+        # Uncomment to Debug
+        [print(f"Outside Volume = {volume}") for volume in Volume_Outside_List]
+        return sum(Volume_Outside_List)
 
 
-            for index in range(0, len(self.WidthFList)):
-                if (index == 1):
-                    Volume_Inside_List.append(
-                        2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index]*
-                        quad(self.WidthFList[index], self.B2, self.Length[index])[0])
-                    Volume_Outside_List.append(
-                        2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
-                        (self.Depth[index]+self.Thickness)*
-                        quad(self.WidthFList_Outside[index], self.B2_O, self.Length[index] + self.B2_Diff)[0])
+    def Inside_Volume(self,SwDFunction_List):
+        Volume_Inside_List = []
+        if (len(self.WidthFList) == 1 and len(self.DepthFList) == 1):
 
-                if (index != 1):
-                    Volume_Inside_List.append(
-                        2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
-                        quad(SwDFunction_List[index], 0, self.Length[index])[0])
-                    Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
-                        SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
+            Volume_Inside_List.append(2 * 2
+                                      * ((self.ECurveF[0]) / (self.ECurveF[0] + 1))
+                                      * quad(SwDFunction_List[0], 0, self.Length[0] / 2)[0])
 
-        for i, j in zip(Volume_Inside_List, Volume_Outside_List):
-            print(f"Inside Volume: {i} || Outside Volume: {j}")
-            Volume_Inside += i
-            Volume_Outside += j
-        Concrete_Volume = Volume_Outside - Volume_Inside
-        print(Volume_Inside)
-        print(Volume_Outside)
-        print(Concrete_Volume)
+
+        elif (len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
+            if(self.Note[2] != 24): # Check if it is Asymmetric hall
+                for index in range(0, len(self.WidthFList)):
+                    if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
+                        Volume_Inside_List.append(
+                            self.Length[index] * 2 * quad(SwDFunction_List[index], 0, self.Depth[index])[0])
+                    elif (self.WidthFList[index] != -1 and self.DepthFList[index] != -1):
+                        Volume_Inside_List.append(
+                            2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
+                            quad(SwDFunction_List[index], 0, self.Length[index])[0])
+            else:
+                # Asymmetric hall
+                for index in range(0, len(self.WidthFList)):
+                    if (index == 1):
+                        Volume_Inside_List.append(
+                            2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index] *
+                            quad(self.WidthFList[index], self.B2, self.Length[index])[0])
+                    else:
+                        Volume_Inside_List.append(
+                            2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
+                            quad(SwDFunction_List[index], 0, self.Length[index])[0])
+        # Uncomment to Debug
+        [print(f"Inside Volume = {volume}") for volume in Volume_Inside_List]
+
+        return sum(Volume_Inside_List)
 
     def Styrofoam_Volume(self):
-        print("k")
+        if (self.Note[2] == 24):
+            # minus the B2
+            self.Length[1] = self.Length[1] - self.B2
+        lengthList = self.Length
+        #lengthList.append()
+        return 42
+
 
     # Model Construction
 
