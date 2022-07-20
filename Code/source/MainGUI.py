@@ -1,21 +1,23 @@
+import sys
 import tkinter as tk
 from tkinter import messagebox
-
 from PIL import Image, ImageTk
-
 # Import other files
 from HealthCheck import *
 
-
 class MainGUI_Base():
+    with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
+        startSetUp = dict.read()
+    dB = DebugBase(bool(eval(startSetUp)['isDebug']))  # isDebug Parameter
+
     def __init__(self, master):
-        self.root = master
-        self.root.geometry("800x800")
-        self.root.title("Canoe Design Software")
+
         self.HC = HealthCheckBase('Main_GUI')
-        isDebug = False
-        isDebug = True# uncomment to enter debug mode
-        if (isDebug):
+
+
+
+        if (MainGUI_Base.dB.isDebug == True):
+            sys.stderr.flush() # refresh
             print("""keyword explain:
             1. sym : mean test a symmetric hall 
             2. lsh  : mean test a LongShort Hull
@@ -23,16 +25,15 @@ class MainGUI_Base():
             4. ach : mean test a Asymmetric Constant Hull
             5. ath  : mean test a Asymmetric Hull
             """)
-
-            Profile = input("Enter the TestProfile: ")
-            ProfileList = ['sym', 'lsh', 'sch', 'ach', 'ath']
-            if (Profile not in ProfileList):
-                self.HC.ErrorReturn('TestProfile not in the list')
-            else:
-                self.D = DebugBase(Profile)
-                self.D.Debug(Profile)
-
+            self.Profile = input("Enter the TestProfile: ")
+            if(self.Profile == "7"):
+                print(777777)
+                sys.exit()
+            MainGUI_Base.dB.DebugMode(self.Profile)
         else:
+            self.root = master
+            self.root.geometry("800x800")
+            self.root.title("Canoe Design Software")
             MainGUI_Init(self.root)
 
 
@@ -95,6 +96,12 @@ class MainGUI_Init():
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
             "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwicth_FindBest).pack(pady=0)
 
+        # Debug Button
+        self.Debug_Button = tk.Button(
+            self.MainGUI_Init_MainFrame, text="Debug",
+            command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
+        self.Debug_Button.pack(side="bottom", padx=10, pady=100)
+
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
         MainGUI_CreatNEW(self.master)
@@ -135,13 +142,18 @@ class MainGUI_CreatNEW():
         self.MainGUI_Title.pack(fill="x", pady=50)
 
         username_label = tk.Label(self.MainGUI_Title, text="Data Input Table", font=(
-            "Time", 15, "bold")).pack(pady=10)
+            "Time", 15, "bold"))
+        username_label.pack(pady=10)
 
         self.NextPage_Button = tk.Button(
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
             command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
                              self.NextPage()])
         self.NextPage_Button.pack(side="right", padx=10, pady=10)
+
+
+
+
 
     def creatWidgets_PageOne(self, SON, STR="Null"):
 

@@ -1,12 +1,38 @@
 from CanoeDataBase import CanoeDataBase
 from Calculation import Calculation
-import sys
+import sys ,os,json,time
 
 class DebugBase():
-    def __init__(self, profile):
-        self.profile = profile
+    def __init__(self, debugBoolean):
+        self.isDebug = debugBoolean
 
-    def Debug(self, p):
+    def DebugMode(self,Profile):
+        self.command_Read(Profile)
+        End_Parameter = input("""End the debug mode? Enter: [y/n]""")
+
+        if(End_Parameter == 'n'):
+            print("Program End")
+            sys.exit()
+        elif(End_Parameter == 'y'): # exit the debug mode and restart
+            print("Program End \n Debug Mode Off")
+            self.ChangDebug(False)
+            self.restartProgram()
+        else:
+            self.command_Read(Profile)
+
+    def command_Read(self,Profile):
+        ProfileList = ['sym', 'lsh', 'sch', 'ach', 'ath']
+        while (Profile != " "):
+            if (Profile not in ProfileList):
+                HealthCheckBase.ErrorReturn('TestProfile not in the list')
+            else:
+                self.DebugTest(Profile)
+
+            # End the Program
+            print("Enter 'space' to end the program")
+            Profile = input("Enter the TestProfile or 'space':")
+            
+    def DebugTest(self,p):
         FileName = "TestProfile_" + p + ".txt"
         with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
             read = List.read()
@@ -20,10 +46,27 @@ class DebugBase():
         # Test
         self.CCO.CalDataReturn()
         self.CCO.Canoe_Volume()
-        # End the Program
-        End = input("Enter 'space' to end the Program")
-        if(End == ' '):
-            sys.exit()
+
+    def ChangDebug(self, debugBoolean):
+        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt','r') as f:
+            startSetUp = eval(f.read())
+
+        if(debugBoolean):
+            digit = 1
+        else:
+            digit = 0
+
+        startSetUp['isDebug'] = digit
+        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt','w') as dict:
+            dict.write(json.dumps(startSetUp))
+
+    def restartProgram(self):
+        sys.stdout.flush()
+        actionList = ["python", "MainGUI.py"]
+        os.execvp(actionList[0], actionList)
+
+
+        
 
 
 
