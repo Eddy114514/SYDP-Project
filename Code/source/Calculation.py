@@ -407,6 +407,7 @@ class Calculation():
             self.Length[1] = self.Length[1] - self.B2
         lengthList = self.Length
         #lengthList.append()
+        # TBD
         return 42
 
 
