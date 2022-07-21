@@ -26,9 +26,6 @@ class MainGUI_Base():
             5. ath  : mean test a Asymmetric Hull
             """)
             self.Profile = input("Enter the TestProfile: ")
-            if(self.Profile == "7"):
-                print(777777)
-                sys.exit()
             MainGUI_Base.dB.DebugMode(self.Profile)
         else:
             self.root = master
@@ -154,7 +151,8 @@ class MainGUI_CreatNEW():
 
 
 
-
+    # SON is PageConditionBoolean
+    # STR is PageConditionKeyword
     def creatWidgets_PageOne(self, SON, STR="Null"):
 
         if (SON == False):
