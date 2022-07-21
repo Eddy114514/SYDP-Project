@@ -408,6 +408,8 @@ class Calculation():
         lengthList = self.Length
         #lengthList.append()
         # TBD
+        # steps:
+        # get a list of length, find where cover is. Calculate
         return 42
 
 
