@@ -100,7 +100,7 @@ class MainGUI_Init():
         self.Debug_Button = tk.Button(
             self.MainGUI_Init_MainFrame, text="Debug",
             command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
-        self.Debug_Button.pack(side="bottom", padx=10, pady=100)
+        self.Debug_Button.pack(side="bottom", padx=10, pady=self.master.winfo_height() * (3 / 4))
 
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
