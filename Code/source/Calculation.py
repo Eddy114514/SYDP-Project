@@ -219,12 +219,13 @@ class Calculation():
         self.Set_FormulaPoint_Asymmetric()
 
         # Pair Back section base on the Middle
+        self.Length[1] = self.Length[1] + self.B2
         self.Width[2] = self.Width[1]
         self.Depth[2] = self.Depth[1]
         self.SemiWidth[2] = self.SemiWidth[1]
         self.DataPrint()
         # For remain the consistency of the Data
-        self.Length[1] = self.Length[1] + self.B2
+
 
 
         # Sign Function for Front
@@ -402,9 +403,6 @@ class Calculation():
         return sum(Volume_Inside_List)
 
     def Styrofoam_Volume(self, SwDFunction_List):
-        if (self.Note[2] == 24):
-            # minus the B2
-            self.Length[1] = self.Length[1] - self.B2
         lengthList = self.Length
         #lengthList.append()
         # TBD
@@ -511,8 +509,6 @@ class Calculation():
         canoe.save('Canoe.stl')
 
         print("Model Generated")
-        # For Debug
-
         # Create a new plot
         figure = pyplot.figure()
         axes = mplot3d.Axes3D(figure)
@@ -529,6 +525,9 @@ class Calculation():
 
         # Show the plot to the screen
         pyplot.show()
+
+
+
 
 
 

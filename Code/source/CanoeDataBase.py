@@ -8,10 +8,8 @@ class CanoeDataBase():
 
     def ConfigSYM(self):
         print("Change from ", self.SymmetryBoolean)
-        if(self.SymmetryBoolean):
-            self.SymmetryBoolean = False
-        elif(self.SymmetryBoolean == False):
-            self.SymmetryBoolean = True
+        # flap the Boolean
+        self.SymmetryBoolean = not self.SymmetryBoolean
         print("to", self.SymmetryBoolean)
 
     def GetSYM(self):

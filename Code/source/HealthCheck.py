@@ -46,6 +46,7 @@ class DebugBase():
         # Test
         self.CCO.CalDataReturn()
         self.CCO.Canoe_Volume()
+        self.CCO.Model_Generate()
 
     def ChangDebug(self, debugBoolean):
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt','r') as f:
