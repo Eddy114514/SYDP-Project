@@ -1,9 +1,11 @@
-import sys
 import tkinter as tk
 from tkinter import messagebox
+
 from PIL import Image, ImageTk
+
 # Import other files
 from HealthCheck import *
+
 
 class MainGUI_Base():
     with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
@@ -215,7 +217,8 @@ class MainGUI_CreatNEW():
             self.BackPage_Button = 0
             self.Save_Button = 0
         if (SON == True):
-            self.CCO = Calculation(self.CDD)
+            self.DCCO = DataCalculation(self.CDD) # DataCalculationCanoeObject
+            self.MCCO = ModelCalculation(self.CDD) # ModelCalculationCanoeObject
 
             self.MainGUI_DisplayTable_Three = tk.Frame(self.master)
             self.MainGUI_DisplayTable_Three.columnconfigure(0, weight=3)
@@ -375,10 +378,12 @@ class MainGUI_CreatNEW():
     def DisplayTable_PageThree(self):
         Label = tk.Label(self.MainGUI_DisplayTable_Three, text="Works", font=(
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
+        # Print out Current Data
+        self.DCCO.CalDataReturn()
+        # Action
+        self.DCCO.Canoe_Volume()
+        self.MCCO.Model_Generate()
 
-        self.CCO.CalDataReturn()
-        self.CCO.Canoe_Volume()
-        self.CCO.Model_Generate()
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if (booleanTable and NumCount < 4):

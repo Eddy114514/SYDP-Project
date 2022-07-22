@@ -1,4 +1,4 @@
-class CanoeDataBase():
+class CanoeDataBase:
     # Designed to connect to STL database
 
     def __init__(self, SectionDataDict, HullDataDict):
