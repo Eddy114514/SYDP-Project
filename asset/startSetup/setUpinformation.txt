@@ -1,1 +1,1 @@
-{"isDebug": 0}
+{"isDebug": 1}
