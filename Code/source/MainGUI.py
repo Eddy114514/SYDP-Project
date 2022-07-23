@@ -93,7 +93,7 @@ class MainGUI_Init():
 
         # CreatNew_Button
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
-            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwicth_FindBest).pack(pady=0)
+            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_FindBest).pack(pady=0)
 
         # Debug Button
         self.Debug_Button = tk.Button(
@@ -109,7 +109,7 @@ class MainGUI_Init():
         self.MainGUI_Init_MainFrame.destroy()
         MainGUI_CreatNEW(self.master)
 
-    def PgSwicth_FindBest(self):
+    def PgSwitch_FindBest(self):
         self.MainGUI_Init_MainFrame.destroy()
         MainGUI_CreatNEW(self.master)
 

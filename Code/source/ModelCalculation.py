@@ -448,11 +448,7 @@ class ModelCalculation(Calculation):
         Sign_Boolean = False
         ReturnSet = []
 
-        Sum = 0
-        Len_Sum = [0]
-        for length in self.Length:
-            Sum += length
-            Len_Sum.append(Sum)
+        Len_Sum = self.GetLengthList(self.Length)
 
         FindSign = find not in LenList
         if (FindSign == False):

@@ -27,8 +27,18 @@ class DebugBase():
 
     def command_Read(self, Profile):
         ProfileList = ['sym', 'lsh', 'sch', 'ach', 'ath']
+        print("Press 'help' for debug Instruction")
         while (Profile != " "):
-            if (Profile not in ProfileList):
+            if (Profile == 'help'):
+                print("""
+                Press 's' to enter setting mode
+                Press 'space' to end the program
+                        """)
+            if (Profile == 's'):
+                print("enter Setting")
+                self.configureSetting()
+
+            elif (Profile not in ProfileList):
                 HealthCheckBase.ErrorReturn('TestProfile not in the list')
             else:
                 self.DebugTest(Profile)
@@ -37,22 +47,72 @@ class DebugBase():
             print("Enter 'space' to end the program")
             Profile = input("Enter the TestProfile or 'space':")
 
+    def configureSetting(self):
+        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+            startSetUp = eval(f.read())
+        for mode, value in startSetUp.items():
+            print(f"{mode} = {bool(value)}")
+        infor = input("Do You Want Config The Mode? [y/n]")
+
+        changeFlag = False
+
+        while (infor != 'end'):
+            if (infor == 'y'):
+                changeFlag = self.config(input("Which Mode? (enter the mode string)"), startSetUp)
+            elif (infor == 'n'):
+                break
+            else:
+                print("enter space ")
+            infor = input()
+        # end text
+        if (changeFlag):
+            if (input("You Made Change, Do You Want To Restart To Apply Configuration?") == 'y'):
+                sys.exit()
+            else:
+                print("Return To The DeBug Mode")
+        else:
+            if (input("You Did Not Made Change, Do You Want To Exit The Debug Mode?") == 'y'):
+                sys.exit()
+            else:
+                print("Return To The DeBug Mode")
+
+    def config(self, modeString, startSetUp):
+        if (modeString not in ["isDebug", "ModelCal", "VolumeCal", "BothMode"]):
+            print("Wrong ModeString !")
+            return False
+        else:
+            for operate in modeString.split(' '):
+                startSetUp[operate] = not startSetUp[operate]
+                save = startSetUp[operate]
+                print(f"{operate}: {startSetUp[operate]} ==>  {operate}: {save}")
+            with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as f:
+                f.write(json.dumps(startSetUp))
+            return True
+
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
+        with open(f'..\\..\\asset\\TestProfile\\{FileName}', 'w') as List:
             read = List.read()
             Data = eval(read)
+        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+            startSetUp = eval(f.read())
 
         SectionDictObject = Data[0]
         HullDictObject = Data[1]
         self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
         self.DCCO = DataCalculation(self.CDD)
-        self.MCCO = ModelCalculation(self.CDD)
         # Print out Current Data
         self.DCCO.CalDataReturn()
+        # Actios base on Configuration
         # Test
-        self.DCCO.Canoe_Volume()
-        self.MCCO.Model_Generate()
+        if (bool(startSetUp["ModelCal"])):
+            self.MCCO = ModelCalculation(self.CDD)
+            self.MCCO.Model_Generate()
+        elif (bool(startSetUp["VolumeCal"])):
+            self.DCCO.Canoe_Volume()
+        elif (bool(startSetUp["ModelCal"]) and bool(startSetUp["VolumeCal"])):
+            self.DCCO.Canoe_Volume()
+            self.MCCO.Model_Generate()
 
     def ChangDebug(self, debugBoolean):
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:

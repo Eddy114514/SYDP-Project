@@ -40,8 +40,6 @@ class Calculation:
                          23: "Assign HullType -> Asymmetric Constant Hull",
                          24: "Assign HullType -> Asymmetric Hull"}
 
-
-
     def SignData(self):
         SDD, HDD = self.CalculationObject.GetData_CDD()
         # Write Function for generate testprofile
@@ -76,6 +74,17 @@ class Calculation:
 
         self.DataPrint()
 
+    def GetLengthList(self,lengthList):
+        # return the a list of length with correct x corrdinate
+        # exp: lengthList[36,120,36]
+        # function return [0,36,156,192]
+        Sum = 0
+        Len_Sum = [0]
+        for length in lengthList:
+            Sum += length
+            Len_Sum.append(Sum)
+        return Len_Sum
+
     def SignFunction_Main(self):
 
         if (len(self.ECurveF) == 1):
@@ -90,43 +99,47 @@ class Calculation:
             self.Note.append(2)
             self.SignFunction_ThreeBodyHull()
 
-    def BuildLambad_Depth(self, index):
+    def BuildLambda_Depth(self, index):
         return (lambda x: self.Depth[index] * (x / self.Length[index]) ** self.EDepthF[index])
 
-    def BuildLambad_Depth_O(self, index):
+    def BuildLambda_Depth_O(self, index):
 
         return (lambda x: (self.Depth[index] + self.Thickness) * (x / (self.Length[index] + self.Thickness)) **
                           self.EDepthF[index])
 
-    def BuildLambad_Depth_O_A(self, index):
+    def BuildLambda_Depth_O_A(self, index):
         return (
             lambda x: (self.Depth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) ** self.EDepthF[
                 index])
 
-    def BuildLambad_Depth_Semi(self):
+    def BuildLambda_Depth_Semi(self):
         SemiLength = self.Length[0] / 2
         return (lambda x: self.Depth[0] * (x / SemiLength) ** self.EDepthF[0])
 
-    def BuildLambad_Width(self, index):
-        return (lambda x: self.SemiWidth[index] * (x / self.Length[index]) ** self.EWidthF[index])
+    def BuildLambda_Width(self, index):
 
-    def BuildLambad_Width_O(self, index):
+        return (lambda x: self.SemiWidth[index] * (x / self.Length[index]) ** self.EWidthF[index])
+    # overRidden
+    def BuildLambda_Width_A(self,index,length):
+        return (lambda x: self.SemiWidth[index] * (x / length) ** self.EWidthF[index])
+
+    def BuildLambda_Width_O(self, index):
         return (lambda x: (self.SemiWidth[index] + self.Thickness) * (x / (self.Length[index] + self.Thickness)) **
                           self.EWidthF[index])
 
-    def BuildLambad_Width_O_A(self, index):
-        return (lambda x: (self.SemiWidth[index] + self.Thickness) * (x / (self.Length[index] + self.B2_Diff)) **
+    def BuildLambda_Width_O_A(self, index, length):
+        return (lambda x: (self.SemiWidth[index] + self.Thickness) * (x / (length + self.B2_Diff)) **
                           self.EWidthF[index])
 
-    def BuildLambad_Width_Semi(self):
+    def BuildLambda_Width_Semi(self):
         SemiLength = self.Length[0] / 2
         return (lambda x: self.SemiWidth[0] * (x / SemiLength) ** self.EWidthF[0])
 
-    def BuildLambad_Width_Semi_O(self):
+    def BuildLambda_Width_Semi_O(self):
         SemiLength = self.Length[0] / 2
         return (lambda x: (self.SemiWidth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EWidthF[0])
 
-    def BuildLambad_Depth_Semi_O(self):
+    def BuildLambda_Depth_Semi_O(self):
         SemiLength = self.Length[0] / 2
         return (lambda x: (
                                   self.Depth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EDepthF[
@@ -147,12 +160,12 @@ class Calculation:
 
         self.SymmetryBoolean = True
 
-        self.WidthFList.append(self.BuildLambad_Width_Semi()
+        self.WidthFList.append(self.BuildLambda_Width_Semi()
                                )
-        self.WidthFList_Outside.append(self.BuildLambad_Width_Semi_O())
-        self.DepthFList.append(self.BuildLambad_Depth_Semi()
+        self.WidthFList_Outside.append(self.BuildLambda_Width_Semi_O())
+        self.DepthFList.append(self.BuildLambda_Depth_Semi()
                                )
-        self.DepthFList_Outside.append(self.BuildLambad_Depth_Semi_O())
+        self.DepthFList_Outside.append(self.BuildLambda_Depth_Semi_O())
 
     def SignFunction_TwoBodyHull(self):
 
@@ -164,11 +177,11 @@ class Calculation:
             self.Note.append(21)
 
         for index in range(0, len(self.EDepthF)):
-            self.WidthFList.append(self.BuildLambad_Width(index))
-            self.WidthFList_Outside.append(self.BuildLambad_Width_O(index))
-            self.DepthFList.append(self.BuildLambad_Depth(index)
+            self.WidthFList.append(self.BuildLambda_Width(index))
+            self.WidthFList_Outside.append(self.BuildLambda_Width_O(index))
+            self.DepthFList.append(self.BuildLambda_Depth(index)
                                    )
-            self.DepthFList_Outside.append(self.BuildLambad_Depth_O(index)
+            self.DepthFList_Outside.append(self.BuildLambda_Depth_O(index)
                                            )
 
     def SignFunction_ThreeBodyHull(self):
@@ -190,11 +203,11 @@ class Calculation:
 
         for index in range(0, len(self.EDepthF)):
             if (self.EWidthF[index] != 0 and self.EDepthF[index] != 0):
-                self.WidthFList.append(self.BuildLambad_Width(index))
-                self.WidthFList_Outside.append(self.BuildLambad_Width_O(index))
-                self.DepthFList.append(self.BuildLambad_Depth(index)
+                self.WidthFList.append(self.BuildLambda_Width(index))
+                self.WidthFList_Outside.append(self.BuildLambda_Width_O(index))
+                self.DepthFList.append(self.BuildLambda_Depth(index)
                                        )
-                self.DepthFList_Outside.append(self.BuildLambad_Depth_O(index)
+                self.DepthFList_Outside.append(self.BuildLambda_Depth_O(index)
                                                )
             elif (self.EWidthF[index] == 0 and self.EDepthF[index] == 0):
                 self.WidthFList.append(-1)
@@ -214,36 +227,34 @@ class Calculation:
         self.SemiWidth[2] = self.SemiWidth[1]
         # For remain the consistency of the Data
 
-
-
         # Sign Function for Front
 
         self.WidthFList.append(
-            self.BuildLambad_Width(0))
+            self.BuildLambda_Width(0))
         self.WidthFList_Outside.append(
-            self.BuildLambad_Width_O(0))
-        self.DepthFList.append(self.BuildLambad_Depth(0)
+            self.BuildLambda_Width_O(0))
+        self.DepthFList.append(self.BuildLambda_Depth(0)
                                )
-        self.DepthFList_Outside.append(self.BuildLambad_Depth_O(0))
+        self.DepthFList_Outside.append(self.BuildLambda_Depth_O(0))
 
         # Sign Function for Middle
 
         self.WidthFList.append(
-            self.BuildLambad_Width(1))
+            self.BuildLambda_Width_A(1,self.Length[1]))
         self.WidthFList_Outside.append(
-            self.BuildLambad_Width_O_A(1))
+            self.BuildLambda_Width_O_A(1,self.Length[1]))
         self.DepthFList.append(self.Depth[1])
-        self.DepthFList_Outside.append((self.Depth[1]+self.Thickness))
+        self.DepthFList_Outside.append((self.Depth[1] + self.Thickness))
 
         # Sign Function for end
 
         self.WidthFList.append(
-            self.BuildLambad_Width(2))
+            self.BuildLambda_Width(2))
         self.WidthFList_Outside.append(
-            self.BuildLambad_Width_O(2))
-        self.DepthFList.append(self.BuildLambad_Depth(2)
+            self.BuildLambda_Width_O(2))
+        self.DepthFList.append(self.BuildLambda_Depth(2)
                                )
-        self.DepthFList_Outside.append(self.BuildLambad_Depth_O(2))
+        self.DepthFList_Outside.append(self.BuildLambda_Depth_O(2))
 
     def Set_FormulaPoint_Asymmetric(self):
         SWvalue = (self.SemiWidth[0]
@@ -262,8 +273,6 @@ class Calculation:
     def Sign_CurveFormula_A(self, k):
         return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k]))
-
-
     def Sign_CurveFormula_Constant(self, k):
         return (lambda x: (((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (1 / self.ECurveF[k]))
 
@@ -275,13 +284,7 @@ class Calculation:
         return (lambda x: (
                 self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k]))
 
-
     def Sign_CurveFormula_Constant_Out(self, k):
         return (lambda x: (
                                   (((self.SemiWidth[k] + self.Thickness) ** self.ECurveF[k]) * x) / (
                                   self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))
-
-
-
-
-
