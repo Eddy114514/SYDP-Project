@@ -1,3 +1,4 @@
+
 class CanoeDataBase:
     # Designed to connect to STL database
 
@@ -42,3 +43,16 @@ class CanoeDataBase:
     def SaveDataIntoFile(self):
         #Save Data
         print("work")
+    def SaveStlIntoFile(self,filePath,stlObject):
+
+        print(f"File Save @ {filePath}")
+        stlObject.save(filePath)
+    @staticmethod
+    def SaveStlIntoFile_static(filePath,stlObject):
+
+        print(f"File Save @ {filePath}")
+        stlObject.save(filePath)
+
+
+
+
