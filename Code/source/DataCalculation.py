@@ -2,7 +2,6 @@ from scipy.integrate import quad
 
 from Calculation import Calculation
 
-
 class DataCalculation(Calculation):
     def __init__(self, CDD):
         super().__init__(CDD)
@@ -12,6 +11,78 @@ class DataCalculation(Calculation):
         self.Volume_Styrofoam = 0
         self.Volume_Concrete = 0
 
+        self.Buoyancy = 0
+        self.Buoyancy_Submerge = 0
+
+        self.CanoeWeight = 0
+        self.TotalWeight = 0
+
+        self.SubmergeBoolean = False
+        self.FlowBoolean = False
+
+
+    def CalDataReturn(self):
+        # Print the OperationNote
+        # Not Done Yet
+        OperationNote = []
+        for num in self.Note:
+            print(self.NoteMenu[num])
+            OperationNote.append(self.NoteMenu[num])
+
+        return OperationNote
+
+    def DataPrint(self):
+        print(f"Length: {self.Length}")
+        print(f"Width: {self.Width}")
+        print(f"SemiWidth: {self.SemiWidth}")
+        print(f"Depth: {self.Depth}")
+        print("\n")
+        print(f"Function of Exponent of Curve{self.ECurveF}")
+        print(f"Function of Exponent of Width{self.EWidthF}")
+        print(f"Function of Exponent of Depth{self.EDepthF}")
+        print("\n")
+        print(f"Inside Volume: {self.Volume_Inside}")
+        print(f"Volume_Outside: {self.Volume_Outside}")
+        print(f"Volume_Styrofoam: {self.Volume_Styrofoam}")
+        print(f"Volume_Concrete: {self.Volume_Concrete}")
+        print("\n")
+        print(f"CanoeWeight = {self.CanoeWeight}")
+        print(f"TotalWeight = {self.TotalWeight}")
+        print(f"Buoyancy = {self.Buoyancy}")
+        print(f"Buoyancy_Submerge = {self.Buoyancy_Submerge}")
+        print("\n")
+        print(f"SubmergeBoolean = {self.SubmergeBoolean}")
+        print(f"FlowBoolean = {self.FlowBoolean}")
+
+    def CanoeDataCalculation(self):
+        self.Canoe_Volume()
+        self.Canoe_Weight()
+        self.Canoe_Buoyancy()
+        self.Canoe_Flowability()
+
+    def Canoe_Weight(self):
+        # inch_to_feet = 1728 || inch³ ==> feet³
+        self.CanoeWeight = (self.Volume_Concrete/1728)*self.Density
+        self.TotalWeight = self.CanoeWeight + self.CrewWeight
+
+    def Canoe_Buoyancy(self):
+        # inch_to_meter = 61023.744095 || inch³ ==> m³
+        # gravity = 9.8 || Earth
+        # density_Water =  997 kg/m³
+        # Buoyancy (N) = ρgV = 997*9.8*(Volume/61023.744095) = Volume * 0.160111447518  || The displacement of water
+        self.Buoyancy = self.Volume_Outside * 0.160111447518
+        self.Buoyancy_Submerge = (self.Volume_Concrete+self.Volume_Styrofoam)*0.160111447518
+
+    def Canoe_Flowability(self):
+        # kg_to_lbs = 2.205 || kilogram ==> pound mass
+        # F = mg ==> m = f/g
+        # (f/g) = kg, kg/2.205 = lbs ==> (f/9.8)/2.205 = 0.225
+        capability = self.Buoyancy * 0.225
+        capability_submerge = self.Buoyancy_Submerge * 0.225
+        if(capability > (self.TotalWeight)):
+            self.FlowBoolean = True
+        if(capability_submerge > self.CanoeWeight):
+            self.SubmergeBoolean = True
 
     def Canoe_Volume(self):
         # Process of Signing Function
@@ -129,11 +200,24 @@ class DataCalculation(Calculation):
             # minus the B2
             self.Length[1] = self.Length[1] - self.B2
         len_sum = self.GetLengthList(self.Length)[1:]  # don't need 0
-        operation_f = self.LocateCover(self.CoverLength, len_sum)
-        operation_e = self.LocateCover(len_sum[-1]-self.CoverLength, len_sum)
-        Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)
-        Volume_EndCover = self.Volume_Inside - self.Styrofoam_Volume_Calculate(operation_e, SwDFunction_List)
-        print(Volume_FrontCover,Volume_EndCover)
+        if(len(len_sum)== 1):
+            # symmetric hall
+            len_sum = [len_sum[0]/2,len_sum[0]]
+            print(len_sum)
+            operation_f =self.LocateCover(self.CoverLength, len_sum)
+            # avoid Out Erro
+            operation_e = operation_f + []
+            operation_e[0][1] = self.CoverLength # can be configured
+            Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)
+            Volume_EndCover = self.Styrofoam_Volume_Calculate(operation_e, SwDFunction_List)
+        else:
+            operation_f = self.LocateCover(self.CoverLength, len_sum)
+            operation_e = self.LocateCover(len_sum[-1] - self.CoverLength, len_sum)
+            Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)
+            Volume_EndCover = self.Volume_Inside - self.Styrofoam_Volume_Calculate(operation_e, SwDFunction_List)
+
+
+        print(f"VolumeFornt: {Volume_FrontCover}, VolumeEnd: {Volume_EndCover}")
 
         return (Volume_EndCover+Volume_FrontCover)
 
@@ -181,7 +265,7 @@ class DataCalculation(Calculation):
                         canoe_cover = canoe_cover - length_list[lenIndex - 1]
                     else:
                         calculation_operation_list.append([index, canoe_cover])
-            elif (canoe_cover < length_list[0] and lenIndex == 0):
-                return [0, canoe_cover]  # if the cover is less than the first length
+            elif (canoe_cover < length_list[0] and lenIndex-1 == 0):
+                return [[0, canoe_cover]]  # if the cover is less than the first length
 
         return calculation_operation_list

@@ -1,5 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
+from matplotlib import pyplot
+from mpl_toolkits import mplot3d
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
+NavigationToolbar2Tk)
+import matplotlib
+from tkinter import filedialog
 
 from PIL import Image, ImageTk
 
@@ -46,37 +53,39 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
-        img_CreatNew = Image.open('../../asset/Picture/CreatNew_Icon.png')
-        img_CreatNew = img_CreatNew.resize((80, 100), Image.ANTIALIAS)
-        self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
+        with Image.open('../../asset/Picture/CreatNew_Icon.png') as CreatNew:
+            img_CreatNew = CreatNew.resize((80, 100), Image.ANTIALIAS)
+            self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
-        img_Open = Image.open('../../asset/Picture/Open_Icon.png')
-        img_Open = img_Open.resize((80, 100), Image.ANTIALIAS)
-        self.img_resized_Open = ImageTk.PhotoImage(img_Open)
+        with Image.open('../../asset/Picture/Open_Icon.png') as Open:
+            img_Open = Open.resize((80, 100), Image.ANTIALIAS)
+            self.img_resized_Open = ImageTk.PhotoImage(img_Open)
 
-        img_Findbest = Image.open('../../asset/Picture/FindBest_Icon.png')
-        img_Findbest = img_Findbest.resize((80, 100), Image.ANTIALIAS)
-        self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
+        with Image.open('../../asset/Picture/FindBest_Icon.png') as Findbest:
+            img_Findbest = Findbest.resize((80, 100), Image.ANTIALIAS)
+            self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
 
-        img_Return = Image.open('../../asset/Picture/Menu_Icon.png')
-        img_Return = img_Return.resize((50, 50), Image.ANTIALIAS)
-        MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
+        with Image.open('../../asset/Picture/Menu_Icon.png') as Return:
+            img_Return = Return.resize((50, 50), Image.ANTIALIAS)
+            MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
 
-        img_Add = Image.open('../../asset/Picture/Add_Icon.png')
-        img_Add = img_Add.resize((50, 50), Image.ANTIALIAS)
-        MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
+        with Image.open('../../asset/Picture/Add_Icon.png') as Add:
+            img_Add = Add.resize((50, 50), Image.ANTIALIAS)
+            MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
 
-        img_NextPage = Image.open('../../asset/Picture/NextPage_Icon.png')
-        img_NextPage = img_NextPage.resize((50, 50), Image.ANTIALIAS)
-        MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
+        with Image.open('../../asset/Picture/NextPage_Icon.png') as NextPage:
+            img_NextPage = NextPage.resize((50, 50), Image.ANTIALIAS)
+            MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
 
-        img_BackPage = Image.open('../../asset/Picture/BackPage_Icon.png')
-        img_BackPage = img_BackPage.resize((50, 50), Image.ANTIALIAS)
-        MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
+        with Image.open('../../asset/Picture/BackPage_Icon.png') as BackPage:
+            img_BackPage = BackPage.resize((50, 50), Image.ANTIALIAS)
+            MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
 
-        img_Save = Image.open('../../asset/Picture/Save_Icon.png')
-        img_Save = img_Save.resize((50, 50), Image.ANTIALIAS)
-        MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
+        with Image.open('../../asset/Picture/Save_Icon.png') as Save:
+            img_Save = Save.resize((50, 50), Image.ANTIALIAS)
+            MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
+
+
 
     def CreateWidgets(self):
         # username_label
@@ -227,7 +236,7 @@ class MainGUI_CreatNEW():
             self.MainGUI_DisplayTable_Three.columnconfigure(4, weight=3)
             self.MainGUI_DisplayTable_Three.columnconfigure(5, weight=3)
             self.MainGUI_DisplayTable_Three.columnconfigure(6, weight=3)
-            self.MainGUI_DisplayTable_Three.pack(fill="x", pady=150)
+            self.MainGUI_DisplayTable_Three.pack(fill = "both", expand=True)
 
             self.NextPage_Button.destroy()
 
@@ -238,7 +247,7 @@ class MainGUI_CreatNEW():
 
             self.Save_Button = tk.Button(
                 self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
-                command=lambda: [self.CDD.SaveDataIntoFile()])
+                command=lambda: [self.FileAcquire()]) # Acquire File and call CanoeDateBase
             self.Save_Button.pack(side="right", padx=10, pady=10)
 
             self.DisplayTable_PageThree()
@@ -378,12 +387,31 @@ class MainGUI_CreatNEW():
     def DisplayTable_PageThree(self):
         Label = tk.Label(self.MainGUI_DisplayTable_Three, text="Works", font=(
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
-        # Print out Current Data
-        self.DCCO.CalDataReturn()
-        # Action
-        self.DCCO.Canoe_Volume()
-        self.MCCO.Model_Generate()
 
+        # Action
+        self.DCCO.CanoeDataCalculation()
+        # Print out Current Data
+        self.OperationNote = self.DCCO.CalDataReturn()
+
+        self.canoe_mesh_object = self.MCCO.Model_Generate()
+        # Create a new plot
+
+
+        fig = Figure(figsize=(5, 5),
+                     dpi=100)
+        axes = fig.add_subplot(111, projection="3d")
+        # Render the canoe
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+
+        scale = self.canoe_mesh_object.points.flatten()
+        axes.auto_scale_xyz(scale, scale, scale)
+        axes.set_xlabel("X axis")
+        axes.set_ylabel("Y axis")
+        axes.set_zlabel("Z axis")
+
+        canvas = FigureCanvasTkAgg(fig, self.MainGUI_DisplayTable_Three)
+        canvas.draw()
+        canvas.get_tk_widget().place(relx=0.3, rely=0.1)
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if (booleanTable and NumCount < 4):
@@ -400,6 +428,16 @@ class MainGUI_CreatNEW():
             self.AddNewTable_Button.destroy()
             print(MainGUI_CreatNEW.Num_Counter)
             messagebox.showinfo("information", "Reach The MAX Section Number")
+
+    def FileAcquire(self):
+        Folderpath = filedialog.askdirectory()
+        filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
+        filePath = f"{Folderpath}/{filename}"
+        print(f"Model Save @ {Folderpath}/{filename}")
+        self.CDD.SaveStlIntoFile(filePath,self.canoe_mesh_object)
+        #self.CDD.SaveDateIntoFile # TBD
+
+
 
     def SaveData(self, Numcount, PageNum):
 

@@ -1,8 +1,8 @@
 from Calculation import Calculation
 import math
 import numpy as np
-from matplotlib import pyplot
-from mpl_toolkits import mplot3d
+from multiprocessing import Process
+
 
 from stl import mesh
 from sympy import *
@@ -107,25 +107,13 @@ class ModelCalculation(Calculation):
         canoe.rotate([0.0, 0.5, 0.0], math.radians(90))
         canoe.rotate([0.5, 0.0, 0.0], math.radians(-1 * 90))
 
-        canoe.save('Canoe.stl')
 
         print("Model Generated")
         # Create a new plot
-        figure = pyplot.figure()
-        axes = mplot3d.Axes3D(figure)
+        return canoe
 
-        # Render the canoe
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(canoe.vectors))
 
-        # Autoscale to the mesh size
-        scale = canoe.points.flatten()
-        axes.auto_scale_xyz(scale, scale, scale)
-        axes.set_xlabel("X axis")
-        axes.set_ylabel("Y axis")
-        axes.set_zlabel("Z axis")
 
-        # Show the plot to the screen
-        pyplot.show()
 
 
 
@@ -427,7 +415,7 @@ class ModelCalculation(Calculation):
 
         return (Formate)
 
-    def Vertex_Generating(V_List):
+    def Vertex_Generating(self,V_List):
         Vertex_I = []
         Vertex_O = []
         Length_List = []
@@ -473,7 +461,7 @@ class ModelCalculation(Calculation):
             print(ReturnSet)
             return (ReturnSet)
 
-    def Vertical_Horizontal_Mesh_Generate(V_List, IndexSet):
+    def Vertical_Horizontal_Mesh_Generate(self,V_List, IndexSet):
         Vertex_I = []
         Vertex_O = []
 

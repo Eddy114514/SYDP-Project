@@ -23,22 +23,16 @@ class Calculation:
         self.DepthFList = []
         self.DepthFList_Outside = []
 
-        self.CanoeVolume = 0
-        self.CanoeWeight = 0
-        self.TotalWeight = 0
-        self.SubmergeBoolean = 0
-        self.FlowBoolean = 0
-        self.Buoyancy = 0
-        self.Buoyancy_Submerge = 0
+
         self.Symmetricity = self.CalculationObject.GetSYM()
 
         self.Note = []
         self.NoteMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
                          10: "Set Deign SubProperty -> Symmetric", 11: "Set Deign SubProperty -> Asymmetric",
-                         20: "Assign HullType -> Symmetric Hull", 21: "Assign HullType -> LongShort Hull",
-                         22: "Assign HullType -> Symmetric Constant Hull",
-                         23: "Assign HullType -> Asymmetric Constant Hull",
-                         24: "Assign HullType -> Asymmetric Hull"}
+                         20: "Assign HullType -> Symmetric_Hull", 21: "Assign HullType -> LongShort_Hull",
+                         22: "Assign HullType -> Symmetric_Constant Hull",
+                         23: "Assign HullType -> Asymmetric_Constant Hull",
+                         24: "Assign HullType -> Asymmetric_Hull"}
 
     def SignData(self):
         SDD, HDD = self.CalculationObject.GetData_CDD()

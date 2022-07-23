@@ -5,6 +5,7 @@ import sys
 from CanoeDataBase import CanoeDataBase
 from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
+from multiprocessing import Process
 
 
 class DebugBase():
@@ -95,7 +96,7 @@ class DebugBase():
 
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\..\\asset\\TestProfile\\{FileName}', 'w') as List:
+        with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
             read = List.read()
             Data = eval(read)
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
@@ -105,19 +106,36 @@ class DebugBase():
         HullDictObject = Data[1]
         self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
         self.DCCO = DataCalculation(self.CDD)
-        # Print out Current Data
-        self.DCCO.CalDataReturn()
+
         # Actions base on Configuration
         # Test
-        if (bool(startSetUp["ModelCal"]) and bool(startSetUp["VolumeCal"])):
-            self.MCCO.Model_Generate()
-            self.DCCO.Canoe_Volume()
-            self.MCCO.Model_Generate()
+        canoe = None
+        if (bool(startSetUp["BothMode"])):
+            self.MCCO = ModelCalculation(self.CDD)
+            self.DCCO.CanoeDataCalculation()
+            canoe = self.MCCO.Model_Generate()
+            self.DCCO.CalDataReturn()
         elif (bool(startSetUp["ModelCal"])):
             self.MCCO = ModelCalculation(self.CDD)
-            self.MCCO.Model_Generate()
+            canoe = self.MCCO.Model_Generate()
         elif (bool(startSetUp["VolumeCal"])):
-            self.DCCO.Canoe_Volume()
+            self.DCCO.CanoeDataCalculation()
+            self.DCCO.CalDataReturn()
+
+        if((bool(startSetUp["BothMode"])) or bool(startSetUp["ModelCal"])):
+            # save file
+            filename = "Test_Canoe.stl"
+            filePath = "..\\..\\asset\\ModelFile\\" + filename
+            saveProcess = Process(target = self.ConnectCanoeDateBase(filePath,canoe))
+            saveProcess.start()
+            saveProcess.join()
+            # Wait Until Save
+
+        print("SaveEnd")
+
+    def ConnectCanoeDateBase(self,filePath,canoe):
+        CanoeDataBase.SaveStlIntoFile_static(filePath,canoe)
+
 
 
     @staticmethod
