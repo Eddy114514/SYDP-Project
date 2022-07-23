@@ -39,8 +39,8 @@ class DebugBase():
                 self.configureSetting()
 
             elif (Profile not in ProfileList):
-                Erro = 'TestProfile not in the list'
-                HealthCheckBase.ErrorReturn(Erro)
+                Err = 'TestProfile not in the list'
+                HealthCheckBase.ErrorReturn(Err)
             else:
                 self.DebugTest(Profile)
 
@@ -77,7 +77,8 @@ class DebugBase():
             else:
                 print("Return To The DeBug Mode")
 
-    def config(self, modeString, startSetUp):
+    @staticmethod
+    def config(modeString, startSetUp):
         for operate in modeString.split(' '):
             if (operate not in ["isDebug", "ModelCal", "VolumeCal", "BothMode"]):
                 print("Wrong ModeString !")
@@ -106,7 +107,7 @@ class DebugBase():
         self.DCCO = DataCalculation(self.CDD)
         # Print out Current Data
         self.DCCO.CalDataReturn()
-        # Actios base on Configuration
+        # Actions base on Configuration
         # Test
         if (bool(startSetUp["ModelCal"]) and bool(startSetUp["VolumeCal"])):
             self.MCCO.Model_Generate()
@@ -119,7 +120,8 @@ class DebugBase():
             self.DCCO.Canoe_Volume()
 
 
-    def ChangDebug(self, debugBoolean):
+    @staticmethod
+    def ChangDebug(debugBoolean):
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
             startSetUp = eval(f.read())
 
@@ -132,7 +134,8 @@ class DebugBase():
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as file_dict:
             file_dict.write(json.dumps(startSetUp))
 
-    def restartProgram(self):
+    @staticmethod
+    def restartProgram():
         sys.stdout.flush()
         actionList = ["python", "MainGUI.py"]
         os.execvp(actionList[0], actionList)

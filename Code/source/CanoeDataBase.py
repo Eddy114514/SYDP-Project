@@ -27,16 +27,16 @@ class CanoeDataBase:
     def GetData_CDD(self):
         return (self.SDD, self.HDD)
 
-    def DeletData_SDD(self):
+    def DeleteData_SDD(self):
         del self.SDD
 
-    def DeletData_HDD(self):
+    def DeleteData_HDD(self):
         del self.HDD
 
-    def DeletData_CDD(self):
+    def DeleteData_CDD(self):
         del self.SDD
         del self.HDD
-    def SaveDataToSQL(selfs):
+    def SaveDataToSQL(self):
         #Save Data To SQL
         print('work')
     def SaveDataIntoFile(self):

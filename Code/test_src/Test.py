@@ -1,5 +1,4 @@
-import operator
-import copy
+
 lenSum = [0,36,156,192]
 cover1 =38
 cover2 = 189

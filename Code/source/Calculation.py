@@ -74,8 +74,9 @@ class Calculation:
 
         self.DataPrint()
 
-    def GetLengthList(self,lengthList):
-        # return the a list of length with correct x corrdinate
+    @staticmethod
+    def GetLengthList(lengthList):
+        # return the list of length with correct x coordinate
         # exp: lengthList[36,120,36]
         # function return [0,36,156,192]
         Sum = 0

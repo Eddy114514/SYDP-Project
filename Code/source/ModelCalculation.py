@@ -45,7 +45,7 @@ class ModelCalculation(Calculation):
         Face_List = []
         Face_Num = 0
 
-        for Number, V_set in enumerate(V_List):
+        for number, V_set in enumerate(V_List):
             F_L = []
             for add in range(len(V_set[1]) - 1):
                 V_set[0].append(V_set[0][0])
@@ -55,13 +55,13 @@ class ModelCalculation(Calculation):
                 outter = V_set[C_Index]
                 Point4_Set = []
 
-                if (Number == 1):
+                if (number == 1):
                     for P4 in range(1, len(inner)):
                         Point4_Set.append(
                             [inner[P4 - 1], inner[P4], outter[P4 - 1], outter[P4]])
                     F_L.append(Point4_Set)
-                if (Number == 0):
-                    if (outter[0][2] > CoverList[1] and outter[0][2] <= CoverList[2]):
+                if (number == 0):
+                    if (CoverList[1] < outter[0][2] <= CoverList[2]):
 
                         for P4 in range(1, len(inner)):
                             Point4_Set.append(
@@ -94,8 +94,8 @@ class ModelCalculation(Calculation):
         # Resigning the Coordinate
 
         face_Counter = 0
-        for list in Face_List:
-            for face in list:
+        for face_sub_list in Face_List:
+            for face in face_sub_list:
                 for set in face:
                     # Sign Two faces
                     for num in range(3):
@@ -117,7 +117,7 @@ class ModelCalculation(Calculation):
         # Render the canoe
         axes.add_collection3d(mplot3d.art3d.Poly3DCollection(canoe.vectors))
 
-        # Auto scale to the mesh size
+        # Autoscale to the mesh size
         scale = canoe.points.flatten()
         axes.auto_scale_xyz(scale, scale, scale)
         axes.set_xlabel("X axis")
@@ -132,7 +132,7 @@ class ModelCalculation(Calculation):
 
 
 
-    def Coordinatie_Generate(self, ModeString):
+    def Coordinate_Generate(self, ModeString):
         SymX = Symbol('x')
         # The list that save the curve function for each 0.1 inch in length
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
@@ -248,7 +248,7 @@ class ModelCalculation(Calculation):
         print("First Section")
 
         for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
-            print("Inside Fucnction: %s" % (j[0]))
+            print("Inside Function: %s" % (j[0]))
             print("\n")
             for a, b, c in zip(i[0], i[1], i[2]):
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
@@ -427,7 +427,7 @@ class ModelCalculation(Calculation):
 
         return (Formate)
 
-    def Vertex_Generating(self, V_List):
+    def Vertex_Generating(V_List):
         Vertex_I = []
         Vertex_O = []
         Length_List = []
@@ -455,7 +455,7 @@ class ModelCalculation(Calculation):
             print("in")
             ReturnSet.append(Sign_Boolean)
             for num in range(1, len(Len_Sum)):
-                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
+                if (Len_Sum[num - 1] < find <= Len_Sum[num]):
                     ReturnSet.append(num - 1)
             ReturnSet.append(LenList.index(find))
             print(ReturnSet)
@@ -465,7 +465,7 @@ class ModelCalculation(Calculation):
             Sign_Boolean = True
             ReturnSet.append(Sign_Boolean)
             for num in range(1, len(Len_Sum)):
-                if (find > Len_Sum[num - 1] and find <= Len_Sum[num]):
+                if (Len_Sum[num - 1] < find <= Len_Sum[num]):
                     ReturnSet.append(num - 1)
             LenList.append(find)
             LenList.sort()
@@ -473,7 +473,7 @@ class ModelCalculation(Calculation):
             print(ReturnSet)
             return (ReturnSet)
 
-    def Vertical_Horizontal_Mesh_Generate(self, V_List, IndexSet):
+    def Vertical_Horizontal_Mesh_Generate(V_List, IndexSet):
         Vertex_I = []
         Vertex_O = []
 
@@ -509,65 +509,65 @@ class ModelCalculation(Calculation):
             F_L.append([[Vertex_I[index - 1][1], Vertex_I[index][1],
                          Vertex_O[index - 1][1], Vertex_O[index][1]]])
 
-        for set in Vertex_I:
-            LP.append(set[1])
-            LN.append(set[0])
+        for vertext_ISet in Vertex_I:
+            LP.append(vertext_ISet[1])
+            LN.append(vertext_ISet[0])
 
         for index in range(1, IndexSet[1] + 1):
             F_L1.append([[LP[index], LP[index - 1], LN[index], LN[index - 1]]])
         for index in range(IndexSet[2] + 1, len(LP)):
             F_L1.append([[LP[index], LP[index - 1], LN[index], LN[index - 1]]])
 
-        for Number, I in enumerate(IndexSet):
+        for number, i in enumerate(IndexSet):
             CN = []
             CP = []
-            for Coordinate in V_List[0][I]:
+            for Coordinate in V_List[0][i]:
                 if (Coordinate[0] <= 0.0):
                     CN.append(Coordinate)
                 if (Coordinate[0] >= 0.0):
                     CP.append(Coordinate)
             CP.reverse()
-            Set = []
-            if (Number == 1 or Number == 3):
+            VertexSet = []
+            if (number == 1 or number == 3):
 
                 for Index in range(1, len(CP)):
-                    Set.append([CP[Index], CP[Index - 1],
-                                CN[Index], CN[Index - 1]])
-                F_L2.append(Set)
-            if (Number == 2 or Number == 0):
+                    VertexSet.append([CP[Index], CP[Index - 1],
+                                      CN[Index], CN[Index - 1]])
+                F_L2.append(VertexSet)
+            if (number == 2 or number == 0):
                 for Index in range(1, len(CP)):
-                    Set.append([CP[Index - 1], CP[Index],
-                                CN[Index - 1], CN[Index]])
+                    VertexSet.append([CP[Index - 1], CP[Index],
+                                      CN[Index - 1], CN[Index]])
 
-                F_L2.append(Set)
+                F_L2.append(VertexSet)
 
         return (F_L, F_L1, F_L2)
 
     def Mesh_Generate(self):
-        CI, CO = self.Coordinatie_Generate("3D")
+        CI, CO = self.Coordinate_Generate("3D")
 
         Vectors_I = []
         Vectors_O = []
 
         for num in range(0, self.Num):
             for c_set in CI[num]:
-                Set = []
+                MeshSet = []
                 # For Debug
                 """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
                     add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                    Set.append([x, y + add, z + self.Thickness])
+                    MeshSet.append([x, y + add, z + self.Thickness])
                     """print(f"[{x},{y+add},{z+self.Thickness}]")"""
-                Vectors_I.append(Set)
+                Vectors_I.append(MeshSet)
 
             for c_set_o in CO[num]:
-                Set = []
+                MeshSet = []
                 # For Debug
                 """print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))"""
                 for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
                     add = (self.Depth[num] + self.Thickness) - c_set_o[1][-1]
-                    Set.append([x, y + add, z])
-                Vectors_O.append(Set)
+                    MeshSet.append([x, y + add, z])
+                Vectors_O.append(MeshSet)
         return ([Vectors_I, Vectors_O])
 
     def Single_Formula_Generate(self, ZLength, num):
@@ -610,7 +610,7 @@ class ModelCalculation(Calculation):
                 ylist.append(function.subs(SymX, w))
                 zlist.append(zvalue)
 
-                if (w < width and (i + 1) * step_interval > width and int(L_Width) < Max_Width):
+                if (w < width < (i + 1) * step_interval and int(L_Width) < Max_Width):
                     xlist.append(width)
                     ylist.append(function.subs(SymX, width))
                     zlist.append(zvalue)

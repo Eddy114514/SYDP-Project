@@ -401,11 +401,11 @@ class MainGUI_CreatNEW():
             print(MainGUI_CreatNEW.Num_Counter)
             messagebox.showinfo("information", "Reach The MAX Section Number")
 
-    def SaveData(self, Numcount, Pagenum):
+    def SaveData(self, Numcount, PageNum):
 
         print(Numcount, "Num is ")
 
-        if (Numcount <= 2 and Pagenum == 0):
+        if (Numcount <= 2 and PageNum == 0):
             print("Enter First Dict", Numcount)
             Length_Canoe = float(self.EntryDict[Numcount][0].get())
             Width_Canoe = float(self.EntryDict[Numcount][1].get())
@@ -419,7 +419,7 @@ class MainGUI_CreatNEW():
 
             self.CDD.ConstructDict_SDD(Numcount, SectionDataList)
 
-        elif (Pagenum > 0):
+        elif (PageNum > 0):
             print("Enter SEC Dict", Numcount)
             CoverLength = float(self.CoverLength_entry.get())
             Concrete_Density = float(self.Density_entry.get())
@@ -434,7 +434,7 @@ class MainGUI_CreatNEW():
             print(self.CDD)
 
     def Return(self):
-        self.CDD.DeletData_CDD()
+        self.CDD.DeleteData_CDD()
         self.MainGUI_Menu_Button.destroy()
         self.MainGUI_Title.destroy()
         self.MainGUI_InputTable.destroy()
@@ -448,7 +448,7 @@ class MainGUI_CreatNEW():
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_One(self):
-        self.CDD.DeletData_SDD()
+        self.CDD.DeleteData_SDD()
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()
@@ -456,7 +456,7 @@ class MainGUI_CreatNEW():
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_Two(self):
-        self.CDD.DeletData_HDD()
+        self.CDD.DeleteData_HDD()
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()

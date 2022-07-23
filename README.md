@@ -1,4 +1,4 @@
-This Project is intended to deign a software that can be used to aid concret canoe designing process. 
+This Project is intended to deign a software that can be used to aid concrete canoe designing process. 
 
 It contains 6 mian code file, which are:\
 1.MainGUI.py\
