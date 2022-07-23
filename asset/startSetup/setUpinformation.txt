@@ -1,1 +1,1 @@
-{"isDebug": 1, "ModelCal": 0, "VolumeCal": 0, "BothMode": 1}
+{"isDebug": 0, "ModelCal": 0, "VolumeCal": 1, "BothMode": 0}
