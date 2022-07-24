@@ -28,6 +28,7 @@ class DataCalculation(Calculation):
         for num in self.Note:
             print(self.NoteMenu[num])
             OperationNote.append(self.NoteMenu[num])
+        self.DataPrint()
 
         return OperationNote
 
@@ -93,7 +94,7 @@ class DataCalculation(Calculation):
         self.Volume_Styrofoam = self.Styrofoam_Volume(SwDFunction_List)
         self.Volume_Concrete = self.Volume_Outside - self.Volume_Inside
         # Uncomment to Debug
-        print(self.Volume_Outside, self.Volume_Inside, self.Volume_Concrete)
+        #print(self.Volume_Outside, self.Volume_Inside, self.Volume_Concrete)
 
     def SignFunction_CanoeVolume(self):
         SwDFunction_List = []
@@ -179,7 +180,6 @@ class DataCalculation(Calculation):
                 # Asymmetric hall
                 for index in range(0, len(self.WidthFList)):
                     if (index == 1):
-                        print(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index])
                         Volume_Inside_List.append(
                             2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * self.Depth[index] *
                             quad(self.WidthFList[index], self.B2, self.Length[index])[0])
@@ -203,7 +203,6 @@ class DataCalculation(Calculation):
         if(len(len_sum)== 1):
             # symmetric hall
             len_sum = [len_sum[0]/2,len_sum[0]]
-            print(len_sum)
             operation_f =self.LocateCover(self.CoverLength, len_sum)
             # avoid Out Erro
             operation_e = operation_f + []
@@ -215,9 +214,6 @@ class DataCalculation(Calculation):
             operation_e = self.LocateCover(len_sum[-1] - self.CoverLength, len_sum)
             Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)
             Volume_EndCover = self.Volume_Inside - self.Styrofoam_Volume_Calculate(operation_e, SwDFunction_List)
-
-
-        print(f"VolumeFornt: {Volume_FrontCover}, VolumeEnd: {Volume_EndCover}")
 
         return (Volume_EndCover+Volume_FrontCover)
 

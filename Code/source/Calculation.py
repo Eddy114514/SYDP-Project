@@ -54,11 +54,12 @@ class Calculation:
         self.CrewWeight = HDD[3]
 
         self.Num = len(self.Length)
+
+        self.SignFunction_Main()
         if (self.SymmetryBoolean == True):
             self.Note.insert(1, 10)
         elif (self.SymmetryBoolean == False):
             self.Note.insert(1, 11)
-        self.SignFunction_Main()
 
     def CalDataReturn(self):
         # Print the OperationNote
