@@ -1,14 +1,11 @@
 import tkinter as tk
-from tkinter import messagebox
-from matplotlib import pyplot
-from mpl_toolkits import mplot3d
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-NavigationToolbar2Tk)
-import matplotlib
 from tkinter import filedialog
+from tkinter import messagebox
 
 from PIL import Image, ImageTk
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
+from matplotlib.figure import Figure
+from mpl_toolkits import mplot3d
 
 # Import other files
 from HealthCheck import *

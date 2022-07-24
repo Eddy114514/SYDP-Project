@@ -1,11 +1,11 @@
 import json
 import os
 import sys
+from multiprocessing import Process
 
 from CanoeDataBase import CanoeDataBase
 from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
-from multiprocessing import Process
 
 
 class DebugBase():

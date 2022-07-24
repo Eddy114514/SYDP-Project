@@ -1,11 +1,10 @@
-from Calculation import Calculation
 import math
+
 import numpy as np
-from multiprocessing import Process
-
-
 from stl import mesh
 from sympy import *
+
+from Calculation import Calculation
 
 
 class ModelCalculation(Calculation):

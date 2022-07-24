@@ -2,6 +2,7 @@ from scipy.integrate import quad
 
 from Calculation import Calculation
 
+
 class DataCalculation(Calculation):
     def __init__(self, CDD):
         super().__init__(CDD)
