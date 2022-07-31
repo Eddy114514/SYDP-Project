@@ -10,6 +10,7 @@ from mpl_toolkits import mplot3d
 # Import other files
 from HealthCheck import *
 
+# change to 122 graphic
 
 class MainGUI_Base():
     with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
