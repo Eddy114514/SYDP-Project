@@ -23,6 +23,10 @@ class Calculation:
         self.DepthFList = []
         self.DepthFList_Outside = []
 
+        self.B2 = 0
+        self.B2_O = 0
+        self.B2_Diff = 0
+
 
         self.Symmetricity = self.CalculationObject.GetSYM()
 
@@ -56,9 +60,9 @@ class Calculation:
         self.Num = len(self.Length)
 
         self.SignFunction_Main()
-        if (self.SymmetryBoolean == True):
+        if self.SymmetryBoolean == True:
             self.Note.insert(1, 10)
-        elif (self.SymmetryBoolean == False):
+        elif self.SymmetryBoolean == False:
             self.Note.insert(1, 11)
 
     def CalDataReturn(self):
@@ -140,6 +144,24 @@ class Calculation:
         return (lambda x: (
                                   self.Depth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EDepthF[
                               0])
+    def BuildLambda_Curve_Constant(self, index):
+
+        return (lambda x: (self.Depth[index] * (x / self.SemiWidth[index])
+        ** self.ECurveF[index]))
+
+    def BuildLambda_Curve_Constant_Out(self, index):
+        return (lambda x: (self.Depth[index] + self.Thickness) *
+                           (x / (self.SemiWidth[index] + self.Thickness))
+                           ** self.ECurveF[index])
+    def BuildLambda_Curve(self,SemiWidth,Depth,index):
+
+        return (lambda x: (Depth * (x / SemiWidth)
+                           ** self.ECurveF[index]))
+
+    def Buldlambda_Curve_Zero(self):
+        # build 0 returner
+        return(lambda x: 0.0)
+
 
     def DataPrint(self):
         print(self.Length)

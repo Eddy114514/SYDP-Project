@@ -20,8 +20,6 @@ class MainGUI_Base():
 
         self.HC = HealthCheckBase('Main_GUI')
 
-
-
         if (MainGUI_Base.dB.isDebug == True):
             sys.stderr.flush() # refresh
             print("""keyword explain:
