@@ -87,7 +87,6 @@ class tkObject(tkObjectList):
         # explain: the label is composed by at lease one rectangle, the text is not necessary but rectangle mush be drawn.
         # thus, we need the 4 coordinate of rectangle, x,x1,y,y1
         # and the coordinate of text, xt,yt
-        # the anchor is acturally reflected in the calling of canvas.create_text()
         # all x,x1,xt,y,y1,yt depend on the master x,y,width,height, which are xM,yM,widthM,heightM
         xM, yM, widthM, heightM = self.RelativeCoordinate
         # configure the box's dimension
@@ -154,10 +153,15 @@ class tkObject(tkObjectList):
         return "tkObject"
 
 
+# --------------------------------------------------
+# ------------------MVC_PART------------------------
+# --------------------------------------------------
+
 def appStarted(app):
     app.tkObjectList = tkObjectList()
     app.clickFlag = False
-    app.clickButton = None
+    app.clickObject = None
+    app.timeCounter = 0
 
 
 # section of Generate Graphic
@@ -171,15 +175,15 @@ def drawBase(app, canvas):
         if (tkObject.showIndicator):
             for element in tkObject.OwnElement:
 
-                if (str(element) in ["Label", "Button"] and element.showIndicator):
-                    drawLabel_Button(app, canvas, element)
+                if (str(element) in ["Label", "Button", "Entry"] and element.showIndicator):
+                    drawLabel_Button_Entry(app, canvas, element)
 
 
-def drawLabel_Button(app, canvas, element):
+def drawLabel_Button_Entry(app, canvas, element):
+    # draw base of these elements
     x, x1, y, y1 = element.coordinate
     xt = (x1 - x) / 2 + x
     yt = (y1 - y) / 2 + y
-
 
     canvas.create_rectangle(x, y,
                             x1, y1,
@@ -192,65 +196,79 @@ def drawLabel_Button(app, canvas, element):
         font122.rstrip(" ")
         canvas.create_text(xt, yt, text=element.text, font=font122)
 
-    if(str(element) == "Button"):
-        # draw the border of the button to make it looks like a button
+    # configuration base on special type (Button, Entry)
+
+    if (str(element) in ["Button", "Entry"]):
+        # draw the border of the button to make it looks like a button and Entry
         # Up part
-        canvas.create_line(x, y, x, y1,width=element.bd+1,fill=element.buttonColorUp)
-        canvas.create_line(x, y, x1, y,width=element.bd + 1, fill=element.buttonColorUp)
+        canvas.create_line(x, y, x, y1, width=element.bd + 1, fill=element.buttonColorUp)
+        canvas.create_line(x, y, x1, y, width=element.bd + 1, fill=element.buttonColorUp)
         # DownPart
         canvas.create_line(x1, y1, x, y1, width=element.bd + 1, fill=element.buttonColorDown)
         canvas.create_line(x1, y1, x1, y, width=element.bd + 1, fill=element.buttonColorDown)
-        # draw the button border
-        canvas.create_rectangle(x-1,y-1,
-                                x1+1,y1+1,outline = "gray")
+        # draw the button/Entry border
+        canvas.create_rectangle(x - 1, y - 1,
+                                x1 + 1, y1 + 1, outline="gray")
+        # draw configuration on Entry
+        if (str(element) == "Entry" and element.clickFlag):
+            # @TODO: finish this text adding part
+            xJ, yJ, y1J = x, y, y1  # a vertical line
+            for elementStr in element.ElementStore:
+                pass
 
 
-
-def mousePressed(app,event):
+def mousePressed(app, event):
     # consider the animation of click
+    keyX = event.x
+    keyY = event.y
     for tkObject in app.tkObjectList.getList():
-        if(tkObject.showIndicator):
+        if (tkObject.showIndicator):
             for element in tkObject.OwnElement:
-                if(str(element) == "Button"):
+                if (str(element) == "Button"):
+                    # Button don't need click-flag for constant happening event
                     x, x1, y, y1 = element.coordinate
-                    keyX = event.x
-                    keyY = event.y
                     if (checkMouse((x, x1, y, y1), (keyX, keyY))):
-                        app.clickFlag = True
-                        app.clickButton = element
+                        app.clickObject = element
                         element.buttonColorUp = "white"
                         element.buttonColorDown = "gray"
+                    # Entry need click-flag for constant happening event
+                elif (str(element) == "Entry"):
+                    if (checkMouse((element.coordinate), (keyX, keyY))):
+                        app.clickObject = element
+                        element.clickFlag = True
+                    else:
+                        element.clickFlag = False
 
 
+def mouseReleased(app, event):
+    if (app.clickObject != None):
+        if (str(app.clickObject) == "Button"):
+            app.clickObject.buttonColorUp = "gray"
+            app.clickObject.buttonColorDown = "white"
+            # tkinter characteristic: only when the cursor released at the button area, call command
+            if (checkMouse(app.clickObject.coordinate, (event.x, event.y))):
+                app.clickObject.executeCommand()
+                app.clickObject = None
 
 
-def mouseReleased(app,event):
-    if(app.clickFlag == True):
-        app.clickButton.buttonColorUp = "gray"
-        app.clickButton.buttonColorDown = "white"
-        if (checkMouse(app.clickButton.coordinate, (event.x, event.y))):
-            app.clickButton.excuteCommand()
-            app.clickFlag = False
-            app.clickButton = None
-
-
-
-
-
-
-def timerFried(app):
+def mouseMoved(app, event):
     pass
 
 
-def checkMouse(coordinate,mouse):
-    x,x1,y,y1 = coordinate
-    keyX,keyY = mouse
-    if(x<=keyX <=x1 and y<=keyY <=y1):
+def timerFried(app):
+    if (app.clickObject.clickFlag):
+        app.timeCounter += 100
+        if (app.timeCounter >= 200):
+            app.timeCounter = 0
+            app.clickObject.JVL_color = "white" if app.clickObject.JVL_color == "black" else "white"
+
+
+def checkMouse(coordinate, mouse):
+    x, x1, y, y1 = coordinate
+    keyX, keyY = mouse
+    if (x <= keyX <= x1 and y <= keyY <= y1):
         return True
     return False
-
-
-
 
 
 def keyPressed(app, event):
