@@ -12,6 +12,7 @@ from HealthCheck import *
 
 
 class MainGUI_Base():
+    # read startUp file
     with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
         startSetUp = dict.read()
     dB = DebugBase(bool(eval(startSetUp)['isDebug']))  # isDebug Parameter
