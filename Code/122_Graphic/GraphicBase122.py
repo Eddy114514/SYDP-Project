@@ -1,15 +1,48 @@
 from cmu_112_graphics import *
 
+# font base
+fontdict = {"TIME": {"RE":"times.ttf","BOLD":"timesbd.ttf","ITALIC":"timesi.ttf"},
+            "ARIAL": {"RE":"arial.ttf","BOLD":"arialbd.ttf","ITALIC":"ariali.ttf"}}
+def FontBase(UserInput: tuple[str,int,str]) -> str:
+    """
+    :param UserInput: str
+    :rtype: file-address str
+    """
+    Fonttype = UserInput[0].upper()
+    Fontshowtype = UserInput[2].upper()
+
+
+    try:
+
+        if(Fontshowtype == ""):
+            Fontshowtype = "RE"
+        return fontdict[Fonttype][Fontshowtype]
+    except BaseException:
+        raise Exception("UDF font type or font config, only support Time and Arial, Bold and Italic")
+
+
+
+
+
+
+
+
 
 # we shall consider each tk and tk.frame as objects
 # label and buttons and etc are elements in it.
+
+
 class tkObjectList:
     __Objectlist = []
+    MasterOfAll = None
 
     def __init__(self):
         pass
 
     def addToList(self, obj):
+        if(obj.name == "Main"):
+            tkObjectList.MasterOfAll = obj
+
         tkObjectList.__Objectlist.append(obj)
 
     def getList(self):
@@ -22,28 +55,44 @@ class tkObjectList:
 class tkObject(tkObjectList):
     def __init__(self, obj, geometry, attr=None, **kwargs):
         super(tkObjectList, self).__init__()
+        # define object identities
         self.name = str(obj)
-
-        self.signDimension(geometry)
+        self.bg = obj.bg
         self.showIndicator = False
 
+        # object_element network
         self.OwnElement = []
         self.OwnObject = []
         self.attrObject = attr
 
         if (kwargs != {}):  # Frame
-            self.anchor = kwargs["anchor"]
-            self.packPadx = kwargs["packPadx"]
-            self.packPady = kwargs["packPady"]
+            # extra parmeters if is Frame
+
+
+            self.padx = kwargs["padx"]
+            self.pady = kwargs["pady"]
             self.bg = kwargs["bg"]
+            self.bd = kwargs["bd"]
+
+
+            # define by outside pack
+            self.packPady = 0
+            self.packPadx = 0
+            self.anchor = "c"
+            self.fill = None
+
+        # define object coordinates or relative coordinates
+        self.signDimension(geometry)
+
 
         self.addToList(self)
 
     def signDimension(self, geometry):
         self.width = geometry[0]
         self.height = geometry[1]
-
-        self.RelativeCoordinate = self.getRelativeCoordinate()  # formate (x,y,width,height)
+        if(self.name == "Main"):
+            # only window can call it from here
+            self.RelativeCoordinate = self.getRelativeCoordinate()  # formate (x,y,width,height)
 
     def getRelativeCoordinate(self):
         if (self.name in ["Main", "Frame"]):
@@ -52,9 +101,10 @@ class tkObject(tkObjectList):
             if (self.name in ["Frame"]):
                 # simulate the Superposition function of tkinter
                 addUp = 0
-                for object in self.attrObject.OwnObject:
-                    addUp += object.height
-                    addUp += object.packPady
+                for obj in self.attrObject.OwnObject[:-1]: # find master
+                    addUp += obj.RelativeCoordinate[1]
+                    addUp += obj.height
+                    addUp += obj.pady
                     if (addUp >= self.attrObject.height):
                         raise Exception("Widget Size over Limit")
                 x, y = (0, 0)
@@ -62,22 +112,37 @@ class tkObject(tkObjectList):
 
                 if (self.anchor == "c"):
                     x = (attrWidth / 2 - self.width / 2) + attrX
-                    y = attrY
+                    y = attrY  + self.packPady
 
-                if (self.anchor == "w"):
+                elif (self.anchor == "w"):
                     x = attrX
-                    y = attrY
+                    y = attrY  + self.packPady
 
-                if (self.anchor == "e"):
+                elif (self.anchor == "e"):
                     x = attrWidth
-                    y = attrY
+                    y = attrY  + self.packPady
 
-                if (self.anchor == "s"):
+                elif (self.anchor == "s"):
                     x = (attrWidth / 2 - self.width / 2) + attrX
-                    y = attrHeight
+                    y = attrHeight - self.packPady
 
                 y += addUp
+                if(self.fill != None):
+                    # consider cases of X, Y , BOTH
+                    if(self.fill.upper() == "X"):
+                        x = self.attrObject.RelativeCoordinate[0]
+                        self.width = self.attrObject.width
 
+                    elif(self.fill.upper() == "Y"):
+                        self.height = self.attrObject.height
+
+                    elif(self.fill.upper() == "BOTH"):
+                        x = self.attrObject.RelativeCoordinate[0]
+                        self.width = self.attrObject.width
+                        self.height = self.attrObject.height
+
+                    else:
+                        raise Exception("Fill key not included")
                 return (x, y, self.width, self.height)
 
     def addElement(self, element):
@@ -135,11 +200,13 @@ class tkObject(tkObjectList):
                             break
 
                 if (privousElment != None):  # not first of its kind
-                    add = privousElment.coordinate[-1]  # y1
-                    minus = privousElment.coordinate[-2]  # y
+                    xp,x1p,yp,y1p = privousElment.coordinate
+
+                    add = y1p + privousElment.packPady # y1
+                    minus = yp + privousElment.packPady  # y
 
                 if (element.packAnchor != "s"):
-                    return (x, x1, y + add, y1 + add)
+                    return (x, x1, add, add+element.height)
                 elif (element.packAnchor == "s"):
                     return (x, x1, minus - element.height, minus)
 
@@ -166,24 +233,60 @@ def appStarted(app):
 
 # section of Generate Graphic
 
+
+def timerFired(app):
+    if (app.clickObject != None and app.clickObject.clickFlag and str(app.clickObject) == "Entry"):
+        app.timeCounter += 10
+        if (app.timeCounter >= 20):
+            app.timeCounter = 0
+            if(app.clickObject.JVL_color == "white"):
+                app.clickObject.JVL_color = "black"
+            else:
+                app.clickObject.JVL_color = "white"
+
+    # check window size
+    if((app.tkObjectList.MasterOfAll.width,app.tkObjectList.MasterOfAll.height) != (app.width,app.height)):
+        # reset the windows
+        app.tkObjectList.MasterOfAll.signDimension((app.width,app.height))
+        # reset all object and its elements
+        for tkObject in app.tkObjectList.getList():
+            for element in tkObject.OwnElement:
+                element.pack(anchor = element.packAnchor,padx = element.packPadx, pady = element.packPady)
 def redrawAll(app, canvas):
+    drawWindow(app, canvas)
     drawBase(app, canvas)
+
+
+def drawWindow(app, canavs):
+    tkObject = app.tkObjectList.MasterOfAll
+    canavs.create_rectangle(0, 0,
+                            app.width, app.height, fill=tkObject.bg)
 
 
 def drawBase(app, canvas):
     for tkObject in app.tkObjectList.getList():
         if (tkObject.showIndicator):
+            if (tkObject.name == "Frame"):
+                drawFrame(app,canvas,tkObject)
             for element in tkObject.OwnElement:
-
                 if (str(element) in ["Label", "Button", "Entry"] and element.showIndicator):
                     drawLabel_Button_Entry(app, canvas, element)
 
+def sortX(x,x1):
+    if(x >= x1):
+        return x1,x
+    else:
+        return x,x1
 
+def drawFrame(app, canavs,tkobject):
+    x,y,width,height = tkobject.RelativeCoordinate
+    canavs.create_rectangle(x,y,x+width,y+height,width = tkobject.bd, fill = tkobject.bg)
 def drawLabel_Button_Entry(app, canvas, element):
     # draw base of these elements
     x, x1, y, y1 = element.coordinate
-    xt = (x1 - x) / 2 + x
-    yt = (y1 - y) / 2 + y
+    x,x1 = sortX(x,x1)
+    xt = abs(x1 - x) / 2 + x
+    yt = abs(y1 - y) / 2 + y
 
     canvas.create_rectangle(x, y,
                             x1, y1,
@@ -201,20 +304,36 @@ def drawLabel_Button_Entry(app, canvas, element):
     if (str(element) in ["Button", "Entry"]):
         # draw the border of the button to make it looks like a button and Entry
         # Up part
-        canvas.create_line(x, y, x, y1, width=element.bd + 1, fill=element.buttonColorUp)
-        canvas.create_line(x, y, x1, y, width=element.bd + 1, fill=element.buttonColorUp)
+        canvas.create_line(x, y, x, y1, width=element.bd + 2, fill=element.buttonColorUp)
+        canvas.create_line(x, y, x1, y, width=element.bd + 2, fill=element.buttonColorUp)
         # DownPart
-        canvas.create_line(x1, y1, x, y1, width=element.bd + 1, fill=element.buttonColorDown)
-        canvas.create_line(x1, y1, x1, y, width=element.bd + 1, fill=element.buttonColorDown)
+        canvas.create_line(x1, y1, x, y1, width=element.bd + 2, fill=element.buttonColorDown)
+        canvas.create_line(x1, y1, x1, y, width=element.bd + 2, fill=element.buttonColorDown)
         # draw the button/Entry border
-        canvas.create_rectangle(x - 1, y - 1,
-                                x1 + 1, y1 + 1, outline="gray")
+        canvas.create_rectangle(x, y,
+                                x1, y1, outline="lightgray")
+
         # draw configuration on Entry
-        if (str(element) == "Entry" and element.clickFlag):
-            # @TODO: finish this text adding part
-            xJ, yJ, y1J = x, y, y1  # a vertical line
-            for elementStr in element.ElementStore:
-                pass
+        if (str(element) == "Entry"):
+            xJ = x
+            yJ = y + 2
+            y1J = y1 - 2
+            VLX = 0
+            # a vertical line
+            if(element.ElementStore != ""):
+                full_width,h = element.Inputfont.getsize(element.ElementStore)
+                VLX,height = element.Inputfont.getsize(element.ElementStore[:element.strTrack])
+                full_width += len(element.ElementStore)*1.6
+                VLX += len(element.ElementStore[:element.strTrack])*1.6
+                # only work for digits, but enough
+                # can't find better way to get the size of characters
+                canvas.create_text(xJ,yt, text = element.ElementStore, font = f"Time {element.InputFontSize}",
+                                   anchor= "w")
+            if(element.clickFlag):
+                canvas.create_line(xJ + VLX+1, yJ, xJ + VLX+1, y1J, fill=app.clickObject.JVL_color, width=1)
+
+
+
 
 
 def mousePressed(app, event):
@@ -229,8 +348,10 @@ def mousePressed(app, event):
                     x, x1, y, y1 = element.coordinate
                     if (checkMouse((x, x1, y, y1), (keyX, keyY))):
                         app.clickObject = element
-                        element.buttonColorUp = "white"
-                        element.buttonColorDown = "gray"
+                        element.buttonColorUp = "gray"
+                        element.buttonColorDown = "white"
+                        app.tempSave = element.bg
+                        element.bg = app.tkObjectList.MasterOfAll.bg
                     # Entry need click-flag for constant happening event
                 elif (str(element) == "Entry"):
                     if (checkMouse((element.coordinate), (keyX, keyY))):
@@ -238,13 +359,17 @@ def mousePressed(app, event):
                         element.clickFlag = True
                     else:
                         element.clickFlag = False
+                        if(app.clickObject == element):
+                            app.clickObject = None
+
 
 
 def mouseReleased(app, event):
     if (app.clickObject != None):
         if (str(app.clickObject) == "Button"):
-            app.clickObject.buttonColorUp = "gray"
-            app.clickObject.buttonColorDown = "white"
+            app.clickObject.bg = app.tempSave
+            app.clickObject.buttonColorUp = "white"
+            app.clickObject.buttonColorDown = "black"
             # tkinter characteristic: only when the cursor released at the button area, call command
             if (checkMouse(app.clickObject.coordinate, (event.x, event.y))):
                 app.clickObject.executeCommand()
@@ -255,24 +380,70 @@ def mouseMoved(app, event):
     pass
 
 
-def timerFried(app):
-    if (app.clickObject.clickFlag):
-        app.timeCounter += 100
-        if (app.timeCounter >= 200):
-            app.timeCounter = 0
-            app.clickObject.JVL_color = "white" if app.clickObject.JVL_color == "black" else "white"
+
 
 
 def checkMouse(coordinate, mouse):
     x, x1, y, y1 = coordinate
     keyX, keyY = mouse
-    if (x <= keyX <= x1 and y <= keyY <= y1):
+    if (min(x,x1) <= keyX <= max(x,x1) and min(y,y1) <= keyY <= max(y,y1)):
         return True
     return False
 
 
 def keyPressed(app, event):
-    pass
+    if(app.clickObject != None and str(app.clickObject) == "Entry"):
+        if(event.key not in ["Up","Right","Down","Left"]):
+            if(event.key not in ["Tab","Backspace", "Delete", "Escape"]):
+                # normal input
+                if(event.key == "Space"):
+                    event.key = " "
+                app.clickObject.ElementStore = app.clickObject.ElementStore[0:app.clickObject.strTrack] \
+                                     + event.key \
+                                     + app.clickObject.ElementStore[app.clickObject.strTrack:]
+                app.clickObject.strTrack += 1
+
+
+            if(event.key == "Tab"):
+                # change to another Entry&
+                masterObject = app.clickObject.attr_obj.object
+                index = masterObject.OwnElement.index(app.clickObject)
+                for element in masterObject.OwnElement[index+1:]:
+                    if(str(element) == "Entry"):
+                        # swicth
+                        app.clickObject.clickFlag = False
+                        app.clickObject = element
+                        app.clickObject.clickFlag = True
+                        break
+            elif(event.key in ["Backspace", "Delete"]):
+                # delete
+                if(app.clickObject.ElementStore != "" and app.clickObject.strTrack != 0):
+                    tempStr = app.clickObject.ElementStore
+                    tempI = app.clickObject.strTrack
+                    tempStr = tempStr[0:tempI-1] + tempStr[tempI:]
+                    app.clickObject.ElementStore = tempStr
+                    app.clickObject.strTrack -= 1
+
+
+
+            elif(event.key == "Escape"):
+                app.clickObject.clickFlag = False
+                app.clickObject = None
+
+
+        elif(event.key == "Right"):
+            if (len(app.clickObject.ElementStore) > app.clickObject.strTrack):
+                app.clickObject.strTrack += 1
+                print("right")
+        elif(event.key == "Left"):
+            if app.clickObject.strTrack > 0:
+                app.clickObject.strTrack -= 1
+                print("left")
+
+
+
+
+
 
 
 def main(w, d, title=""):
