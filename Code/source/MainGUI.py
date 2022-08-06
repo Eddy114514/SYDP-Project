@@ -374,6 +374,8 @@ class MainGUI_CreatNEW():
         # CrewWeight_Label
         tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
             "Time", 12)).grid(column=0, row=4, sticky=tk.E, ipadx=5, ipady=5)
+        tk.Checkbutton(self.MainGUI_InputTable_Two,text = "FSD Mode",
+                       command=lambda: [self.CDD.ConfigFSD()]).grid(column=0, row=5, sticky=tk.E, ipadx=5, ipady=5)
 
         self.CoverLength_entry.grid(column=1, row=1, sticky=tk.W)
         self.Density_entry.grid(column=1, row=2, sticky=tk.W)

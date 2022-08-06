@@ -29,6 +29,7 @@ class Calculation:
 
 
         self.Symmetricity = self.CalculationObject.GetSYM()
+        self.FSDMode = self.CalculationObject.GetFSD()
 
         self.Note = []
         self.NoteMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
