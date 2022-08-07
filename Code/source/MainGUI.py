@@ -18,7 +18,6 @@ from HealthCheck import *
 # https://www.w3schools.com/python/python_file_open.asp
 # https://www.geeksforgeeks.org/with-statement-in-python/
 # https://www.programiz.com/python-programming/methods/built-in/eval
-# that is all
 
 
 class MainGUI_Base():
