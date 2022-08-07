@@ -6,6 +6,7 @@ class CanoeDataBase:
         self.SDD = SectionDataDict
         self.HDD = HullDataDict
         self.SymmetryBoolean = False
+        self.FSDMode = False
 
     def ConfigSYM(self):
         print("Change from ", self.SymmetryBoolean)
@@ -13,8 +14,18 @@ class CanoeDataBase:
         self.SymmetryBoolean = not self.SymmetryBoolean
         print("to", self.SymmetryBoolean)
 
+    def ConfigFSD(self):
+        print("Change from ", self.FSDMode)
+        # flap the Boolean
+        self.FSDMode = not self.FSDMode
+        print("to", self.FSDMode)
+
+
     def GetSYM(self):
         return(self.SymmetryBoolean)
+
+    def GetFSD(self):
+        return(self.FSDMode)
 
     def ConstructDict_SDD(self, SectionNum, DataList):
         self.SDD[SectionNum] = DataList
