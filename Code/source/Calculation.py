@@ -40,9 +40,9 @@ class Calculation:
                          24: "Assign HullType -> Asymmetric_Hull"}
 
     def SignData(self):
-        SDD, HDD = self.CalculationObject.GetData_CDD()
+        SDD, HDL = self.CalculationObject.GetData_CDD()
         # Write Function for generate testprofile
-        # with open("SDDHDD",'w') as file: file.write(str([SDD,HDD]))
+        # with open("SDDHDD",'w') as file: file.write(str([SDD,HDL]))
 
         for v in SDD.values():
             self.Length.append(v[0])
@@ -53,10 +53,10 @@ class Calculation:
             self.EWidthF.append(v[4])
             self.EDepthF.append(v[5])
 
-        self.CoverLength = HDD[0]
-        self.Density = HDD[1]
-        self.Thickness = HDD[2]
-        self.CrewWeight = HDD[3]
+        self.CoverLength = HDL[0]
+        self.Density = HDL[1]
+        self.Thickness = HDL[2]
+        self.CrewWeight = HDL[3]
 
         self.Num = len(self.Length)
 

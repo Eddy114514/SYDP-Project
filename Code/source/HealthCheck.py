@@ -102,10 +102,10 @@ class DebugBase():
             Data = eval(read)
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
             startSetUp = eval(f.read())
-
+        print(Data)
         SectionDictObject = Data[0]
-        HullDictObject = Data[1]
-        self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
+        HullListObject = Data[1]
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
         self.DCCO = DataCalculation(self.CDD)
 
         # Actions base on Configuration

@@ -160,12 +160,14 @@ class MainGUI_CreatNEW():
         self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue")
         self.MainGUI_Menu_Button.pack(fill="x")
 
-        self.MainGUI_Title = tk.Frame(self.master, bg="green")
+        self.MainGUI_Title = tk.Frame(self.master)
         self.MainGUI_Title.pack(fill="x", pady=50)
-
-        username_label = tk.Label(self.MainGUI_Title, text="Data Input Table", font=(
+        self.username_label = tk.Label(self.MainGUI_Title, text="", font=(
             "Time", 15, "bold"))
-        username_label.pack(pady=10)
+        self.username_label.pack(pady=10)
+
+
+
 
         self.NextPage_Button = tk.Button(
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
@@ -174,14 +176,12 @@ class MainGUI_CreatNEW():
         self.NextPage_Button.pack(side="right", padx=10, pady=10)
 
 
-
-
     # SON is PageConditionBoolean
     # STR is PageConditionKeyword
     def creatWidgets_PageOne(self, SON, STR="Null"):
 
         if (SON == False):
-            self.MainGUI_InputTable = 0
+            self.MainGUI_InputTable = None
             self.Return_Button = 0
 
         if (SON == True):
@@ -189,6 +189,8 @@ class MainGUI_CreatNEW():
             SectionDictObject = {}
             HullDictObject = []
             self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
+            self.MainGUI_Title.configure(bg="green")
+            self.username_label.configure(text = "Data Input Table (1)")
 
             print("IN The Page One")
             MainGUI_CreatNEW.Num_Counter = 0
@@ -212,10 +214,12 @@ class MainGUI_CreatNEW():
     def creatWidgets_PageTwo(self, SON, STR="Null"):
 
         if (SON == False):
-            self.MainGUI_InputTable_Two = 0
+            self.MainGUI_InputTable_Two = None
             self.BackPage_Button = 0
 
         if (SON == True):
+            self.MainGUI_Title.configure(bg="green")
+            self.username_label.configure(text="Data Input Table (2)")
             print("IN The Page TWO")
             self.MainGUI_InputTable_Two = tk.Frame(self.master)
             self.MainGUI_InputTable_Two.columnconfigure(0, weight=3)
@@ -236,10 +240,12 @@ class MainGUI_CreatNEW():
 
     def creatWidgets_PageThree(self, SON, STR="Null"):
         if (SON == False):
-            self.MainGUI_DisplayTable_Three = 0
+            self.MainGUI_DisplayTable_Three = None
             self.BackPage_Button = 0
             self.Save_Button = 0
         if (SON == True):
+            self.MainGUI_Title.configure(bg="red")
+            self.username_label.configure(text="Result Table")
             self.DCCO = DataCalculation(self.CDD) # DataCalculationCanoeObject
             self.MCCO = ModelCalculation(self.CDD) # ModelCalculationCanoeObject
 
@@ -261,7 +267,7 @@ class MainGUI_CreatNEW():
 
             self.Save_Button = tk.Button(
                 self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
-                command=lambda: [self.FileAcquire()]) # Acquire File and call CanoeDateBase
+                command=lambda: [self.FileAcquire(),self.returnToMainPageAcquire()]) # Acquire File and call CanoeDateBase
             self.Save_Button.pack(side="right", padx=10, pady=10)
 
             self.DisplayTable_PageThree()
@@ -403,8 +409,7 @@ class MainGUI_CreatNEW():
     # learned how to embed 3d matplotlib into the Tkinter interface from line:
     #  https://www.geeksforgeeks.org/how-to-embed-matplotlib-charts-in-tkinter-gui/
     def DisplayTable_PageThree(self):
-        Label = tk.Label(self.MainGUI_DisplayTable_Three, text="Works", font=(
-            "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
+
 
         # Action
         self.DCCO.CanoeDataCalculation()
@@ -455,6 +460,16 @@ class MainGUI_CreatNEW():
         self.CDD.SaveStlIntoFile(filePath,self.canoe_mesh_object)
         #self.CDD.SaveDateIntoFile # TBD
 
+    def returnToMainPageAcquire(self):
+        answer: bool = messagebox.askyesno(title = "Back to the Menu?", message="Want To Return To MainPage?")
+        if(answer):
+            # delete the data
+            self.MainGUI_InputTable_Two.destroy()
+            self.MainGUI_DisplayTable_Three.destroy()
+            self.Return()
+
+
+
 
 
     def SaveData(self, Numcount, PageNum):
@@ -485,7 +500,7 @@ class MainGUI_CreatNEW():
             HullDataList = [CoverLength, Concrete_Density,
                             Concrete_Thickness, CrewWeight]
 
-            self.CDD.ConstructDict_HDD(HullDataList)
+            self.CDD.ConstructDict_HDL(HullDataList)
 
             print(self.CDD)
 
@@ -512,7 +527,7 @@ class MainGUI_CreatNEW():
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_Two(self):
-        self.CDD.DeleteData_HDD()
+        self.CDD.DeleteData_HDL()
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
             FrameObject.destroy()
