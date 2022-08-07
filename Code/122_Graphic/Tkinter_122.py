@@ -1,6 +1,7 @@
 from GraphicBase122 import *
 from PIL import  ImageFont
 
+
 class Tk:
     def __init__(self,bg = "#f0f0f0"):
         self.title = ""
@@ -94,7 +95,9 @@ class Label(Tk):
 
 
 
-
+    # leanred how to use ImageFont of Pillow library from
+    # https://codeantenna.com/a/Lb2aX5Xcqp
+    # This is a Chinese website
     def setFont(self, font):
         if(str(self) == "Entry"):
             return None # save time

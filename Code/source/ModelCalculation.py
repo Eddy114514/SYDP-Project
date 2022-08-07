@@ -22,7 +22,7 @@ class ModelCalculation(Calculation):
         self.LengthIndexGenerate()
 
     # Model Construction
-
+    # Learn how to use the numpy-stl library from https://pypi.org/project/numpy-stl/
     def Model_Generate(self):
 
         V_List = self.Mesh_Generate()

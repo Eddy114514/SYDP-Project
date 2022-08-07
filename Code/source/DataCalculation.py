@@ -2,6 +2,9 @@ from scipy.integrate import quad
 
 from Calculation import Calculation
 
+# learned how to use quad
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.quad.html
+# learned calculus from Ap Calculus BC
 
 class DataCalculation(Calculation):
     def __init__(self, CDD):

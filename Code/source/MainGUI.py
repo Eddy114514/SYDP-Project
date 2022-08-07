@@ -11,6 +11,14 @@ from mpl_toolkits import mplot3d
 from HealthCheck import *
 
 # change to 122 graphic
+# The mainGUI file's structure is mostly done before the July 4th.
+# Thus, I will rewrite it to receive points for that
+
+# learned how to use "with open", "eval" from
+# https://www.w3schools.com/python/python_file_open.asp
+# https://www.geeksforgeeks.org/with-statement-in-python/
+# https://www.programiz.com/python-programming/methods/built-in/eval
+
 
 class MainGUI_Base():
     with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
@@ -49,34 +57,42 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
+        # https://www.iconfinder.com/icons/802066/add_create_document_new_new_document_plus_create_document_icon
         with Image.open('../../asset/Picture/CreatNew_Icon.png') as CreatNew:
             img_CreatNew = CreatNew.resize((80, 100), Image.ANTIALIAS)
             self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
+        # http://megane2.ru/load/url=http:/www.perspectivy.info/photography/open-file-icon-png.html
         with Image.open('../../asset/Picture/Open_Icon.png') as Open:
             img_Open = Open.resize((80, 100), Image.ANTIALIAS)
             self.img_resized_Open = ImageTk.PhotoImage(img_Open)
 
+        # https://thenounproject.com/icon/optimisation-2754529/
         with Image.open('../../asset/Picture/FindBest_Icon.png') as Findbest:
             img_Findbest = Findbest.resize((80, 100), Image.ANTIALIAS)
             self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
 
+        # https://icon-library.com/icon/icon-menu-png-10.html configure manully
         with Image.open('../../asset/Picture/Menu_Icon.png') as Return:
             img_Return = Return.resize((50, 50), Image.ANTIALIAS)
             MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
 
+        # https://www.flaticon.com/free-icon-font/add_3914248
         with Image.open('../../asset/Picture/Add_Icon.png') as Add:
             img_Add = Add.resize((50, 50), Image.ANTIALIAS)
             MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
 
+        # https://italian.cri.cn/zt/xinjiang/index.html
         with Image.open('../../asset/Picture/NextPage_Icon.png') as NextPage:
             img_NextPage = NextPage.resize((50, 50), Image.ANTIALIAS)
             MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
 
+        # https://italian.cri.cn/zt/xinjiang/index.html just a manually reverse
         with Image.open('../../asset/Picture/BackPage_Icon.png') as BackPage:
             img_BackPage = BackPage.resize((50, 50), Image.ANTIALIAS)
             MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
 
+        # https://www.pngfind.com/mpng/iiiRibm_png-file-save-icon-vector-png-transparent-png/
         with Image.open('../../asset/Picture/Save_Icon.png') as Save:
             img_Save = Save.resize((50, 50), Image.ANTIALIAS)
             MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
@@ -104,7 +120,7 @@ class MainGUI_Init():
         self.Debug_Button = tk.Button(
             self.MainGUI_Init_MainFrame, text="Debug",
             command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
-        self.Debug_Button.pack(side="bottom", padx=10, pady=self.master.winfo_height() * (3 / 4))
+        self.Debug_Button.pack(side="bottom", padx=10, pady=10)
 
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
@@ -380,6 +396,8 @@ class MainGUI_CreatNEW():
         self.Thickness_entry.grid(column=1, row=3, sticky=tk.W)
         self.CrewWeight_entry.grid(column=1, row=4, sticky=tk.W)
 
+    # learned how to embed 3d matplotlib into the Tkinter interface from line:
+    #  https://www.geeksforgeeks.org/how-to-embed-matplotlib-charts-in-tkinter-gui/
     def DisplayTable_PageThree(self):
         Label = tk.Label(self.MainGUI_DisplayTable_Three, text="Works", font=(
             "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
