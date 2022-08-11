@@ -1,14 +1,13 @@
-import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 
-from PIL import Image, ImageTk
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
-from matplotlib.figure import Figure
+from matplotlib import pyplot
 from mpl_toolkits import mplot3d
 
+import Messagebox122 as messagebox
+import Tkinter_122 as tk
 # Import other files
 from HealthCheck import *
+
 
 # change to 122 graphic
 # The mainGUI file's structure is mostly done before the July 4th.
@@ -31,7 +30,7 @@ class MainGUI_Base():
         self.HC = HealthCheckBase('Main_GUI')
 
         if (MainGUI_Base.dB.isDebug == True):
-            sys.stderr.flush() # refresh
+            sys.stderr.flush()  # refresh
             print("""keyword explain:
             1. sym : mean test a symmetric hall 
             2. lsh  : mean test a LongShort Hull
@@ -43,8 +42,8 @@ class MainGUI_Base():
             MainGUI_Base.dB.DebugMode(self.Profile)
         else:
             self.root = master
-            self.root.geometry("800x800")
-            self.root.title("Canoe Design Software")
+            self.root.geometry = "800*800"
+            self.root.title = "Canoe Design Software"
             MainGUI_Init(self.root)
 
 
@@ -52,84 +51,91 @@ class MainGUI_Init():
 
     def __init__(self, master):
         self.master = master
-        self.MainGUI_Init_MainFrame = tk.Frame(self.master)
+        self.MainGUI_Init_MainFrame = tk.Frame(self.master, height=master.geometry[0], width=master.geometry[1])
         self.MainGUI_Init_MainFrame.pack()
         self.ConfigImg()
         self.CreateWidgets()
 
     def ConfigImg(self):
         # https://www.iconfinder.com/icons/802066/add_create_document_new_new_document_plus_create_document_icon
-        with Image.open('../../asset/Picture/CreatNew_Icon.png') as CreatNew:
-            img_CreatNew = CreatNew.resize((80, 100), Image.ANTIALIAS)
-            self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
+        self.img_resized_CreatNew = '../../asset/Picture/CreatNew_Icon.png'
 
         # http://megane2.ru/load/url=http:/www.perspectivy.info/photography/open-file-icon-png.html
-        with Image.open('../../asset/Picture/Open_Icon.png') as Open:
-            img_Open = Open.resize((80, 100), Image.ANTIALIAS)
-            self.img_resized_Open = ImageTk.PhotoImage(img_Open)
+        self.img_resized_Open = '../../asset/Picture/Open_Icon.png'
 
         # https://thenounproject.com/icon/optimisation-2754529/
-        with Image.open('../../asset/Picture/FindBest_Icon.png') as Findbest:
-            img_Findbest = Findbest.resize((80, 100), Image.ANTIALIAS)
-            self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
+        self.img_resized_Findbest = '../../asset/Picture/FindBest_Icon.png'
 
         # https://icon-library.com/icon/icon-menu-png-10.html configure manully
-        with Image.open('../../asset/Picture/Menu_Icon.png') as Return:
-            img_Return = Return.resize((50, 50), Image.ANTIALIAS)
-            MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
+
+        MainGUI_Init.img_resized_Return = '../../asset/Picture/Menu_Icon.png'
 
         # https://www.flaticon.com/free-icon-font/add_3914248
-        with Image.open('../../asset/Picture/Add_Icon.png') as Add:
-            img_Add = Add.resize((50, 50), Image.ANTIALIAS)
-            MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
+
+        MainGUI_Init.img_resized_Add = '../../asset/Picture/Add_Icon.png'
 
         # https://italian.cri.cn/zt/xinjiang/index.html
-        with Image.open('../../asset/Picture/NextPage_Icon.png') as NextPage:
-            img_NextPage = NextPage.resize((50, 50), Image.ANTIALIAS)
-            MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
+
+        MainGUI_Init.img_resized_NextPage = '../../asset/Picture/NextPage_Icon.png'
 
         # https://italian.cri.cn/zt/xinjiang/index.html just a manually reverse
-        with Image.open('../../asset/Picture/BackPage_Icon.png') as BackPage:
-            img_BackPage = BackPage.resize((50, 50), Image.ANTIALIAS)
-            MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
+        MainGUI_Init.img_resized_BackPage = '../../asset/Picture/BackPage_Icon.png'
 
         # https://www.pngfind.com/mpng/iiiRibm_png-file-save-icon-vector-png-transparent-png/
-        with Image.open('../../asset/Picture/Save_Icon.png') as Save:
-            img_Save = Save.resize((50, 50), Image.ANTIALIAS)
-            MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
-
-
+        MainGUI_Init.img_resized_Save = '../../asset/Picture/Save_Icon.png'
 
     def CreateWidgets(self):
         # username_label
-        tk.Label(self.MainGUI_Init_MainFrame, text="Canoe Design Program", font=(
+        FrameMaster = self.MainGUI_Init_MainFrame
+        w = FrameMaster.width
+        h = FrameMaster.height
+        tk.Label(FrameMaster, text="Canoe Design Program", font=(
             "Time", 15, "bold")).pack(pady=10)
 
         # CreatNew_Button
-        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_CreatNew, text="New Project", font=(
-            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_CreatNew).pack(pady=40)
+        tk.Button(FrameMaster, width=w / 3, height=h / 5, image=self.img_resized_CreatNew, text="New Project", font=(
+            "Time", 15, "bold"), command=self.PgSwitch_CreatNew).pack(pady=40)
 
         # Open_Button
-        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Open, text="Open Project", font=(
-            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_Open).pack(pady=40)
+        tk.Button(FrameMaster, width=w / 3, height=h / 5, image=self.img_resized_Open, text="Open Project", font=(
+            "Time", 15, "bold"), command=self.PgSwitch_Open).pack(pady=40)
 
         # CreatNew_Button
-        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
-            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_FindBest).pack(pady=0)
+        tk.Button(FrameMaster, width=w / 3, height=h / 5, image=self.img_resized_Findbest, text="Design Optimization",
+                  font=(
+                      "Time", 15, "bold"), command=self.PgSwitch_FindBest).pack(pady=20)
 
         # Debug Button
         self.Debug_Button = tk.Button(
             self.MainGUI_Init_MainFrame, text="Debug",
             command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
-        self.Debug_Button.pack(side="bottom", padx=10, pady=10)
+        self.Debug_Button.pack(padx=10, pady=10)
 
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
         MainGUI_CreatNEW(self.master)
 
     def PgSwitch_Open(self):
-        self.MainGUI_Init_MainFrame.destroy()
-        MainGUI_CreatNEW(self.master)
+
+        AbsFilePath = __file__
+        AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
+        AbsFilePath += f"asset\\__designHistory"
+        InputFile_Path = ""
+        try:
+            InputFile_Path = filedialog.askopenfilename(title="Open Your Previous Design",
+                                                        filetypes=[('Text file', '.txt')],
+                                                        initialdir=AbsFilePath)
+
+
+        except:
+            messagebox.showMessage("Wrong Input")
+            return 0
+        if (InputFile_Path != ""):
+            self.MainGUI_Init_MainFrame.destroy()
+            MainGUI_Open(self.master, InputFile_Path)
+        else:
+            messagebox.showMessage("Wrong Input")
+            return 0
 
     def PgSwitch_FindBest(self):
         self.MainGUI_Init_MainFrame.destroy()
@@ -156,24 +162,21 @@ class MainGUI_CreatNEW():
 
     def creatWidgets_PageMain(self):
 
-        self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue")
+        self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue", height=70)
         self.MainGUI_Menu_Button.pack(fill="x")
 
-        self.MainGUI_Title = tk.Frame(self.master)
-        self.MainGUI_Title.pack(fill="x", pady=50)
+        self.MainGUI_Title = tk.Frame(self.master, height=70)
+        self.MainGUI_Title.pack(fill="x", pady=10)
         self.username_label = tk.Label(self.MainGUI_Title, text="", font=(
             "Time", 15, "bold"))
-        self.username_label.pack(pady=10)
-
-
-
+        self.username_label.pack(pady=30)
 
         self.NextPage_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            self.MainGUI_Menu_Button, bg="gray", image=MainGUI_Init.img_resized_NextPage, width=60,
+            height=self.MainGUI_Menu_Button.height - 10,
             command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
                              self.NextPage()])
-        self.NextPage_Button.pack(side="right", padx=10, pady=10)
-
+        self.NextPage_Button.pack(anchor="e", padx=10, pady=5)
 
     # SON is PageConditionBoolean
     # STR is PageConditionKeyword
@@ -184,27 +187,24 @@ class MainGUI_CreatNEW():
             self.Return_Button = 0
 
         if (SON == True):
+            MainGUI_CreatNEW.Num_Counter = 0
 
             SectionDictObject = {}
-            HullDictObject = []
-            self.CDD = CanoeDataBase(SectionDictObject, HullDictObject)
+            HullListObject = []
+            self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
             self.MainGUI_Title.configure(bg="green")
-            self.username_label.configure(text = "Data Input Table (1)")
+            self.username_label.configure(text="Data Input Table (1)")
 
             print("IN The Page One")
             MainGUI_CreatNEW.Num_Counter = 0
-            self.MainGUI_InputTable = tk.Frame(self.master)
-            self.MainGUI_InputTable.columnconfigure(0, weight=3)
-            self.MainGUI_InputTable.columnconfigure(1, weight=3)
-            self.MainGUI_InputTable.columnconfigure(2, weight=3)
-            self.MainGUI_InputTable.columnconfigure(4, weight=3)
-            self.MainGUI_InputTable.columnconfigure(5, weight=3)
-            self.MainGUI_InputTable.columnconfigure(6, weight=3)
-            self.MainGUI_InputTable.pack(fill="x", pady=150)
+            self.MainGUI_InputTable = tk.Frame(self.master, width=500, height=500)
+            self.MainGUI_InputTable.pack(fill="x", pady=10)
+            self.MainGUI_InputTable.columnconfigure(12, 7)
             self.DataInputTable(0)
             self.Return_Button = tk.Button(
-                self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Return, command=self.Return)
-            self.Return_Button.pack(side="left", padx=10, pady=10)
+                self.MainGUI_Menu_Button, bg="gray", height=70, width=60, image=MainGUI_Init.img_resized_Return,
+                command=self.Return)
+            self.Return_Button.pack(anchor="w", padx=10, pady=5)
 
             if (STR == "Update"):
                 self.FrameStoreList[0][0] = self.MainGUI_InputTable
@@ -220,19 +220,14 @@ class MainGUI_CreatNEW():
             self.MainGUI_Title.configure(bg="green")
             self.username_label.configure(text="Data Input Table (2)")
             print("IN The Page TWO")
-            self.MainGUI_InputTable_Two = tk.Frame(self.master)
-            self.MainGUI_InputTable_Two.columnconfigure(0, weight=3)
-            self.MainGUI_InputTable_Two.columnconfigure(1, weight=3)
-            self.MainGUI_InputTable_Two.columnconfigure(2, weight=3)
-            self.MainGUI_InputTable_Two.columnconfigure(4, weight=3)
-            self.MainGUI_InputTable_Two.columnconfigure(5, weight=3)
-            self.MainGUI_InputTable_Two.columnconfigure(6, weight=3)
-            self.MainGUI_InputTable_Two.pack(fill="x", pady=150)
+            self.MainGUI_InputTable_Two = tk.Frame(self.master, height=500, width=self.master.geometry[0])
+            self.MainGUI_InputTable_Two.columnconfigure(6, 6)
+            self.MainGUI_InputTable_Two.pack(pady=150)
             self.DataInputTable_PageTWO()
             self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
                                              command=lambda: [
-                                                 self.PreviousPage_One()])
-            self.BackPage_Button.pack(side="left", padx=10, pady=10)
+                                                 self.PreviousPage_One()], height=70, width=60)
+            self.BackPage_Button.pack(anchor="w", padx=10, pady=5)
             if (STR == "Update"):
                 self.FrameStoreList[1][0] = self.MainGUI_InputTable_Two
                 self.FrameStoreList[1][1] = self.BackPage_Button
@@ -245,29 +240,24 @@ class MainGUI_CreatNEW():
         if (SON == True):
             self.MainGUI_Title.configure(bg="red")
             self.username_label.configure(text="Result Table")
-            self.DCCO = DataCalculation(self.CDD) # DataCalculationCanoeObject
-            self.MCCO = ModelCalculation(self.CDD) # ModelCalculationCanoeObject
+            self.DCCO = DataCalculation(self.CDD)  # DataCalculationCanoeObject
+            self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
 
-            self.MainGUI_DisplayTable_Three = tk.Frame(self.master)
-            self.MainGUI_DisplayTable_Three.columnconfigure(0, weight=3)
-            self.MainGUI_DisplayTable_Three.columnconfigure(1, weight=3)
-            self.MainGUI_DisplayTable_Three.columnconfigure(2, weight=3)
-            self.MainGUI_DisplayTable_Three.columnconfigure(4, weight=3)
-            self.MainGUI_DisplayTable_Three.columnconfigure(5, weight=3)
-            self.MainGUI_DisplayTable_Three.columnconfigure(6, weight=3)
-            self.MainGUI_DisplayTable_Three.pack(fill = "both", expand=True)
+            self.MainGUI_DisplayTable_Three = tk.Frame(self.master, height=500, width=self.master.geometry[0])
+            self.MainGUI_DisplayTable_Three.columnconfigure(6, 6)
+            self.MainGUI_DisplayTable_Three.pack(pady=50)
 
             self.NextPage_Button.destroy()
 
             self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
                                              command=lambda: [
-                                                 self.PreviousPage_Two()])
-            self.BackPage_Button.pack(side="left", padx=10, pady=10)
+                                                 self.PreviousPage_Two()], height=70, width=60, )
+            self.BackPage_Button.pack(anchor="w", padx=10, pady=5)
 
             self.Save_Button = tk.Button(
                 self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
-                command=lambda: [self.FileAcquire(),self.returnToMainPageAcquire()]) # Acquire File and call CanoeDateBase
-            self.Save_Button.pack(side="right", padx=10, pady=10)
+                command=lambda: [self.FileAcquire()], height=70, width=60)  # Acquire File and call CanoeDateBase
+            self.Save_Button.pack(anchor="e", padx=10, pady=5)
 
             self.DisplayTable_PageThree()
 
@@ -279,26 +269,26 @@ class MainGUI_CreatNEW():
     def DataInputTable(self, NumCount):
         # Defind Input table
 
-        Length_entry_1 = tk.Entry(self.MainGUI_InputTable)
-        Width_entry_1 = tk.Entry(self.MainGUI_InputTable)
-        Depth_entry_1 = tk.Entry(self.MainGUI_InputTable)
-        ExponentCurve_entry_1 = tk.Entry(self.MainGUI_InputTable)
-        ExponentWidth_entry_1 = tk.Entry(self.MainGUI_InputTable)
-        ExponentDepth_entry_1 = tk.Entry(self.MainGUI_InputTable)
+        Length_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Width_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Depth_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentCurve_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentWidth_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentDepth_entry_1 = tk.Entry(self.MainGUI_InputTable, width=40)
 
-        Length_entry_2 = tk.Entry(self.MainGUI_InputTable)
-        Width_entry_2 = tk.Entry(self.MainGUI_InputTable)
-        Depth_entry_2 = tk.Entry(self.MainGUI_InputTable)
-        ExponentCurve_entry_2 = tk.Entry(self.MainGUI_InputTable)
-        ExponentWidth_entry_2 = tk.Entry(self.MainGUI_InputTable)
-        ExponentDepth_entry_2 = tk.Entry(self.MainGUI_InputTable)
+        Length_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Width_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Depth_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentCurve_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentWidth_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentDepth_entry_2 = tk.Entry(self.MainGUI_InputTable, width=40)
 
-        Length_entry_3 = tk.Entry(self.MainGUI_InputTable)
-        Width_entry_3 = tk.Entry(self.MainGUI_InputTable)
-        Depth_entry_3 = tk.Entry(self.MainGUI_InputTable)
-        ExponentCurve_entry_3 = tk.Entry(self.MainGUI_InputTable)
-        ExponentWidth_entry_3 = tk.Entry(self.MainGUI_InputTable)
-        ExponentDepth_entry_3 = tk.Entry(self.MainGUI_InputTable)
+        Length_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Width_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
+        Depth_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentCurve_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentWidth_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
+        ExponentDepth_entry_3 = tk.Entry(self.MainGUI_InputTable, width=40)
 
         self.EntryDict = {0: [Length_entry_1, Width_entry_1, Depth_entry_1,
                               ExponentCurve_entry_1, ExponentWidth_entry_1,
@@ -310,74 +300,54 @@ class MainGUI_CreatNEW():
                               ExponentCurve_entry_3, ExponentWidth_entry_3,
                               ExponentDepth_entry_3]}
 
+        LabelCount = NumCount if NumCount == 0 else NumCount + 0.5
+
         SectionTitle_Label = tk.Label(self.MainGUI_InputTable,
                                       text="Section %s" % (int(
                                           NumCount / 2) + 1),
-                                      font=("Time", 15)).grid(column=NumCount,
-                                                              row=1,
-                                                              sticky=tk.E,
-                                                              ipady=5, ipadx=5)
+                                      font=("Time", 15, "bold")).grid(column=LabelCount,
+                                                                      row=1)
 
         Length_label = tk.Label(self.MainGUI_InputTable,
                                 text="Canoe Length :", font=(
-                "Time", 12)).grid(column=NumCount, row=2,
-                                  sticky=tk.E, ipady=5,
-                                  ipadx=5)
+                "Time", 12, "")).grid(column=LabelCount, row=2)
         Width_label = tk.Label(self.MainGUI_InputTable,
                                text="Canoe Width :", font=(
-                "Time", 12)).grid(column=NumCount, row=3,
-                                  sticky=tk.E, ipady=5,
-                                  ipadx=5)
+                "Time", 12, "")).grid(column=LabelCount, row=3)
         Depth_label = tk.Label(self.MainGUI_InputTable,
                                text="Canoe Depth :", font=(
-                "Time", 12)).grid(column=NumCount, row=4,
-                                  sticky=tk.E, ipady=5,
-                                  ipadx=5)
+                "Time", 12, "")).grid(column=LabelCount, row=4)
         ExponentCurve_label = tk.Label(self.MainGUI_InputTable,
-                                       text="Exponent of Curve function :",
+                                       text="Curve Exp:",
                                        font=(
-                                           "Time", 12)).grid(column=NumCount,
-                                                             row=5, sticky=tk.E,
-                                                             ipadx=5, ipady=5)
+                                           "Time", 12, "")).grid(column=LabelCount, row=5)
         ExponentWidth_label = tk.Label(self.MainGUI_InputTable,
-                                       text="Exponent of Width function :",
+                                       text="Width Exp:",
                                        font=(
-                                           "Time", 12)).grid(column=NumCount,
-                                                             row=6, sticky=tk.E,
-                                                             ipadx=5, ipady=5)
+                                           "Time", 12, "")).grid(column=LabelCount, row=6)
         ExponentDepth_label = tk.Label(self.MainGUI_InputTable,
-                                       text="Exponent of Depth function :",
+                                       text="Depth Exp:",
                                        font=(
-                                           "Time", 12)).grid(column=NumCount,
-                                                             row=7, sticky=tk.E,
-                                                             ipadx=5, ipady=5)
+                                           "Time", 12, "")).grid(column=LabelCount, row=7)
 
         self.EntryDict[NumCount
-                       / 2][0].grid(column=NumCount + 1, row=2, sticky=tk.W)
+                       / 2][0].grid(column=NumCount + 2, row=2)
         self.EntryDict[NumCount
-                       / 2][1].grid(column=NumCount + 1, row=3, sticky=tk.W)
+                       / 2][1].grid(column=NumCount + 2, row=3)
         self.EntryDict[NumCount
-                       / 2][2].grid(column=NumCount + 1, row=4, sticky=tk.W)
+                       / 2][2].grid(column=NumCount + 2, row=4)
         self.EntryDict[NumCount
-                       / 2][3].grid(column=NumCount + 1, row=5, sticky=tk.W)
+                       / 2][3].grid(column=NumCount + 2, row=5)
         self.EntryDict[NumCount
-                       / 2][4].grid(column=NumCount + 1, row=6, sticky=tk.W)
+                       / 2][4].grid(column=NumCount + 2, row=6)
         self.EntryDict[NumCount
-                       / 2][5].grid(column=NumCount + 1, row=7, sticky=tk.W)
+                       / 2][5].grid(column=NumCount + 2, row=7)
 
         self.AddNewTable_Button = tk.Button(
-            self.MainGUI_InputTable, image=MainGUI_Init.img_resized_Add,
+            self.MainGUI_InputTable, image=MainGUI_Init.img_resized_Add, width=50, height=50,
             command=lambda: [self.Addtable(True, NumCount)])
         self.AddNewTable_Button.grid(
-            column=NumCount + 2, row=2, sticky=tk.W, padx=10)
-
-        if (NumCount == 4):
-            print("work5")
-            self.Symmetry_CheckButton = tk.Checkbutton(
-                self.MainGUI_InputTable, command=lambda: [self.CDD.ConfigSYM()], text="Symmetricity: ", font=(
-                    "Time", 12))
-            self.Symmetry_CheckButton.grid(
-                column=NumCount + 2, row=1, sticky=tk.W, padx=10)
+            column=NumCount + 2.5, row=2)
 
     def DataInputTable_PageTWO(self):
         self.CoverLength_entry = tk.Entry(self.MainGUI_InputTable_Two)
@@ -387,89 +357,109 @@ class MainGUI_CreatNEW():
 
         # CoverLenth_Label
         tk.Label(self.MainGUI_InputTable_Two, text="Cover Length :", font=(
-            "Time", 12)).grid(column=0, row=1, sticky=tk.E, ipady=5, ipadx=5)
+            "Time", 12, "")).grid(column=0, row=1)
         # Density_Label
         tk.Label(self.MainGUI_InputTable_Two, text="Concrete Density :", font=(
-            "Time", 12)).grid(column=0, row=2, sticky=tk.E, ipady=5, ipadx=5)
+            "Time", 12, "")).grid(column=0, row=2)
         # Thickness_Label
         tk.Label(self.MainGUI_InputTable_Two, text="Concrete Thickness :", font=(
-            "Time", 12)).grid(column=0, row=3, sticky=tk.E, ipady=5, ipadx=5)
+            "Time", 12, "")).grid(column=0, row=3)
         # CrewWeight_Label
         tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
-            "Time", 12)).grid(column=0, row=4, sticky=tk.E, ipadx=5, ipady=5)
-        tk.Checkbutton(self.MainGUI_InputTable_Two,text = "FSD Mode",
-                       command=lambda: [self.CDD.ConfigFSD()]).grid(column=0, row=5, sticky=tk.E, ipadx=5, ipady=5)
+            "Time", 12, "")).grid(column=0, row=4)
 
-        self.CoverLength_entry.grid(column=1, row=1, sticky=tk.W)
-        self.Density_entry.grid(column=1, row=2, sticky=tk.W)
-        self.Thickness_entry.grid(column=1, row=3, sticky=tk.W)
-        self.CrewWeight_entry.grid(column=1, row=4, sticky=tk.W)
+        self.CoverLength_entry.grid(column=1, row=1)
+        self.Density_entry.grid(column=1, row=2)
+        self.Thickness_entry.grid(column=1, row=3)
+        self.CrewWeight_entry.grid(column=1, row=4)
 
     # learned how to embed 3d matplotlib into the Tkinter interface from line:
     #  https://www.geeksforgeeks.org/how-to-embed-matplotlib-charts-in-tkinter-gui/
     def DisplayTable_PageThree(self):
 
-
         # Action
-        self.DCCO.CanoeDataCalculation()
+        try:
+            self.DCCO.CanoeDataCalculation()
+        except:
+            messagebox.showMessage("Wrong Data Input")
+            self.MainGUI_InputTable_Two.destroy()
+            self.MainGUI_DisplayTable_Three.destroy()
+            self.Return()
+            return 0
         # Print out Current Data
-        self.OperationNote = self.DCCO.CalDataReturn()
+        self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
 
-        self.canoe_mesh_object = self.MCCO.Model_Generate()
-        # Create a new plot
+        # Canoe Hall type defined
+        tk.Label(self.MainGUI_DisplayTable_Three,
+                 text=f"{self.OperationNote[0]} || {self.OperationNote[1]} || {self.OperationNote[2]}", font=(
+                "Time", 12, "")).grid(column=0, row=0)
 
+        # Output display
+        VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
+        WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+        BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
+        FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
+        Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
-        fig = Figure(figsize=(5, 5),
-                     dpi=100)
-        axes = fig.add_subplot(111, projection="3d")
-        # Render the canoe
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+        tk.Label(self.MainGUI_DisplayTable_Three, text=VolumeString, font=(
+            "Time", 12, "bold")).grid(column=0, row=1)
+        tk.Label(self.MainGUI_DisplayTable_Three, text=WeightSrting, font=(
+            "Time", 12, "bold")).grid(column=0, row=2)
+        tk.Label(self.MainGUI_DisplayTable_Three, text=BuoyancyString, font=(
+            "Time", 12, "bold")).grid(column=0, row=3)
+        tk.Label(self.MainGUI_DisplayTable_Three, text=FlowString, font=(
+            "Time", 12, "bold")).grid(column=0, row=4)
+        tk.Label(self.MainGUI_DisplayTable_Three, text=Submerge, font=(
+            "Time", 12, "bold")).grid(column=0, row=5)
+
+        # Model related
+        try:
+            self.canoe_mesh_object = self.MCCO.Model_Generate()
+        except:
+            messagebox.showMessage("Wrong Data Input")
+            self.MainGUI_DisplayTable_Three.destroy()
+            self.Return()
+            return 0
+
+        # Generate the canoe
+        # consider the example from https://pypi.org/project/numpy-stl/
+        window = pyplot.figure()
+        canvas = pyplot.subplot(projection="3d")
+        # render
+        canvas.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
 
         scale = self.canoe_mesh_object.points.flatten()
-        axes.auto_scale_xyz(scale, scale, scale)
-        axes.set_xlabel("X axis")
-        axes.set_ylabel("Y axis")
-        axes.set_zlabel("Z axis")
+        canvas.auto_scale_xyz(scale, scale, scale)
 
-        canvas = FigureCanvasTkAgg(fig, self.MainGUI_DisplayTable_Three)
-        canvas.draw()
-        canvas.get_tk_widget().place(relx=0.3, rely=0.1)
+        pyplot.show()
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if (booleanTable and NumCount < 4):
 
-            self.SaveData(NumCount / 2, MainGUI_CreatNEW.Page_Counter)
-            NumCount += 2
-            self.AddNewTable_Button.destroy()
-            self.DataInputTable(NumCount)
-            MainGUI_CreatNEW.Num_Counter = NumCount / 2
-            print(MainGUI_CreatNEW.Num_Counter)
+            continueBoolean = self.SaveData(NumCount / 2, MainGUI_CreatNEW.Page_Counter)
+            if (continueBoolean):
+                NumCount += 2
+                self.AddNewTable_Button.destroy()
+                self.DataInputTable(NumCount)
+                MainGUI_CreatNEW.Num_Counter = NumCount / 2
+                print(MainGUI_CreatNEW.Num_Counter)
+
 
         elif (booleanTable and NumCount == 4):
             self.SaveData(NumCount / 2, MainGUI_CreatNEW.Page_Counter)
             self.AddNewTable_Button.destroy()
             print(MainGUI_CreatNEW.Num_Counter)
-            messagebox.showinfo("information", "Reach The MAX Section Number")
+            messagebox.showMessage("Reach The MAX Section Number")
 
     def FileAcquire(self):
+        # Directly Save Design
+        self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt)
+        # Save the Model position by asking
         Folderpath = filedialog.askdirectory()
         filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
         filePath = f"{Folderpath}/{filename}"
         print(f"Model Save @ {Folderpath}/{filename}")
-        self.CDD.SaveStlIntoFile(filePath,self.canoe_mesh_object)
-        #self.CDD.SaveDateIntoFile # TBD
-
-    def returnToMainPageAcquire(self):
-        answer: bool = messagebox.askyesno(title = "Back to the Menu?", message="Want To Return To MainPage?")
-        if(answer):
-            # delete the data
-            self.MainGUI_InputTable_Two.destroy()
-            self.MainGUI_DisplayTable_Three.destroy()
-            self.Return()
-
-
-
-
+        self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
     def SaveData(self, Numcount, PageNum):
 
@@ -477,17 +467,23 @@ class MainGUI_CreatNEW():
 
         if (Numcount <= 2 and PageNum == 0):
             print("Enter First Dict", Numcount)
-            Length_Canoe = float(self.EntryDict[Numcount][0].get())
-            Width_Canoe = float(self.EntryDict[Numcount][1].get())
-            Depth_Canoe = float(self.EntryDict[Numcount][2].get())
-            ExponentCurve_Canoe = float(self.EntryDict[Numcount][3].get())
-            ExponentWidth_Canoe = float(self.EntryDict[Numcount][4].get())
-            ExponentDepth_Canoe = float(self.EntryDict[Numcount][5].get())
+            try:
+                Length_Canoe = float(self.EntryDict[Numcount][0].get())
+                Width_Canoe = float(self.EntryDict[Numcount][1].get())
+                Depth_Canoe = float(self.EntryDict[Numcount][2].get())
+                ExponentCurve_Canoe = float(self.EntryDict[Numcount][3].get())
+                ExponentWidth_Canoe = float(self.EntryDict[Numcount][4].get())
+                ExponentDepth_Canoe = float(self.EntryDict[Numcount][5].get())
 
-            SectionDataList = [Length_Canoe, Width_Canoe, Depth_Canoe,
-                               ExponentCurve_Canoe, ExponentWidth_Canoe, ExponentDepth_Canoe]
+                SectionDataList = [Length_Canoe, Width_Canoe, Depth_Canoe,
+                                   ExponentCurve_Canoe, ExponentWidth_Canoe, ExponentDepth_Canoe]
 
-            self.CDD.ConstructDict_SDD(Numcount, SectionDataList)
+                self.CDD.ConstructDict_SDD(Numcount, SectionDataList)
+                return True
+            except:
+                messagebox.showMessage("Wrong input")
+
+
 
         elif (PageNum > 0):
             print("Enter SEC Dict", Numcount)
@@ -526,6 +522,12 @@ class MainGUI_CreatNEW():
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
 
     def PreviousPage_Two(self):
+
+        if (None in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]):
+            # displayable 3 haven't finished
+            messagebox.showMessage("Please Close The Model Window")
+            return 0
+
         self.CDD.DeleteData_HDL()
         MainGUI_CreatNEW.Num_Counter -= 1
         for FrameObject in self.FrameStoreList[MainGUI_CreatNEW.Page_Counter]:
@@ -535,8 +537,305 @@ class MainGUI_CreatNEW():
         self.NextPage_Button = tk.Button(
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
             command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
-                             self.NextPage()])
-        self.NextPage_Button.pack(side="right", padx=10, pady=10)
+                             self.NextPage()], height=70, width=60, )
+        self.NextPage_Button.pack(anchor="e", padx=10, pady=5)
+
+
+class MainGUI_Open():
+    def __init__(self, master, InputFilePath):
+        self.master = master
+        self.InputFile_Path = InputFilePath
+        SectionDictObject = {}
+        HullListObject = []
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
+        self.creatWidgets_PageMain()
+
+    def creatWidgets_PageMain(self):
+        self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue", height=70)
+        self.MainGUI_Menu_Button.pack(fill="x")
+
+        self.MainGUI_Title = tk.Frame(self.master, height=70)
+        self.MainGUI_Title.pack(fill="x", pady=10)
+        self.username_label = tk.Label(self.MainGUI_Title, text="", font=(
+            "Time", 15, "bold"))
+        self.username_label.pack(pady=30)
+
+        self.DisplayTable_PageMain()
+
+    def DisplayTable_PageMain(self):
+        self.MainGUI_Title.configure(bg="green")
+        self.username_label.configure(text="Past Input")
+        self.DisplayTable_PageMain_Frame = tk.Frame(self.master, height=500, width=self.master.geometry[0])
+
+        with open(self.InputFile_Path, "r") as InputFile:
+            self.InputFile = eval(InputFile.read())
+
+        size = len(self.InputFile["Length"])
+        self.DisplayTable_PageMain_Frame.columnconfigure((size * 3) + 1, 8, weight=1)
+        self.DisplayTable_PageMain_Frame.pack(pady=50)
+
+        # Store the Entry
+        EntrySectionList = []
+        # Store the UserLabel
+        UserSectionLabel = []
+
+        HallEntryList = self.AssignPreviousInput(size, EntrySectionList, UserSectionLabel)
+        # CreateOtherPart
+        for Col, (Entrylist, Labellist) in enumerate(zip(EntrySectionList, UserSectionLabel)):
+            for Row, (Entry, Label) in enumerate(zip(Entrylist, Labellist)):
+                Entry.grid(column=(Col * 3) + 1 + 0.5, row=Row + 1)
+                Label.grid(column=(Col * 3) + 1 + 0.5, row=Row + 1)
+
+        self.Next_Button = tk.Button(
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            command=lambda: [self.FileTransfer(EntrySectionList, HallEntryList), self.ResultTableDisplay()], height=70,
+            width=60)  # Acquire File and call CanoeDateBase
+        self.Next_Button.pack(anchor="e", padx=10, pady=5)
+
+        self.Return_Button = tk.Button(
+            self.MainGUI_Menu_Button, bg="gray", height=70, width=60, image=MainGUI_Init.img_resized_Return,
+            command=self.Return)
+        self.Return_Button.pack(anchor="w", padx=10, pady=5)
+
+    def FileTransfer(self, EntryListSection, HallEntryList):
+        SectionDictObject = {}
+        HullListObject = []
+
+        for sectionNum, Entrylist in enumerate(EntryListSection):
+            SectionDictObject[sectionNum] = []
+            for element in Entrylist:
+                SectionDictObject[sectionNum].append(float(element.get()))
+
+        for element in HallEntryList:
+            HullListObject.append(float(element.get()))
+
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
+        self.DCCO = DataCalculation(self.CDD)
+        self.MCCO = ModelCalculation(self.CDD)
+
+    def FileConfig(self):
+        # Save the model at first
+        Folderpath = filedialog.askdirectory()
+        filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
+        filePath = f"{Folderpath}/{filename}"
+        print(f"Model Save @ {Folderpath}/{filename}")
+        self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
+
+        FileName = self.InputFile["Name"]
+        FileAddress = f"..\\..\\asset\\progressSave\\{'Design_' + FileName}"
+
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile['Name'])
+
+    def ResultTableDisplay(self):
+        self.DisplayTable_PageMain_Frame.destroyAllElement()
+        self.Next_Button.destroy()
+
+        # GUI construct
+
+        self.Save_Button = tk.Button(
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
+            command=lambda: [self.FileConfig(), self.Return()], height=70,
+            width=60)
+        self.Save_Button.pack(anchor="e", padx=10, pady=5)
+
+        self.MainGUI_Title.configure(bg="red")
+        self.username_label.configure(text="Result Display")
+
+        try:
+            self.DCCO.CanoeDataCalculation()
+            self.canoe_mesh_object = self.MCCO.Model_Generate()
+            # Print out Current Data
+            self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
+
+            # Canoe Hall type defined
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text=f"{self.OperationNote[0]} || {self.OperationNote[1]} || {self.OperationNote[2]}", font=(
+                    "Time", 12, "")).grid(column=0, row=0)
+
+            # Output display
+            VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
+            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
+            FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
+            Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
+
+            tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
+                "Time", 12, "bold")).grid(column=0, row=1)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+                "Time", 12, "bold")).grid(column=0, row=2)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
+                "Time", 12, "bold")).grid(column=0, row=3)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
+                "Time", 12, "bold")).grid(column=0, row=4)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
+                "Time", 12, "bold")).grid(column=0, row=5)
+
+            # Model related
+
+            # Generate the canoe
+            # consider the example from https://pypi.org/project/numpy-stl/
+            window = pyplot.figure()
+            canvas = pyplot.subplot(projection="3d")
+            # render
+            canvas.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+
+            scale = self.canoe_mesh_object.points.flatten()
+            canvas.auto_scale_xyz(scale, scale, scale)
+
+            pyplot.show()
+
+        except:
+            messagebox.showMessage("Wrong Data Input")
+            self.DisplayTable_PageMain()
+
+    def Return(self):
+        self.CDD.DeleteData_CDD()
+        self.MainGUI_Menu_Button.destroy()
+        self.MainGUI_Title.destroy()
+        self.DisplayTable_PageMain_Frame.destroy()
+        MainGUI_Init(self.master)
+
+    def DeleteLabelatEntry(self, UserLabel, sectionNum, row):
+        UserLabel[sectionNum][row].destroy()
+
+    def DireteDeletLabel(self, Labelobj):
+        Labelobj.destroy()
+
+    def AssignPreviousInput(self, size, EntryList, UserLabel):
+        # Assign the PrePair Table
+        # This is really just GUI structure of the page
+        # a lot
+        # suffer to read
+        # can skip
+
+        for createInput in range(size):
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text=f"Section {createInput + 1}",
+                     font=("Time", 15, "bold")).grid(column=createInput * 3, row=0)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Canoe Length :", font=(
+                    "Time", 12, "")).grid(column=createInput * 3, row=1)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Canoe Width :", font=(
+                    "Time", 12, "")).grid(column=createInput * 3, row=2)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Canoe Depth :", font=(
+                    "Time", 12, "")).grid(column=createInput * 3, row=3)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Curve Exp:",
+                     font=(
+                         "Time", 12, "")).grid(column=createInput * 3, row=4)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Width Exp:",
+                     font=(
+                         "Time", 12, "")).grid(column=createInput * 3, row=5)
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text="Depth Exp:",
+                     font=(
+                         "Time", 12, "")).grid(column=createInput * 3, row=6)
+            tempEntryList = []
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 0),
+                                          deflautReturn=self.InputFile['Length'][createInput]))
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 1),
+                                          deflautReturn=self.InputFile['Width'][createInput]))
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 2),
+                                          deflautReturn=self.InputFile['Depth'][createInput]))
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 3),
+                                          deflautReturn=self.InputFile['ECurveF'][createInput]))
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 4),
+                                          deflautReturn=self.InputFile['EWidthF'][createInput]))
+            tempEntryList.append(tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                          command=self.buildCommand_Delete(UserLabel, createInput, 5),
+                                          deflautReturn=self.InputFile['EDepthF'][createInput]))
+            EntryList.append(tempEntryList)
+            tempUserLabel = []
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['Length'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['Width'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['Depth'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['ECurveF'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['EWidthF'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            tempUserLabel.append(tk.Label(self.DisplayTable_PageMain_Frame,
+                                          text=f"{self.InputFile['EDepthF'][createInput]}",
+                                          font=(
+                                              "Time", 10, "")))
+            UserLabel.append(tempUserLabel)
+
+        # Assign Other Spec's GUI display
+
+        CoverLengthEntry = tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                    command=lambda: [self.DireteDeletLabel(CoverLengthLabel)],
+                                    deflautReturn=f"{self.InputFile['CoverLength']}")
+        CoverLengthEntry.grid(column=1, row=7)
+        DensityEntry = tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                command=lambda: [self.DireteDeletLabel(DensityLabel)],
+                                deflautReturn=f"{self.InputFile['Density']}")
+        DensityEntry.grid(column=1, row=8)
+        ThicknessEntry = tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                  command=lambda: [self.DireteDeletLabel(ThicknessLabel)],
+                                  deflautReturn=f"{self.InputFile['Thickness']}")
+        ThicknessEntry.grid(column=3, row=7)
+        CrewWeightEntry = tk.Entry(self.DisplayTable_PageMain_Frame, width=40, height=15,
+                                   command=lambda: [self.DireteDeletLabel(CrewWeightLabel)],
+                                   deflautReturn=f"{self.InputFile['CrewWeight']}")
+        CrewWeightEntry.grid(column=3, row=8)
+
+        CoverLengthLabel = tk.Label(self.DisplayTable_PageMain_Frame,
+                                    text=f"{self.InputFile['CoverLength']}",
+                                    font=(
+                                        "Time", 10, ""))
+        CoverLengthLabel.grid(column=1, row=7)
+        tk.Label(self.DisplayTable_PageMain_Frame, text="CoverLength", font=(
+            "Time", 10, "")).grid(column=0, row=7)
+
+        DensityLabel = tk.Label(self.DisplayTable_PageMain_Frame,
+                                text=f"{self.InputFile['Density']}",
+                                font=(
+                                    "Time", 10, ""))
+        DensityLabel.grid(column=1, row=8)
+        tk.Label(self.DisplayTable_PageMain_Frame, text="Density", font=(
+            "Time", 10, "")).grid(column=0, row=8)
+
+        ThicknessLabel = tk.Label(self.DisplayTable_PageMain_Frame,
+                                  text=f"{self.InputFile['Thickness']}",
+                                  font=(
+                                      "Time", 10, ""))
+        ThicknessLabel.grid(column=3, row=7)
+        tk.Label(self.DisplayTable_PageMain_Frame, text="Thickness", font=(
+            "Time", 10, "")).grid(column=2, row=7)
+
+        CrewWeightLabel = tk.Label(self.DisplayTable_PageMain_Frame,
+                                   text=f"{self.InputFile['CrewWeight']}",
+                                   font=(
+                                       "Time", 10, ""))
+        CrewWeightLabel.grid(column=3, row=8)
+        tk.Label(self.DisplayTable_PageMain_Frame, text="CrewWeight", font=(
+            "Time", 10, "")).grid(column=2, row=8)
+
+        HallEntryList = [CoverLengthEntry, DensityEntry, ThicknessEntry, CrewWeightEntry]
+        return HallEntryList
+
+    def buildCommand_Delete(self, Target, Row, Col):
+        return lambda: [self.DeleteLabelatEntry(Target, Row, Col)]
 
 
 if __name__ == "__main__":

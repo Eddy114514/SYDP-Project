@@ -1,18 +1,16 @@
-list = []
-list2 = []
-def buildlambda(i):
-    return lambda x:x+i
-for i in range(2):
-    # append lambda x:x+0
-    # append lambda x:x+1
-    list.append(lambda x:x+i)
-    list2.append(buildlambda(i))
+import csv
 
+dct = {'Name': 'John', 'Age': '23', 'Country': ['USA',"USB"]}
 
+"""with open('dct.csv', 'w') as f:
+    writer = csv.writer(f)
+    for k, v in dct.items():
+        if(type(v) in [tuple, list, set]):
+            writeIn = [k] + v
+            writer.writerow(writeIn)
+        else:
+            writer.writerow([k])"""
 
-print("dont use build")
-print(list[0](1),list[0])
-print(list[1](1),list[1])
-print("use build")
-print(list2[0](1),list[0])
-print(list2[1](1),list[1])
+with open('dct.csv',"w") as f:
+    writer = csv.writer(f)
+    writer.writerow(["CHINA","111"])

@@ -1,3 +1,7 @@
+import json
+import os
+import csv
+
 
 class CanoeDataBase:
     # Designed to connect to STL database
@@ -6,26 +10,6 @@ class CanoeDataBase:
         self.SDD = SectionDataDict
         self.HDL = HullDataList
         self.SymmetryBoolean = False
-        self.FSDMode = False
-
-    def ConfigSYM(self):
-        print("Change from ", self.SymmetryBoolean)
-        # flap the Boolean
-        self.SymmetryBoolean = not self.SymmetryBoolean
-        print("to", self.SymmetryBoolean)
-
-    def ConfigFSD(self):
-        print("Change from ", self.FSDMode)
-        # flap the Boolean
-        self.FSDMode = not self.FSDMode
-        print("to", self.FSDMode)
-
-
-    def GetSYM(self):
-        return(self.SymmetryBoolean)
-
-    def GetFSD(self):
-        return(self.FSDMode)
 
     def ConstructDict_SDD(self, SectionNum, DataList):
         self.SDD[SectionNum] = DataList
@@ -48,22 +32,96 @@ class CanoeDataBase:
     def DeleteData_CDD(self):
         del self.SDD
         del self.HDL
+
     def SaveDataToSQL(self):
-        #Save Data To SQL
+        # Save Data To SQL
         print('work')
-    def SaveDataIntoFile(self):
-        #Save Data
-        print("work")
-    def SaveStlIntoFile(self,filePath,stlObject):
+
+    def WriteDataIntoFile(self,CSVAddress,LogAddress,saveText, logName):
+        CanoeDetailDataDict = saveText[2]
+        with open(CSVAddress+'.csv',"w") as CSV:
+            writer = csv.writer(CSV)
+            for key, value in CanoeDetailDataDict.items():
+                if (type(value) in [tuple, list, set]):
+                    writeIn = [key] + value
+                    writer.writerow(writeIn)
+                else:
+                    writer.writerow([key, value])
+        UserInput = saveText[0]
+        UserInput['Name'] = "__log"+str(logName)
+        with open(LogAddress, "w") as Userlog:
+            Userlog.write(json.dumps(UserInput))
+        print("File Config Complete")
+
+
+
+
+    def SaveDataIntoFile(self, DesignLog, saveText, logInt):
+
+        # re-load the software Log
+        with open("..\\..\\asset\\progressSave\\__log.txt", "r") as log:
+            logString = eval(log.read())
+            DesignNumber = logString["Canoe Design"] + 1
+            onebodyCount = logString["One Body Design"]
+            twobodyCount = logString["Two Body Design"]
+            threebodyCount = logString["Three Body Design"]
+            if ("One Body" in DesignLog[0]):
+                onebodyCount += 1
+            elif ("Two Body" in DesignLog[0]):
+                twobodyCount += 1
+            elif ("Three Body" in DesignLog[0]):
+                threebodyCount += 1
+
+        logString = {"Canoe Design": DesignNumber, "One Body Design": onebodyCount, "Two Body Design": twobodyCount,
+                     "Three Body Design": threebodyCount}
+
+        with open("..\\..\\asset\\progressSave\\__log.txt", "w") as log:
+            log.write(json.dumps(logString))
+
+        # Covert saveText (dict) to csv file
+
+
+        # Generate file name
+        fileName = f"{DesignNumber}"
+        for l in logInt:
+            fileName += str(l)
+
+
+
+
+        # Save User Input for Open
+        UserInput = saveText[0]
+        UserInput["Name"] = fileName
+
+        with open(f'..\\..\\asset\\__designHistory\\__log{fileName}.txt', "w") as Userlog:
+            Userlog.write(json.dumps(UserInput))
+
+        # OutPutCSVFile
+        fileName = "Design_" + fileName
+        CanoeDetailDataDict = saveText[2]
+        fileAddress = f"..\\..\\asset\\progressSave\\{fileName}"
+        with open(f'{fileAddress}.csv', 'w') as CSV:
+
+            writer = csv.writer(CSV)
+            for key, value in CanoeDetailDataDict.items():
+                if (type(value) in [tuple, list, set]):
+                    writeIn = [key] + value
+                    writer.writerow(writeIn)
+                else:
+                    writer.writerow([key, value])
+        AbsFilePath = __file__
+        AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
+        AbsFilePath += f"asset\\progressSave\\{fileName}"
+
+        print(f"Save Design File At {AbsFilePath}")
+
+    def SaveStlIntoFile(self, filePath, stlObject):
 
         print(f"File Save @ {filePath}")
         stlObject.save(filePath)
+
     @staticmethod
-    def SaveStlIntoFile_static(filePath,stlObject):
+    def SaveStlIntoFile_static(filePath, stlObject):
 
         print(f"File Save @ {filePath}")
         stlObject.save(filePath)
-
-
-
-

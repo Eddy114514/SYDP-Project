@@ -26,30 +26,22 @@ class ModelCalculation(Calculation):
     def Model_Generate(self):
 
         V_List = self.Mesh_Generate()
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             # minus the B2
             self.Length[1] = self.Length[1] - self.B2
 
         Vertext_In_Set, Vertext_Out_Set, Vertext_Out_Set_Cover = self.Vertex_Generating(V_List)
 
-
-        Face_List  = self.Hall_Mesh_Generate(V_List)
+        Face_List = self.Hall_Mesh_Generate(V_List)
         Inside_Outside_Connection = self.Connection_Mesh_Generate(Vertext_In_Set, Vertext_Out_Set)
         Face_List.append(Inside_Outside_Connection)
-        if(not self.FSDMode):
-            # Only for normal model that require cover, vertical cover.
-            Cover_Vertical, Cset_Vertical_List = self.Vertical_Cover_Mesh_Generate([V_List[0][0], V_List[0][-1]])
+        Cover_Vertical, Cset_Vertical_List = self.Vertical_Cover_Mesh_Generate([V_List[0][0], V_List[0][-1]])
 
-            Horizontal_Cover = self.Horizontal_Cover_Mesh_Generate(Vertext_Out_Set_Cover)
+        Horizontal_Cover = self.Horizontal_Cover_Mesh_Generate(Vertext_Out_Set_Cover)
 
-            Face_List.append(Cover_Vertical)
+        Face_List.append(Cover_Vertical)
 
-            Face_List.append(Horizontal_Cover)
-
-
-
-
-
+        Face_List.append(Horizontal_Cover)
 
         Face_Num = 0
         for l in Face_List:
@@ -80,7 +72,7 @@ class ModelCalculation(Calculation):
         # Create a new plot
         return canoe
 
-    def Hall_Mesh_Generate(self,V_List):
+    def Hall_Mesh_Generate(self, V_List):
         Face_List = []
         for number, V_set in enumerate(V_List):
             F_L = []
@@ -185,7 +177,7 @@ class ModelCalculation(Calculation):
         # The list that save the curve function for each 1 inch in length
 
         # This part can be simplified into a one by another function. TDB
-        CurveList_Inside, CurveList_Outside = self.Formula_Generate()
+        curve_formula_list_inside, curve_formula_list_outside = self.Formula_Generate()
 
         Coordinate_Inside = []
         Coordinate_Outside = []
@@ -198,10 +190,10 @@ class ModelCalculation(Calculation):
         for num in range(0, self.Num):
             CI_List, count_in = self.Coordinate_Section_Generate(
                 num, count_in, self.Inside_LengthList, self.Inside_Length,
-                CurveList_Inside, interval, ModeString)
+                curve_formula_list_inside, interval, ModeString)
             CO_List, count_out = self.Coordinate_Section_Generate(
                 num, count_out, self.Outside_LengthList, self.Outside_Length,
-                CurveList_Outside, interval, ModeString)
+                curve_formula_list_outside, interval, ModeString)
 
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
@@ -211,7 +203,7 @@ class ModelCalculation(Calculation):
         """
         print("First Section")
 
-        for i, j in zip(Coordinate_Inside[0], CurveList_Inside[0]):
+        for i, j in zip(Coordinate_Inside[0], curve_formula_list_inside[0]):
             print("Inside Function: %s" % (j[0]))
             print("\n")
             for a, b, c in zip(i[0], i[1], i[2]):
@@ -220,7 +212,7 @@ class ModelCalculation(Calculation):
 
         print("Second Section")
 
-        for i, j in zip(Coordinate_Inside[1], CurveList_Inside[1]):
+        for i, j in zip(Coordinate_Inside[1], curve_formula_list_inside[1]):
             print("Inside Fucnction: %s" % (j[0]))
             for a, b, c in zip(i[0], i[1], i[2]):
                 print("X: %s || Y: %s || Z: %s" % (a, b, c))
@@ -233,7 +225,7 @@ class ModelCalculation(Calculation):
         print("Third Section")
 
 
-        for i, j in zip(Coordinate_Inside[2], CurveList_Inside[2]):
+        for i, j in zip(Coordinate_Inside[2], curve_formula_list_inside[2]):
             print("Inside Fucnction: %s" % (j[0]))
             print("\n")
             for a, b, c in zip(i[0], i[1], i[2]):
@@ -250,7 +242,7 @@ class ModelCalculation(Calculation):
         
         print("First Section")
 
-        for i, j in zip(Coordinate_Outside[0], CurveList_Outside[0]):
+        for i, j in zip(Coordinate_Outside[0], curve_formula_list_outside[0]):
             print("Outside Fucnction: %s" % (j[0]))
             print("\n")
             for a, b, c in zip(i[0], i[1], i[2]):
@@ -269,7 +261,7 @@ class ModelCalculation(Calculation):
 
         print("Third Section")
 
-        for i, j in zip(Coordinate_Outside[2], CurveList_Outside[2]):
+        for i, j in zip(Coordinate_Outside[2], curve_formula_list_outside[2]):
             print("Outside Fucnction: %s" % (j[0]))
             print("\n")
             for a, b, c in zip(i[0], i[1], i[2]):
@@ -285,6 +277,7 @@ class ModelCalculation(Calculation):
 
     def Coordinate_Section_Generate(self, num, count, CalculateLengthList, ModelLengthList, CurveList, interval,
                                     ModeString):
+        # Generate e section's Each slice's all X,Y coordinate and sign a Z coordinate to it.
         C_List = []
         for dataIndex in range(len(CalculateLengthList[num])):
             if (num == 0):
@@ -298,24 +291,26 @@ class ModelCalculation(Calculation):
 
                     X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                         CurveList[num][0][1], interval, CurveList[num][0][0],
-                        ModelLengthList[count], ModeString)  # length subtake
+                        ModelLengthList[count], ModeString)
                     C_List.append([X_List, Y_List, Z_List])
                 else:
-                    if (self.Note[2] == 24):
+                    if (self.Log[2] == 24):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
-                            ModelLengthList[count], ModeString)  # length subtake
+                            ModelLengthList[count], ModeString)
                         C_List.append([X_List, Y_List, Z_List])
                     else:
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
-                            ModelLengthList[count], ModeString)  # length subtake
+                            ModelLengthList[count], ModeString)
                         C_List.append([X_List, Y_List, Z_List])
             count += 1
 
         return C_List, count
 
     def Formula_Generate(self):
+        # generate the curve formula for each slice
+        # base on the Z index
         CurveFbyInch_Inside = []
         CurveFbyInch_Outside = []
 
@@ -405,17 +400,13 @@ class ModelCalculation(Calculation):
         for VI in V_List[0]:
             Vertex_I.append([VI[0], VI[-1]])
         for VO in V_List[1]:
-            if(self.FSDMode):
+            if (VO[0][-1] >= FrontCover and VO[0][-1] <= EndCover):
                 Vertex_O.append([VO[0], VO[-1]])
-
-            else:
-                if (VO[0][-1] >= FrontCover and VO[0][-1] <= EndCover):
-                    Vertex_O.append([VO[0], VO[-1]])
-                if (VO[0][-1] <= FrontCover or VO[0][-1] >= EndCover):
-                    if (VO[0][-1] <= FrontCover):
-                        Vertex_O_Cover[0].append([VO[0], VO[-1]])
-                    else:
-                        Vertex_O_Cover[-1].append([VO[0], VO[-1]])
+            if (VO[0][-1] <= FrontCover or VO[0][-1] >= EndCover):
+                if (VO[0][-1] <= FrontCover):
+                    Vertex_O_Cover[0].append([VO[0], VO[-1]])
+                else:
+                    Vertex_O_Cover[-1].append([VO[0], VO[-1]])
 
 
 
@@ -433,23 +424,16 @@ class ModelCalculation(Calculation):
                 # For Debug
                 """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
-                    if (self.Note[2] == 24):
+                    if (self.Log[2] == 24):
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if(self.FSDMode):
-                            MeshSet.append([x, y + add, z + self.Thickness])
-
-
-                        elif ((self.CoverLength - self.Thickness) <= z <= (
+                        if ((self.CoverLength - self.Thickness) <= z <= (
                                 sum(self.Length) - self.CoverLength - self.B2 + self.Thickness)):
 
                             MeshSet.append([x, y + add, z + self.Thickness])
                             """print(f"[{x},{y+add},{z+self.Thickness}]")"""
                     else:
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if(self.FSDMode):
-                            MeshSet.append([x, y + add, z + self.Thickness])
-
-                        elif ((self.CoverLength - self.Thickness) <= z <= (
+                        if ((self.CoverLength - self.Thickness) <= z <= (
                                 sum(self.Length) - self.CoverLength + self.Thickness)):
 
                             MeshSet.append([x, y + add, z + self.Thickness])
@@ -550,8 +534,12 @@ class ModelCalculation(Calculation):
         self.DepthFList_Outside.append(self.DepthFList_Outside[0])
 
     def LengthIndexGenerate(self):
+        # Generate LengthList and Length
+        # In which they are defined as : consider the self.Length to be [3,4,5]
+        # LengthList = [[0,1,2,3],[0,1,2,3,4],[0,1,2,3,4,5]]
+        # Length = [0,1,2,3,4,5,6,7,8,9,10,11,12]
         interval = 1
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             cover_list_in = [self.CoverLength - self.Thickness,
                              self.CoverLength_end - self.B2 + self.Thickness]
             cover_list_out = [self.CoverLength,
@@ -596,7 +584,7 @@ class ModelCalculation(Calculation):
             lenOut_list = []
 
             if (self.Num == 3 and numIndex == 1):
-                if (self.Note[2] == 24):
+                if (self.Log[2] == 24):
                     for length_In in np.arange(self.B2, self.Length[numIndex], interval):
                         lenIn_list.append(length_In)
                         if (length_In + interval >= self.Length[numIndex]):
@@ -649,7 +637,7 @@ class ModelCalculation(Calculation):
         for CoverIndex in CoverIndexList:
             if (CoverIndex[0] == numIndex):
                 if (CoverIndex[1] not in lenlist):
-                    if (self.Note[2] == 24 and numIndex == 1):
+                    if (self.Log[2] == 24 and numIndex == 1):
                         lenlist.append(CoverIndex[1] + B2)
                         lenlist.sort()
                     else:
@@ -657,7 +645,7 @@ class ModelCalculation(Calculation):
                         lenlist.sort()
 
     def ZIndexGenerate(self, LengthList, LenSum, B2):
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             for index, element in enumerate(LengthList[1]):
                 LengthList[1][index] = element - B2
         resultList = []
@@ -673,6 +661,7 @@ class ModelCalculation(Calculation):
 
     @staticmethod
     def LocateCover(canoe_cover, length_list):
+        # locate the coordinate of cover and the section it belong
         for lenIndex in range(1, len(length_list)):
             if (canoe_cover < length_list[lenIndex - 1] and lenIndex - 1 == 0):
                 return lenIndex - 1

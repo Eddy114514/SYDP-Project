@@ -7,6 +7,7 @@ from CanoeDataBase import CanoeDataBase
 from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
 
+
 # I learned how to use daemon from this guid:
 #  https://www.geeksforgeeks.org/python-daemon-threads/
 class DebugBase():

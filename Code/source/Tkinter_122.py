@@ -1,5 +1,5 @@
 from GraphicBase122 import *
-from PIL import  ImageFont
+from PIL import ImageFont, Image
 
 
 class Tk:
@@ -27,6 +27,25 @@ class Tk:
     def AddToObject(self):
         self.attr_obj.object.addElement(self)
 
+    def configure(self,**kwargs):
+        OwnEle = self.attr_obj.object.OwnElement
+        replaceIndex = OwnEle.index(self)
+        for keyword in kwargs:
+            if(keyword == "bg"):
+                self.bg = kwargs[keyword]
+            if(keyword == "text"):
+                self.text = kwargs[keyword]
+
+        OwnEle[replaceIndex] = self
+
+
+
+
+
+
+
+
+
     def __repr__(self):
         return "Main"
 
@@ -41,6 +60,7 @@ class Tk:
             self._geometry = "500*500"  # Default Setting
             return 500, 500
 
+
     @geometry.setter
     def geometry(self, value):
         self._geometry = value
@@ -50,6 +70,8 @@ class Tk:
         width, depth = self.geometry
         title = self.title
         main(width, depth, title)
+
+
 
     # useful methods:
 
@@ -62,6 +84,25 @@ class Tk:
             self.coordinate = self.attr_obj.object.getElementRelativeCoordinate(self)
             if(str(self) == "Entry"):
                 self.JVL_color = "black"
+            self.pairImage()
+
+    def grid(self,column = 0, row = 0):
+        self.showIndicator = True
+        self.gridRow = row
+        self.gridcolum = column
+        self.isGrid = True
+        if (str(self) == "Entry"):
+            self.JVL_color = "black"
+
+        self.coordinate = self.attr_obj.gridFrame(self,column= column, row=row)
+        self.pairImage()
+
+    def destroy(self):
+        self.attr_obj.object.OwnElement.remove(self)
+        del self
+
+
+
 
 
 class Label(Tk):
@@ -90,6 +131,21 @@ class Label(Tk):
 
         self.setFont(font)
         self.PairText()
+
+        # image
+        self.imageAddress = image
+
+        # grid
+        self.isGrid = False
+
+    def pairImage(self):
+        if (self.imageAddress != None):
+            self.text = ""  # if image, then no text
+            x, x1, y, y1 = self.coordinate
+            self.xImage = x + (x1 - x) / 2
+            self.yImage = y + (y1 - y) / 2
+            PILImage = Image.open(self.imageAddress)
+            self.image  = PILImage
 
 
 
@@ -160,14 +216,14 @@ class Button(Label):
 
 class Entry(Button):
     def __init__(self, master, anchor="c", bg="white", bd=0, padx=1, pady=1,
-                 width=50, height=10):
-        Button.__init__(self, master, anchor=anchor, bg=bg, bd=bd, width=width, height=height)
+                 width=50, height=10,command =None, deflautReturn = None):
+        Button.__init__(self, master, anchor=anchor, bg=bg, bd=bd, width=width, height=height,command = command)
         self.ElementStore = ""
         self.buttonColorUp = "gray"
         self.buttonColorDown = "white"
         self.InputFontSize = 10 # deflaut
         self.determineIFS()
-
+        self.deflautReturn = deflautReturn
         self.strTrack = 0
 
     def determineIFS(self):
@@ -183,16 +239,27 @@ class Entry(Button):
 
     def get(self):
         # only consider str and int
-        if(self.ElementStore.isdigit()):
+        if(self.ElementStore == ""):
+            return self.deflautReturn
+
+        elif(self.ElementStore.isdigit()):
             if(self.ElementStore.isdecimal()):
                 return float(self.ElementStore)
             return int(self.ElementStore)
         else:
             return self.ElementStore
 
+    def executeCommand(self):
+        # only execute once
+        if (self.command != None):
+            self.command()
+            self.command = None
+
 
     def __repr__(self):
         return "Entry"
+
+
 
 
 class Frame(Tk):
@@ -209,8 +276,16 @@ class Frame(Tk):
         self.padx = padx
         self.pady = pady
 
+        self.isGrid = False
+
         # create Frame Object
         super(Frame, self).__init__(bg = bg)
+
+    def configure(self, **kwargs):
+        for keyword in kwargs:
+            if (keyword == "bg"):
+                self.object.bg = kwargs[keyword]
+
 
     def CreateObject(self):
 
@@ -230,9 +305,41 @@ class Frame(Tk):
             self.object.fill = fill
         self.object.RelativeCoordinate = self.object.getRelativeCoordinate()
 
+    def columnconfigure(self, col:int, row:int, weight = 0):
+        self.isGrid = True
+        self.row = row
+        self.col = col
+        self.rowHeight = self.height / (2*row)
+        if(weight == 0):
+            self.colWidth = (self.width / col) * 3
+        else:
+            self.colWidth = (self.width / col) * weight
+
+
+    def gridFrame(self, element, column = 0, row = 0):
+        Fx = self.object.RelativeCoordinate[0]
+        Fy = self.object.RelativeCoordinate[1]
+        x = Fx + column*self.colWidth + 10
+        x1 = x + element.width
+        y = Fy + (row) * self.rowHeight
+        y1 = y + element.height
+        return x,x1,y,y1
+
+
+
+
+
+    def destroy(self):
+        self.object.removeObject(self.object)
+        self.attr_obj.object.OwnObject.remove(self.object)
+        del self
+
+    def destroyAllElement(self):
+        self.object.OwnElement = []
+
+
 
 
     def __repr__(self):
         return "Frame"
 
-    pass

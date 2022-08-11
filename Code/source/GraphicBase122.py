@@ -1,4 +1,5 @@
 from cmu_112_graphics import *
+from multiprocessing import Process
 
 # font base
 fontdict = {"TIME": {"RE":"times.ttf","BOLD":"timesbd.ttf","ITALIC":"timesi.ttf"},
@@ -24,12 +25,8 @@ def FontBase(UserInput: tuple[str,int,str]) -> str:
 
 
 
-
-
-
-
 # we shall consider each tk and tk.frame as objects
-# label and buttons and etc are elements in it.
+# label and buttons, etc are elements in it.
 
 
 class tkObjectList:
@@ -48,6 +45,9 @@ class tkObjectList:
     def getList(self):
         return tkObjectList.__Objectlist
 
+    def removeObject(self,obj):
+        tkObjectList.__Objectlist.remove(obj)
+
     def __repr__(self):
         return "tkObjectList"
 
@@ -65,21 +65,27 @@ class tkObject(tkObjectList):
         self.OwnObject = []
         self.attrObject = attr
 
-        if (kwargs != {}):  # Frame
-            # extra parmeters if is Frame
+        if (kwargs != {}):  # Frame or MessageBox
 
 
-            self.padx = kwargs["padx"]
-            self.pady = kwargs["pady"]
-            self.bg = kwargs["bg"]
-            self.bd = kwargs["bd"]
+            if(self.name == "Frame"):
+                # extra parmeters if is Frame
+                self.padx = kwargs["padx"]
+                self.pady = kwargs["pady"]
+                self.bg = kwargs["bg"]
+                self.bd = kwargs["bd"]
+                self.obejct = obj
 
+                # define by outside pack
+                self.packPady = 0
+                self.packPadx = 0
+                self.anchor = "c"
+                self.fill = None
 
-            # define by outside pack
-            self.packPady = 0
-            self.packPadx = 0
-            self.anchor = "c"
-            self.fill = None
+            if(self.name == "Messagebox"):
+                self.title = kwargs["title"]
+                self.showIndicator = True
+
 
         # define object coordinates or relative coordinates
         self.signDimension(geometry)
@@ -101,7 +107,8 @@ class tkObject(tkObjectList):
             if (self.name in ["Frame"]):
                 # simulate the Superposition function of tkinter
                 addUp = 0
-                for obj in self.attrObject.OwnObject[:-1]: # find master
+                index = self.attrObject.OwnObject.index(self)
+                for obj in self.attrObject.OwnObject[:index]: # find master
                     addUp += obj.RelativeCoordinate[1]
                     addUp += obj.height
                     addUp += obj.pady
@@ -195,7 +202,7 @@ class tkObject(tkObjectList):
                         privousElment = self.OwnElement[index]
                         break
                     elif (element.packAnchor in ["c", "w", "e"]):
-                        if (self.OwnElement[index].packAnchor in ["c", "w", "e"]):
+                        if (self.OwnElement[index].packAnchor == element.packAnchor):
                             privousElment = self.OwnElement[index]
                             break
 
@@ -229,6 +236,7 @@ def appStarted(app):
     app.clickFlag = False
     app.clickObject = None
     app.timeCounter = 0
+    app.messageBox = False
 
 
 # section of Generate Graphic
@@ -239,10 +247,14 @@ def timerFired(app):
         app.timeCounter += 10
         if (app.timeCounter >= 20):
             app.timeCounter = 0
-            if(app.clickObject.JVL_color == "white"):
-                app.clickObject.JVL_color = "black"
-            else:
-                app.clickObject.JVL_color = "white"
+            try:
+                if (app.clickObject.JVL_color == "white"):
+                    app.clickObject.JVL_color = "black"
+                else:
+                    app.clickObject.JVL_color = "white"
+            except:
+                print("something might be wrong")
+
 
     # check window size
     if((app.tkObjectList.MasterOfAll.width,app.tkObjectList.MasterOfAll.height) != (app.width,app.height)):
@@ -250,9 +262,18 @@ def timerFired(app):
         app.tkObjectList.MasterOfAll.signDimension((app.width,app.height))
         # reset all object and its elements
         for tkObject in app.tkObjectList.getList():
+            if(tkObject.name != "Main"):
+                tkObject.obejct.pack(anchor = tkObject.anchor, padx = tkObject.packPadx, pady = tkObject.packPady )
             for element in tkObject.OwnElement:
-                element.pack(anchor = element.packAnchor,padx = element.packPadx, pady = element.packPady)
+                if(element.showIndicator):
+                    if (element.isGrid):
+                        element.grid(column=element.gridcolum, row=element.gridRow)
+                    else:
+                        element.pack(anchor=element.packAnchor, padx=element.packPadx, pady=element.packPady)
+
 def redrawAll(app, canvas):
+    if(app.messageBox):
+        canvas.create_window((100,150))
     drawWindow(app, canvas)
     drawBase(app, canvas)
 
@@ -292,7 +313,12 @@ def drawLabel_Button_Entry(app, canvas, element):
                             x1, y1,
                             fill=element.bg,
                             width=element.bd)
-    if (element.text != ""):
+
+    if(element.imageAddress != None):
+        ResizeImage = element.image.resize((int(element.width),int(element.height)))
+        canvas.create_image(element.xImage, element.yImage, image=ImageTk.PhotoImage(ResizeImage))
+
+    elif (element.text != ""):
         font122 = ""
         for ele in element.font:
             font122 += f"{ele} "
@@ -343,24 +369,26 @@ def mousePressed(app, event):
     for tkObject in app.tkObjectList.getList():
         if (tkObject.showIndicator):
             for element in tkObject.OwnElement:
-                if (str(element) == "Button"):
-                    # Button don't need click-flag for constant happening event
-                    x, x1, y, y1 = element.coordinate
-                    if (checkMouse((x, x1, y, y1), (keyX, keyY))):
-                        app.clickObject = element
-                        element.buttonColorUp = "gray"
-                        element.buttonColorDown = "white"
-                        app.tempSave = element.bg
-                        element.bg = app.tkObjectList.MasterOfAll.bg
-                    # Entry need click-flag for constant happening event
-                elif (str(element) == "Entry"):
-                    if (checkMouse((element.coordinate), (keyX, keyY))):
-                        app.clickObject = element
-                        element.clickFlag = True
-                    else:
-                        element.clickFlag = False
-                        if(app.clickObject == element):
-                            app.clickObject = None
+                if(element.showIndicator):
+                    if (str(element) == "Button"):
+                        # Button don't need click-flag for constant happening event
+                        x, x1, y, y1 = element.coordinate
+                        if (checkMouse((x, x1, y, y1), (keyX, keyY))):
+                            app.clickObject = element
+                            element.buttonColorUp = "gray"
+                            element.buttonColorDown = "white"
+                            app.tempSave = element.bg
+                            element.bg = app.tkObjectList.MasterOfAll.bg
+                        # Entry need click-flag for constant happening event
+                    elif (str(element) == "Entry"):
+                        if (checkMouse((element.coordinate), (keyX, keyY))):
+                            app.clickObject = element
+                            element.clickFlag = True
+                        else:
+                            element.clickFlag = False
+                            if (app.clickObject == element):
+                                app.clickObject = None
+
 
 
 
@@ -396,6 +424,7 @@ def keyPressed(app, event):
         if(event.key not in ["Up","Right","Down","Left"]):
             if(event.key not in ["Tab","Backspace", "Delete", "Escape"]):
                 # normal input
+                app.clickObject.executeCommand()
                 if(event.key == "Space"):
                     event.key = " "
                 app.clickObject.ElementStore = app.clickObject.ElementStore[0:app.clickObject.strTrack] \
@@ -409,7 +438,7 @@ def keyPressed(app, event):
                 masterObject = app.clickObject.attr_obj.object
                 index = masterObject.OwnElement.index(app.clickObject)
                 for element in masterObject.OwnElement[index+1:]:
-                    if(str(element) == "Entry"):
+                    if(str(element) == "Entry" and element.showIndicator):
                         # swicth
                         app.clickObject.clickFlag = False
                         app.clickObject = element
@@ -451,3 +480,9 @@ def main(w, d, title=""):
         runApp(width=w, height=d)
     else:
         runApp(width=w, height=d, title=title)
+
+def showMessage(text):
+    App._theRoot.app.showMessage(text)
+
+def quit():
+    App._theRoot.app.quit()

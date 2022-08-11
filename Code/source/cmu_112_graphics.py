@@ -348,6 +348,7 @@ class App(object):
     def showMessage(app, message):
         messagebox.showinfo('showMessage', message, parent=app._root)
 
+
     def getUserInput(app, prompt):
         return simpledialog.askstring('getUserInput', prompt)
 
