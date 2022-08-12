@@ -62,32 +62,43 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
-        # https://www.iconfinder.com/icons/802066/add_create_document_new_new_document_plus_create_document_icon
-        self.img_resized_CreatNew = '../../asset/Picture/CreatNew_Icon.png'
+        if(platform.system().lower() == "windows"):
+            # https://www.iconfinder.com/icons/802066/add_create_document_new_new_document_plus_create_document_icon
+            self.img_resized_CreatNew = '../../asset/Picture/CreatNew_Icon.png'
 
-        # http://megane2.ru/load/url=http:/www.perspectivy.info/photography/open-file-icon-png.html
-        self.img_resized_Open = '../../asset/Picture/Open_Icon.png'
+            # http://megane2.ru/load/url=http:/www.perspectivy.info/photography/open-file-icon-png.html
+            self.img_resized_Open = '../../asset/Picture/Open_Icon.png'
 
-        # https://thenounproject.com/icon/optimisation-2754529/
-        self.img_resized_Findbest = '../../asset/Picture/FindBest_Icon.png'
+            # https://thenounproject.com/icon/optimisation-2754529/
+            self.img_resized_Findbest = '../../asset/Picture/FindBest_Icon.png'
 
-        # https://icon-library.com/icon/icon-menu-png-10.html configure manully
+            # https://icon-library.com/icon/icon-menu-png-10.html configure manully
 
-        MainGUI_Init.img_resized_Return = '../../asset/Picture/Menu_Icon.png'
+            MainGUI_Init.img_resized_Return = '../../asset/Picture/Menu_Icon.png'
 
-        # https://www.flaticon.com/free-icon-font/add_3914248
+            # https://www.flaticon.com/free-icon-font/add_3914248
 
-        MainGUI_Init.img_resized_Add = '../../asset/Picture/Add_Icon.png'
+            MainGUI_Init.img_resized_Add = '../../asset/Picture/Add_Icon.png'
 
-        # https://italian.cri.cn/zt/xinjiang/index.html
+            # https://italian.cri.cn/zt/xinjiang/index.html
 
-        MainGUI_Init.img_resized_NextPage = '../../asset/Picture/NextPage_Icon.png'
+            MainGUI_Init.img_resized_NextPage = '../../asset/Picture/NextPage_Icon.png'
 
-        # https://italian.cri.cn/zt/xinjiang/index.html just a manually reverse
-        MainGUI_Init.img_resized_BackPage = '../../asset/Picture/BackPage_Icon.png'
+            # https://italian.cri.cn/zt/xinjiang/index.html just a manually reverse
+            MainGUI_Init.img_resized_BackPage = '../../asset/Picture/BackPage_Icon.png'
 
-        # https://www.pngfind.com/mpng/iiiRibm_png-file-save-icon-vector-png-transparent-png/
-        MainGUI_Init.img_resized_Save = '../../asset/Picture/Save_Icon.png'
+            # https://www.pngfind.com/mpng/iiiRibm_png-file-save-icon-vector-png-transparent-png/
+            MainGUI_Init.img_resized_Save = '../../asset/Picture/Save_Icon.png'
+        else:
+            self.img_resized_CreatNew = '././asset/Picture/CreatNew_Icon.png'
+            self.img_resized_Open = '././asset/Picture/Open_Icon.png'
+            self.img_resized_Findbest = '././asset/Picture/FindBest_Icon.png'
+            MainGUI_Init.img_resized_Return = '././asset/Picture/Menu_Icon.png'
+            MainGUI_Init.img_resized_Add = '././asset/Picture/Add_Icon.png'
+            MainGUI_Init.img_resized_NextPage = '././asset/Picture/NextPage_Icon.png'
+            MainGUI_Init.img_resized_BackPage = '././asset/Picture/BackPage_Icon.png'
+            MainGUI_Init.img_resized_Save = '././asset/Picture/Save_Icon.png'
+
 
     def CreateWidgets(self):
         # username_label
