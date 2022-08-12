@@ -72,7 +72,7 @@ class CanoeDataBase:
             self.FilePathlog = '..\\..\\asset\\progressSave\\__log.txt'
 
         else:
-            self.FilePathlog = '../../asset/progressSave/__log.txt'
+            self.FilePathlog = '././asset/progressSave/__log.txt'
 
 
 
@@ -114,7 +114,7 @@ class CanoeDataBase:
             self.DesignHistoryLog = f'..\\..\\asset\\__designHistory\\__log{fileName}.txt'
 
         else:
-            self.DesignHistoryLog = f'../../asset/__designHistory/__log{fileName}.txt'
+            self.DesignHistoryLog = f'././asset/__designHistory/__log{fileName}.txt'
 
 
         with open(self.DesignHistoryLog, "w") as Userlog:
@@ -127,7 +127,7 @@ class CanoeDataBase:
             self.fileAddress = f"..\\..\\asset\\progressSave\\{fileName}"
 
         else:
-            self.fileAddress = f"../../asset/progressSave/{fileName}"
+            self.fileAddress = f"././asset/progressSave/{fileName}"
 
         with open(f'{self.fileAddress}.csv', 'w') as CSV:
 

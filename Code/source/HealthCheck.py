@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import platform
+from pathlib import Path
 from multiprocessing import Process
 
 from CanoeDataBase import CanoeDataBase
@@ -66,13 +67,13 @@ class DebugBase():
             ProgressSave = "..\\..\\asset\\progressSave"
             ProgressSave1 ="..\\..\\asset\\progressSave\\"
         else:
-            FilePathlog = '../../asset/progressSave/__log.txt'
-            FilePathModel = "../../asset/ModelFile"
-            FilePathModel1 = "../../asset/ModelFile/"
-            DesignHistory = "../../asset/__designHistory"
-            DesignHistory1 = "../../asset/__designHistory/"
-            ProgressSave = "../../asset/progressSave"
-            ProgressSave1 = "../../asset/progressSave/"
+            FilePathlog = '././asset/progressSave/__log.txt'
+            FilePathModel = "././asset/ModelFile"
+            FilePathModel1 = "././asset/ModelFile/"
+            DesignHistory = "././asset/__designHistory"
+            DesignHistory1 = "././asset/__designHistory/"
+            ProgressSave = "././asset/progressSave"
+            ProgressSave1 = "././asset/progressSave/"
 
         # reset Software Log
         if (input("Reset Software Log? [y/n]") in ["y", "Y"]):
@@ -100,7 +101,7 @@ class DebugBase():
         if (platform.system().lower() == 'windows'):
             SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
         else:
-            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+            SetUpinformation = '././asset/startSetup/setUpinformation.txt'
 
         with open(SetUpinformation, 'r') as f:
             startSetUp = eval(f.read())
@@ -145,7 +146,7 @@ class DebugBase():
         if (platform.system().lower() == 'windows'):
             SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
         else:
-            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+            SetUpinformation = '././asset/startSetup/setUpinformation.txt'
 
         with open(SetUpinformation, 'w') as f:
             f.write(json.dumps(startSetUp))
@@ -157,8 +158,8 @@ class DebugBase():
             FileNamePath =f'..\\..\\asset\\TestProfile\\{FileName}'
             SetUpinformation = '..\\..\\asset\\startSetup\\setUpinformation.txt'
         else:
-            FileNamePath = f'../../asset/TestProfile/{FileName}'
-            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+            FileNamePath = f'././asset/TestProfile/{FileName}'
+            SetUpinformation = '././asset/startSetup/setUpinformation.txt'
 
         with open(FileNamePath) as List:
             read = List.read()
@@ -192,7 +193,7 @@ class DebugBase():
             if (platform.system().lower() == 'windows'):
                 filePath = "..\\..\\asset\\ModelFile\\" + filename
             else:
-                filePath = "../../asset/ModelFile/" + filename
+                filePath = "././asset/ModelFile/" + filename
             saveProcess = Process(target=self.ConnectCanoeDateBase(filePath, canoe))
             saveProcess.start()
             saveProcess.join()
@@ -208,7 +209,7 @@ class DebugBase():
         if (platform.system().lower() == 'windows'):
             SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
         else:
-            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+            SetUpinformation = '././asset/startSetup/setUpinformation.txt'
 
         with open(SetUpinformation, 'r') as f:
             startSetUp = eval(f.read())

@@ -19,7 +19,7 @@ def FontBase(UserInput: tuple[str, int, str]) -> str:
             Fontshowtype = "RE"
         return fontdict[Fonttype][Fontshowtype]
     except BaseException:
-        raise Exception("UDF font type or font config, only support Time and Arial, Bold and Italic")
+        return False
 
 
 # we shall consider each tk and tk.frame as objects
