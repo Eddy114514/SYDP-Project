@@ -226,7 +226,7 @@ class MainGUI_CreatNEW():
             self.MainGUI_InputTable_Two.columnconfigure(6, 6)
             self.MainGUI_InputTable_Two.pack(pady=150)
             self.DataInputTable_PageTWO()
-            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
+            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button,bg = "gray", image=MainGUI_Init.img_resized_BackPage,
                                              command=lambda: [
                                                  self.PreviousPage_One()], height=70, width=60)
             self.BackPage_Button.pack(anchor="w", padx=10, pady=5)
@@ -249,7 +249,7 @@ class MainGUI_CreatNEW():
 
             self.NextPage_Button.destroy()
 
-            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_BackPage,
+            self.BackPage_Button = tk.Button(self.MainGUI_Menu_Button,bg = "gray", image=MainGUI_Init.img_resized_BackPage,
                                              command=lambda: [
                                                  self.PreviousPage_Two()], height=70, width=60, )
             self.BackPage_Button.pack(anchor="w", padx=10, pady=5)
@@ -451,7 +451,7 @@ class MainGUI_CreatNEW():
 
     def FileAcquire(self):
 
-        Folderpath = filedialog.askdirectory()
+        Folderpath = filedialog.askdirectory(title="Save STL Model")
         if (Folderpath == ""):  # no save when no input
             return 0
         # Directly Save Design
@@ -537,7 +537,7 @@ class MainGUI_CreatNEW():
         MainGUI_CreatNEW.Page_Counter = MainGUI_CreatNEW.Page_Counter - 1
         self.PageStoreList[MainGUI_CreatNEW.Page_Counter](True, "Update")
         self.NextPage_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,bg = "gray",
             command=lambda: [self.SaveData(MainGUI_CreatNEW.Num_Counter, MainGUI_CreatNEW.Page_Counter),
                              self.NextPage()], height=70, width=60, )
         self.NextPage_Button.pack(anchor="e", padx=10, pady=5)
@@ -594,7 +594,7 @@ class MainGUI_Open():
                 Label.grid(column=(Col * 3) + 1 + 0.5, row=Row + 1)
 
         self.Next_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,bg = "gray",
             command=lambda: [self.FileTransfer(EntrySectionList, HallEntryList)], height=70,
             width=60)  # Acquire File and call CanoeDateBase
         self.Next_Button.pack(anchor="e", padx=10, pady=5)
@@ -624,7 +624,7 @@ class MainGUI_Open():
 
     def FileConfig(self):
         # Save the model at first
-        Folderpath = filedialog.askdirectory()
+        Folderpath = filedialog.askdirectory(title="Save STL Model")
         filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
         if (Folderpath != ""):
             filePath = f"{Folderpath}/{filename}"
@@ -958,56 +958,57 @@ class MainGUI_Optimization():
             self.CDDR["ECurveF"] = [self.InputFile["ECurveF"][0],
                                     self.InputFile["ECurveF"][0] + self.CDDR["Interval"]]
 
-        self.OCCO = OptimizationCalculation(self.CDD, self.CDDR)
-        Top3list, ResultLog = self.OCCO.Optimization()
-        size = len(self.InputFile["Length"])
-        tk.Label(self.DisplayTable_PageMain_Frame,
-                 text=f"Top Three Optimize Design from {ResultLog} result",
-                 font=(
-                     "Time", 15, "")).grid(column=1, row=0)
 
-        tempdict = self.CDD.SDD
-        DCCOList = []
-        MCCOList = []
-
-        # ready for generate Data Result
-        for indexLabel, design in enumerate(Top3list):
-            ExpTuple: tuple = ()
-            for indexSet, (ECF, ECW, ECD) in enumerate(zip(design[1][0], design[1][1], design[1][2])):
-                tempdict[indexSet][3] = ECF
-                tempdict[indexSet][4] = ECW
-                tempdict[indexSet][5] = ECD
-                ExpTuple = (ECF, ECW, ECD)
-            self.CDD.SDD = tempdict
-            DCCOList.append(DataCalculation(self.CDD))
-            MCCOList.append(ModelCalculation(self.CDD))
-            DCCOList[-1].CanoeDataCalculation()
-            # Print out Current Data
-            logInt, CanoeData, OperationNote = DCCOList[-1].CalDataReturn()
-
-            # Canoe Hall type defined
+        try:
+            self.OCCO = OptimizationCalculation(self.CDD, self.CDDR)
+            Top3list, ResultLog = self.OCCO.Optimization()
+            size = len(self.InputFile["Length"])
             tk.Label(self.DisplayTable_PageMain_Frame,
-                     text=f"Top {indexLabel + 1} ({ExpTuple})",
+                     text=f"Top Three Optimize Design from {ResultLog} result",
                      font=(
-                         "Time", 12, "")).grid(column=indexLabel * size + 0.5, row=1)
+                         "Time", 15, "")).grid(column=1, row=0)
 
-            # Output display
-            VolumeString = f"Volume :{round(CanoeData[1]['Volume'], 2)} cu in"
-            WeightSrting = f"Weight :{round(CanoeData[1]['Weight'], 2)} lbs"
-            BuoyancyString = f"Buoyancy :{round(CanoeData[1]['Buoyancy'], 2)} N"
+            tempdict = self.CDD.SDD
+            DCCOList = []
+            MCCOList = []
 
-            tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
-                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=2)
-            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
-                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=3)
-            tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
-                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=4)
+            # ready for generate Data Result
+            for indexLabel, design in enumerate(Top3list):
+                ExpTuple: tuple = ()
+                for indexSet, (ECF, ECW, ECD) in enumerate(zip(design[1][0], design[1][1], design[1][2])):
+                    tempdict[indexSet][3] = ECF
+                    tempdict[indexSet][4] = ECW
+                    tempdict[indexSet][5] = ECD
+                    ExpTuple = (ECF, ECW, ECD)
+                self.CDD.SDD = tempdict
+                DCCOList.append(DataCalculation(self.CDD))
+                MCCOList.append(ModelCalculation(self.CDD))
+                DCCOList[-1].CanoeDataCalculation()
+                # Print out Current Data
+                logInt, CanoeData, OperationNote = DCCOList[-1].CalDataReturn()
 
-            tk.Button(
-                self.DisplayTable_PageMain_Frame, image=MainGUI_Init.img_resized_Save,
-                command=lambda: [self.DisplayAndSave(MCCOList[-1], logInt, CanoeData, OperationNote)],
-                destroySelf=True, height=70, width=60).grid(indexLabel * size + 0.5, row=5)
-        """try:
+                # Canoe Hall type defined
+                tk.Label(self.DisplayTable_PageMain_Frame,
+                         text=f"Top {indexLabel + 1} ({ExpTuple})",
+                         font=(
+                             "Time", 12, "")).grid(column=indexLabel * size + 0.5, row=1)
+
+                # Output display
+                VolumeString = f"Volume :{round(CanoeData[1]['Volume'], 2)} cu in"
+                WeightSrting = f"Weight :{round(CanoeData[1]['Weight'], 2)} lbs"
+                BuoyancyString = f"Buoyancy :{round(CanoeData[1]['Buoyancy'], 2)} N"
+
+                tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
+                    "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=2)
+                tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+                    "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=3)
+                tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
+                    "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=4)
+
+                tk.Button(
+                    self.DisplayTable_PageMain_Frame, image=MainGUI_Init.img_resized_Save,
+                    command=lambda: [self.DisplayAndSave(MCCOList[-1], logInt, CanoeData, OperationNote)],
+                    destroySelf=True, height=70, width=60).grid(indexLabel * size + 0.5, row=5)
             
 
 
@@ -1016,7 +1017,7 @@ class MainGUI_Optimization():
 
         except:
             messagebox.showMessage("Fail to Optimize")
-            self.Return()"""
+            self.Return()
 
     def DisplayAndSave(self, model, logInt, CanoeData, OperationNote):
 
@@ -1035,7 +1036,7 @@ class MainGUI_Optimization():
         pyplot.show()
 
         # Save the Model position by asking
-        Folderpath = filedialog.askdirectory()
+        Folderpath = filedialog.askdirectory(title="Save STL Model")
         if (Folderpath == ""):
             return 0
         # Directly Save Design

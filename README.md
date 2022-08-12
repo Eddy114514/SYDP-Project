@@ -1,7 +1,7 @@
 &emsp;Canoe Design Program (CDP) is design software that aids the design process of the
 canoe. The CDP will take mathematical inputs such as length, width, depth, the slope of the
 curve, density, and crew weight to calculate the volume, buoyancy, center of gravity, and
-waterline, determining the flowability of the canoe. Then, the CDP will generate an STL
+waterline, determining the flow-ability of the canoe. Then, the CDP will generate an STL
 (Standard Triangle Language) file that is water-tight, 3D printable, and testable in CFD
 (Computational fluid dynamics) software.    
 
@@ -42,7 +42,7 @@ Introduction:
 MainGUi : (Graphic User Interface file) is the file\
 that you should run, which will start the software
 * To properly use this software, you must input proper data\
-to acces the functions of the software. Otherwise, the software
+to access the functions of the software. Otherwise, the software
 will not generate proper result.\
 * It is **highly** recommend to read the introduction document to 
 understand the meaning of variables and the type of hulls \
