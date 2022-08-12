@@ -13,6 +13,13 @@ altering parameters and specifications to calculate and construct new models.
 
 &emsp;CDP automates this process, heavily increasing efficiency, and ensuring accuracy.
 
+**Important for vs code user**: YOU MUST FOLLOW THE \
+INSTRUCTION ENTITLED "VScode tutorial Run.pdf" TO \
+Run the Program.
+
+You can see that there is an design example in the file,
+use it as your canoe shape standard if you want.
+
 It contains 7 mian code file, which are:\
 1.MainGUI.py\
 2.CanoeDataBase.py\
