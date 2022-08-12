@@ -946,7 +946,7 @@ class MainGUI_Optimization():
                           command=self.buildCommand_config(createVariable, 0, ButtonSectionList,
                                                            "EWidthF")))
             tempButtonList.append(
-                tk.Button(master=self.DisplayTable_PageMain_Frame, text="Exponent of Width", width=100, height=50,
+                tk.Button(master=self.DisplayTable_PageMain_Frame, text="Exponent of Depth", width=100, height=50,
                           command=self.buildCommand_config(createVariable, 1, ButtonSectionList,
                                                            "EDepthF")))
             ButtonSectionList.append(tempButtonList)
