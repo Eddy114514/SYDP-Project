@@ -11,6 +11,7 @@ class OptimizationCalculation(Calculation):
         "EWidthF":{sectionNum:[lower,upper]...},"EDepthF":{sectionNum:[lower,upper]}, }
         """
         super().__init__(CDD)
+        super().__init__(CDD)
         self.SignData()
         self.CDDRange = CDDRange
 

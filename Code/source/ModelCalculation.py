@@ -3,7 +3,6 @@ import math
 
 import numpy as np
 from stl import mesh
-from sympy import *
 
 from Calculation import Calculation
 
@@ -452,29 +451,12 @@ class ModelCalculation(Calculation):
                 Vectors_O.append(MeshSet)
         return ([Vectors_I, Vectors_O])
 
-    def Single_Formula_Generate(self, ZLength, num):
-        SymX = Symbol('x')
-
-        F1 = self.WidthFList[num]
-        F2 = self.DepthFList[num]
-
-        if (F1 == -1):
-            def F1(x): return self.SemiWidth[num]
-
-        if (F2 == -1 or type(F2) in [int, float]):
-            def F2(x): return self.Depth[num]
-
-        Width = F1(ZLength)
-        Depth = F2(ZLength)
-
-        return (Depth * (SymX / Width) ** self.ECurveF[num], Width)
 
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
 
         xlist = []
         ylist = []
         zlist = []
-        nxlist = []
 
         if (ModeString == "3D"):
             # Find the largest Width, confirm the Width step interval

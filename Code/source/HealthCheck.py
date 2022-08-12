@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import platform
 from multiprocessing import Process
 
 from CanoeDataBase import CanoeDataBase
@@ -55,30 +56,53 @@ class DebugBase():
             Profile = input("Enter the TestProfile or 'space':")
 
     def ResetAll(self):
+        # Make sure right fillpath index
+        if(platform.system().lower() == 'windows'):
+            FilePathlog = '..\\..\\asset\\progressSave\\__log.txt'
+            FilePathModel = "..\\..\\asset\\ModelFile"
+            FilePathModel1 = "..\\..\\asset\\ModelFile\\"
+            DesignHistory = "..\\..\\asset\\__designHistory"
+            DesignHistory1 = "..\\..\\asset\\__designHistory\\"
+            ProgressSave = "..\\..\\asset\\progressSave"
+            ProgressSave1 ="..\\..\\asset\\progressSave\\"
+        else:
+            FilePathlog = '../../asset/progressSave/__log.txt'
+            FilePathModel = "../../asset/ModelFile"
+            FilePathModel1 = "../../asset/ModelFile/"
+            DesignHistory = "../../asset/__designHistory"
+            DesignHistory1 = "../../asset/__designHistory/"
+            ProgressSave = "../../asset/progressSave"
+            ProgressSave1 = "../../asset/progressSave/"
+
         # reset Software Log
-        if(input("Reset Software Log? [y/n]") in ["y","Y"]):
-            with open(f'..\\..\\asset\\progressSave\\__log.txt', "w") as f:
-                resetFormat = {"Canoe Design": 0, "One Body Design": 0, "Two Body Design": 0, "Three Body Design": 0}
+        if (input("Reset Software Log? [y/n]") in ["y", "Y"]):
+            with open(FilePathlog, "w") as f:
+                resetFormat = {"Canoe Design": 0, "One Body Design": 0, "Two Body Design": 0,
+                               "Three Body Design": 0}
                 f.write(json.dumps(resetFormat))
 
-        # delet all savefiles
-        if(input("Delte All Model ? [y/n]")in ["y","Y"]):
-            for file in os.listdir("..\\..\\asset\\ModelFile"):
-                  os.remove("..\\..\\asset\\ModelFile\\"+file)
+            # delet all savefiles
+        if (input("Delte All Model ? [y/n]") in ["y", "Y"]):
+            for file in os.listdir(FilePathModel):
+                os.remove(FilePathModel1 + file)
 
         if (input("Delte AllHistory ? [y/n]") in ["y", "Y"]):
-            for file in os.listdir("..\\..\\asset\\__designHistory"):
-                os.remove("..\\..\\asset\\__designHistory\\"+file)
-
+            for file in os.listdir(DesignHistory):
+                os.remove(DesignHistory1 + file)
 
         if (input("Delte All ProgressSave ? [y/n]") in ["y", "Y"]):
-            for file in os.listdir("..\\..\\asset\\progressSave"):
-                if("csv" in file):
-                    os.remove("..\\..\\asset\\progressSave\\"+file)
+            for file in os.listdir(ProgressSave):
+                if ("csv" in file):
+                    os.remove(ProgressSave1 + file)
         print("Reset Done")
 
     def configureSetting(self):
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        if (platform.system().lower() == 'windows'):
+            SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
+        else:
+            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+
+        with open(SetUpinformation, 'r') as f:
             startSetUp = eval(f.read())
         for mode, value in startSetUp.items():
             print(f"{mode} = {bool(value)}")
@@ -117,16 +141,29 @@ class DebugBase():
             startSetUp[operate] = int(booleanValue)
 
             print(f"{operate}: {bool(save)} ==>  {operate}: {bool(startSetUp[operate])}")
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as f:
+
+        if (platform.system().lower() == 'windows'):
+            SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
+        else:
+            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+
+        with open(SetUpinformation, 'w') as f:
             f.write(json.dumps(startSetUp))
         return True
 
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
+        if (platform.system().lower() == 'windows'):
+            FileNamePath =f'..\\..\\asset\\TestProfile\\{FileName}'
+            SetUpinformation = '..\\..\\asset\\startSetup\\setUpinformation.txt'
+        else:
+            FileNamePath = f'../../asset/TestProfile/{FileName}'
+            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+
+        with open(FileNamePath) as List:
             read = List.read()
             Data = eval(read)
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        with open(SetUpinformation, 'r') as f:
             startSetUp = eval(f.read())
         print(Data)
         SectionDictObject = Data[0]
@@ -152,7 +189,10 @@ class DebugBase():
         if ((bool(startSetUp["BothMode"])) or bool(startSetUp["ModelCal"])):
             # save file
             filename = "Test_Canoe.stl"
-            filePath = "..\\..\\asset\\ModelFile\\" + filename
+            if (platform.system().lower() == 'windows'):
+                filePath = "..\\..\\asset\\ModelFile\\" + filename
+            else:
+                filePath = "../../asset/ModelFile/" + filename
             saveProcess = Process(target=self.ConnectCanoeDateBase(filePath, canoe))
             saveProcess.start()
             saveProcess.join()
@@ -165,7 +205,12 @@ class DebugBase():
 
     @staticmethod
     def ChangDebug(debugBoolean):
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        if (platform.system().lower() == 'windows'):
+            SetUpinformation ='..\\..\\asset\\startSetup\\setUpinformation.txt'
+        else:
+            SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+
+        with open(SetUpinformation, 'r') as f:
             startSetUp = eval(f.read())
 
         if (debugBoolean):
@@ -174,7 +219,7 @@ class DebugBase():
             digit = 0
 
         startSetUp['isDebug'] = digit
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as file_dict:
+        with open(SetUpinformation, 'w') as file_dict:
             file_dict.write(json.dumps(startSetUp))
 
     @staticmethod

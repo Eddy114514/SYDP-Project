@@ -21,7 +21,12 @@ from OptimizationCalculation import OptimizationCalculation
 
 class MainGUI_Base():
     # read startUp file
-    with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt') as dict:
+    if (platform.system().lower() == 'windows'):
+        SetUpinformation = '..\\..\\asset\\startSetup\\setUpinformation.txt'
+    else:
+        SetUpinformation = '../../asset/startSetup/setUpinformation.txt'
+
+    with open(SetUpinformation) as dict:
         startSetUp = dict.read()
     dB = DebugBase(bool(eval(startSetUp)['isDebug']))  # isDebug Parameter
 
@@ -133,7 +138,10 @@ class MainGUI_Init():
     def GetFilePath(self):
         AbsFilePath = __file__
         AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
-        AbsFilePath += f"asset\\__designHistory"
+        if (platform.system().lower() == 'windows'):
+            AbsFilePath += "asset\\__designHistory"
+        else:
+            AbsFilePath += "asset/__designHistory"
         try:
             InputFile_Path = filedialog.askopenfilename(title="Open Your Previous Design",
                                                         filetypes=[('Text file', '.txt')],
@@ -632,9 +640,10 @@ class MainGUI_Open():
             self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile["Name"]
-        print(FileName)
-        FileAddress = f"..\\..\\asset\\progressSave\\{'Design_' + FileName}"
-        print("")
+        if (platform.system().lower() == 'windows'):
+            FileAddress =f"..\\..\\asset\\progressSave\\{'Design_' + FileName}"
+        else:
+            FileAddress = f"../../asset/progressSave/{'Design_' + FileName}"
 
         self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile['Name'])
 

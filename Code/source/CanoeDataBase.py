@@ -1,7 +1,7 @@
 import json
 import os
 import csv
-
+import platform
 import Messagebox112
 
 
@@ -67,7 +67,16 @@ class CanoeDataBase:
     def SaveDataIntoFile(self, DesignLog, saveText, logInt):
 
         # re-load the software Log
-        with open("..\\..\\asset\\progressSave\\__log.txt", "r") as log:
+
+        if (platform.system().lower() == 'windows'):
+            self.FilePathlog = '..\\..\\asset\\progressSave\\__log.txt'
+
+        else:
+            self.FilePathlog = '../../asset/progressSave/__log.txt'
+
+
+
+        with open(self.FilePathlog, "r") as log:
             logString = eval(log.read())
             DesignNumber = logString["Canoe Design"] + 1
             onebodyCount = logString["One Body Design"]
@@ -83,7 +92,7 @@ class CanoeDataBase:
         logString = {"Canoe Design": DesignNumber, "One Body Design": onebodyCount, "Two Body Design": twobodyCount,
                      "Three Body Design": threebodyCount}
 
-        with open("..\\..\\asset\\progressSave\\__log.txt", "w") as log:
+        with open(self.FilePathlog, "w") as log:
             log.write(json.dumps(logString))
 
         # Covert saveText (dict) to csv file
@@ -101,14 +110,26 @@ class CanoeDataBase:
         UserInput = saveText[0]
         UserInput["Name"] = fileName
 
-        with open(f'..\\..\\asset\\__designHistory\\__log{fileName}.txt', "w") as Userlog:
+        if (platform.system().lower() == 'windows'):
+            self.DesignHistoryLog = f'..\\..\\asset\\__designHistory\\__log{fileName}.txt'
+
+        else:
+            self.DesignHistoryLog = f'../../asset/__designHistory/__log{fileName}.txt'
+
+
+        with open(self.DesignHistoryLog, "w") as Userlog:
             Userlog.write(json.dumps(UserInput))
 
         # OutPutCSVFile
         fileName = "Design_" + fileName
         CanoeDetailDataDict = saveText[2]
-        fileAddress = f"..\\..\\asset\\progressSave\\{fileName}"
-        with open(f'{fileAddress}.csv', 'w') as CSV:
+        if (platform.system().lower() == 'windows'):
+            self.fileAddress = f"..\\..\\asset\\progressSave\\{fileName}"
+
+        else:
+            self.fileAddress = f"../../asset/progressSave/{fileName}"
+
+        with open(f'{self.fileAddress}.csv', 'w') as CSV:
 
             writer = csv.writer(CSV)
             for key, value in CanoeDetailDataDict.items():
@@ -119,7 +140,7 @@ class CanoeDataBase:
                     writer.writerow([key, value])
         AbsFilePath = __file__
         AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
-        AbsFilePath += f"asset\\progressSave\\{fileName}"
+        AbsFilePath += self.fileAddress
 
         print(f"Save Design File At {AbsFilePath}")
 
