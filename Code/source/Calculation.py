@@ -27,7 +27,6 @@ class Calculation:
         self.B2_O = 0
         self.B2_Diff = 0
 
-
         self.Symmetricity = False
 
         self.Log = []
@@ -121,8 +120,9 @@ class Calculation:
     def BuildLambda_Width(self, index):
 
         return (lambda x: self.SemiWidth[index] * (x / self.Length[index]) ** self.EWidthF[index])
+
     # overRidden
-    def BuildLambda_Width_A(self,index,length):
+    def BuildLambda_Width_A(self, index, length):
         return (lambda x: self.SemiWidth[index] * (x / length) ** self.EWidthF[index])
 
     def BuildLambda_Width_O(self, index):
@@ -146,24 +146,25 @@ class Calculation:
         return (lambda x: (
                                   self.Depth[0] + self.Thickness) * (x / (SemiLength + self.Thickness)) ** self.EDepthF[
                               0])
+
     def BuildLambda_Curve_Constant(self, index):
 
         return (lambda x: (self.Depth[index] * (x / self.SemiWidth[index])
-        ** self.ECurveF[index]))
+                           ** self.ECurveF[index]))
 
     def BuildLambda_Curve_Constant_Out(self, index):
         return (lambda x: (self.Depth[index] + self.Thickness) *
-                           (x / (self.SemiWidth[index] + self.Thickness))
-                           ** self.ECurveF[index])
-    def BuildLambda_Curve(self,SemiWidth,Depth,index):
+                          (x / (self.SemiWidth[index] + self.Thickness))
+                          ** self.ECurveF[index])
+
+    def BuildLambda_Curve(self, SemiWidth, Depth, index):
 
         return (lambda x: (Depth * (x / SemiWidth)
                            ** self.ECurveF[index]))
 
     def Buldlambda_Curve_Zero(self):
         # build 0 returner
-        return(lambda x: 0.0)
-
+        return (lambda x: 0.0)
 
     def DataPrint(self):
         print(self.Length)
@@ -260,9 +261,9 @@ class Calculation:
         # Sign Function for Middle
 
         self.WidthFList.append(
-            self.BuildLambda_Width_A(1,self.Length[1]))
+            self.BuildLambda_Width_A(1, self.Length[1]))
         self.WidthFList_Outside.append(
-            self.BuildLambda_Width_O_A(1,self.Length[1]))
+            self.BuildLambda_Width_O_A(1, self.Length[1]))
         self.DepthFList.append(self.Depth[1])
         self.DepthFList_Outside.append((self.Depth[1] + self.Thickness))
 
@@ -293,6 +294,7 @@ class Calculation:
     def Sign_CurveFormula_A(self, k):
         return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k]))
+
     def Sign_CurveFormula_Constant(self, k):
         return (lambda x: (((self.SemiWidth[k] ** self.ECurveF[k]) * x) / (self.Depth[k])) ** (1 / self.ECurveF[k]))
 

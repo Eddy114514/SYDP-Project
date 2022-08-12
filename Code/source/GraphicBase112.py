@@ -1,10 +1,11 @@
 from cmu_112_graphics import *
-from multiprocessing import Process
 
 # font base
-fontdict = {"TIME": {"RE":"times.ttf","BOLD":"timesbd.ttf","ITALIC":"timesi.ttf"},
-            "ARIAL": {"RE":"arial.ttf","BOLD":"arialbd.ttf","ITALIC":"ariali.ttf"}}
-def FontBase(UserInput: tuple[str,int,str]) -> str:
+fontdict = {"TIME": {"RE": "times.ttf", "BOLD": "timesbd.ttf", "ITALIC": "timesi.ttf"},
+            "ARIAL": {"RE": "arial.ttf", "BOLD": "arialbd.ttf", "ITALIC": "ariali.ttf"}}
+
+
+def FontBase(UserInput: tuple[str, int, str]) -> str:
     """
     :param UserInput: str
     :rtype: file-address str
@@ -12,17 +13,13 @@ def FontBase(UserInput: tuple[str,int,str]) -> str:
     Fonttype = UserInput[0].upper()
     Fontshowtype = UserInput[2].upper()
 
-
     try:
 
-        if(Fontshowtype == ""):
+        if (Fontshowtype == ""):
             Fontshowtype = "RE"
         return fontdict[Fonttype][Fontshowtype]
     except BaseException:
         raise Exception("UDF font type or font config, only support Time and Arial, Bold and Italic")
-
-
-
 
 
 # we shall consider each tk and tk.frame as objects
@@ -37,7 +34,7 @@ class tkObjectList:
         pass
 
     def addToList(self, obj):
-        if(obj.name == "Main"):
+        if (obj.name == "Main"):
             tkObjectList.MasterOfAll = obj
 
         tkObjectList.__Objectlist.append(obj)
@@ -45,7 +42,7 @@ class tkObjectList:
     def getList(self):
         return tkObjectList.__Objectlist
 
-    def removeObject(self,obj):
+    def removeObject(self, obj):
         tkObjectList.__Objectlist.remove(obj)
 
     def __repr__(self):
@@ -67,8 +64,7 @@ class tkObject(tkObjectList):
 
         if (kwargs != {}):  # Frame or MessageBox
 
-
-            if(self.name == "Frame"):
+            if (self.name == "Frame"):
                 # extra parmeters if is Frame
                 self.padx = kwargs["padx"]
                 self.pady = kwargs["pady"]
@@ -82,21 +78,19 @@ class tkObject(tkObjectList):
                 self.anchor = "c"
                 self.fill = None
 
-            if(self.name == "Messagebox"):
+            if (self.name == "Messagebox"):
                 self.title = kwargs["title"]
                 self.showIndicator = True
 
-
         # define object coordinates or relative coordinates
         self.signDimension(geometry)
-
 
         self.addToList(self)
 
     def signDimension(self, geometry):
         self.width = geometry[0]
         self.height = geometry[1]
-        if(self.name == "Main"):
+        if (self.name == "Main"):
             # only window can call it from here
             self.RelativeCoordinate = self.getRelativeCoordinate()  # formate (x,y,width,height)
 
@@ -108,7 +102,7 @@ class tkObject(tkObjectList):
                 # simulate the Superposition function of tkinter
                 addUp = 0
                 index = self.attrObject.OwnObject.index(self)
-                for obj in self.attrObject.OwnObject[:index]: # find master
+                for obj in self.attrObject.OwnObject[:index]:  # find master
                     addUp += obj.RelativeCoordinate[1]
                     addUp += obj.height
                     addUp += obj.pady
@@ -119,31 +113,31 @@ class tkObject(tkObjectList):
 
                 if (self.anchor == "c"):
                     x = (attrWidth / 2 - self.width / 2) + attrX
-                    y = attrY  + self.packPady
+                    y = attrY + self.packPady
 
                 elif (self.anchor == "w"):
                     x = attrX
-                    y = attrY  + self.packPady
+                    y = attrY + self.packPady
 
                 elif (self.anchor == "e"):
                     x = attrWidth
-                    y = attrY  + self.packPady
+                    y = attrY + self.packPady
 
                 elif (self.anchor == "s"):
                     x = (attrWidth / 2 - self.width / 2) + attrX
                     y = attrHeight - self.packPady
 
                 y += addUp
-                if(self.fill != None):
+                if (self.fill != None):
                     # consider cases of X, Y , BOTH
-                    if(self.fill.upper() == "X"):
+                    if (self.fill.upper() == "X"):
                         x = self.attrObject.RelativeCoordinate[0]
                         self.width = self.attrObject.width
 
-                    elif(self.fill.upper() == "Y"):
+                    elif (self.fill.upper() == "Y"):
                         self.height = self.attrObject.height
 
-                    elif(self.fill.upper() == "BOTH"):
+                    elif (self.fill.upper() == "BOTH"):
                         x = self.attrObject.RelativeCoordinate[0]
                         self.width = self.attrObject.width
                         self.height = self.attrObject.height
@@ -207,13 +201,13 @@ class tkObject(tkObjectList):
                             break
 
                 if (privousElment != None):  # not first of its kind
-                    xp,x1p,yp,y1p = privousElment.coordinate
+                    xp, x1p, yp, y1p = privousElment.coordinate
 
-                    add = y1p + privousElment.packPady # y1
+                    add = y1p + privousElment.packPady  # y1
                     minus = yp + privousElment.packPady  # y
 
                 if (element.packAnchor != "s"):
-                    return (x, x1, add, add+element.height)
+                    return (x, x1, add, add + element.height)
                 elif (element.packAnchor == "s"):
                     return (x, x1, minus - element.height, minus)
 
@@ -255,25 +249,25 @@ def timerFired(app):
             except:
                 print("something might be wrong")
 
-
     # check window size
-    if((app.tkObjectList.MasterOfAll.width,app.tkObjectList.MasterOfAll.height) != (app.width,app.height)):
+    if ((app.tkObjectList.MasterOfAll.width, app.tkObjectList.MasterOfAll.height) != (app.width, app.height)):
         # reset the windows
-        app.tkObjectList.MasterOfAll.signDimension((app.width,app.height))
+        app.tkObjectList.MasterOfAll.signDimension((app.width, app.height))
         # reset all object and its elements
         for tkObject in app.tkObjectList.getList():
-            if(tkObject.name != "Main"):
-                tkObject.obejct.pack(anchor = tkObject.anchor, padx = tkObject.packPadx, pady = tkObject.packPady )
+            if (tkObject.name != "Main"):
+                tkObject.obejct.pack(anchor=tkObject.anchor, padx=tkObject.packPadx, pady=tkObject.packPady)
             for element in tkObject.OwnElement:
-                if(element.showIndicator):
+                if (element.showIndicator):
                     if (element.isGrid):
                         element.grid(column=element.gridcolum, row=element.gridRow)
                     else:
                         element.pack(anchor=element.packAnchor, padx=element.packPadx, pady=element.packPady)
 
+
 def redrawAll(app, canvas):
-    if(app.messageBox):
-        canvas.create_window((100,150))
+    if (app.messageBox):
+        canvas.create_window((100, 150))
     drawWindow(app, canvas)
     drawBase(app, canvas)
 
@@ -288,24 +282,28 @@ def drawBase(app, canvas):
     for tkObject in app.tkObjectList.getList():
         if (tkObject.showIndicator):
             if (tkObject.name == "Frame"):
-                drawFrame(app,canvas,tkObject)
+                drawFrame(app, canvas, tkObject)
             for element in tkObject.OwnElement:
                 if (str(element) in ["Label", "Button", "Entry"] and element.showIndicator):
                     drawLabel_Button_Entry(app, canvas, element)
 
-def sortX(x,x1):
-    if(x >= x1):
-        return x1,x
-    else:
-        return x,x1
 
-def drawFrame(app, canavs,tkobject):
-    x,y,width,height = tkobject.RelativeCoordinate
-    canavs.create_rectangle(x,y,x+width,y+height,width = tkobject.bd, fill = tkobject.bg)
+def sortX(x, x1):
+    if (x >= x1):
+        return x1, x
+    else:
+        return x, x1
+
+
+def drawFrame(app, canavs, tkobject):
+    x, y, width, height = tkobject.RelativeCoordinate
+    canavs.create_rectangle(x, y, x + width, y + height, width=tkobject.bd, fill=tkobject.bg)
+
+
 def drawLabel_Button_Entry(app, canvas, element):
     # draw base of these elements
     x, x1, y, y1 = element.coordinate
-    x,x1 = sortX(x,x1)
+    x, x1 = sortX(x, x1)
     xt = abs(x1 - x) / 2 + x
     yt = abs(y1 - y) / 2 + y
 
@@ -314,16 +312,16 @@ def drawLabel_Button_Entry(app, canvas, element):
                             fill=element.bg,
                             width=element.bd)
 
-    if(element.imageAddress != None):
-        ResizeImage = element.image.resize((int(element.width),int(element.height)))
+    if (element.imageAddress != None):
+        ResizeImage = element.image.resize((int(element.width), int(element.height)))
         canvas.create_image(element.xImage, element.yImage, image=ImageTk.PhotoImage(ResizeImage))
 
     elif (element.text != ""):
-        font122 = ""
+        font112 = ""
         for ele in element.font:
-            font122 += f"{ele} "
-        font122.rstrip(" ")
-        canvas.create_text(xt, yt, text=element.text, font=font122)
+            font112 += f"{ele} "
+        font112.rstrip(" ")
+        canvas.create_text(xt, yt, text=element.text, font=font112)
 
     # configuration base on special type (Button, Entry)
 
@@ -346,20 +344,17 @@ def drawLabel_Button_Entry(app, canvas, element):
             y1J = y1 - 2
             VLX = 0
             # a vertical line
-            if(element.ElementStore != ""):
-                full_width,h = element.Inputfont.getsize(element.ElementStore)
-                VLX,height = element.Inputfont.getsize(element.ElementStore[:element.strTrack])
-                full_width += len(element.ElementStore)*1.6
-                VLX += len(element.ElementStore[:element.strTrack])*1.6
+            if (element.ElementStore != ""):
+                full_width, h = element.Inputfont.getsize(element.ElementStore)
+                VLX, height = element.Inputfont.getsize(element.ElementStore[:element.strTrack])
+                full_width += len(element.ElementStore) * 1.6
+                VLX += len(element.ElementStore[:element.strTrack]) * 1.6
                 # only work for digits, but enough
                 # can't find better way to get the size of characters
-                canvas.create_text(xJ,yt, text = element.ElementStore, font = f"Time {element.InputFontSize}",
-                                   anchor= "w")
-            if(element.clickFlag):
-                canvas.create_line(xJ + VLX+1, yJ, xJ + VLX+1, y1J, fill=app.clickObject.JVL_color, width=1)
-
-
-
+                canvas.create_text(xJ, yt, text=element.ElementStore, font=f"Time {element.InputFontSize}",
+                                   anchor="w")
+            if (element.clickFlag):
+                canvas.create_line(xJ + VLX + 1, yJ, xJ + VLX + 1, y1J, fill=app.clickObject.JVL_color, width=1)
 
 
 def mousePressed(app, event):
@@ -369,7 +364,7 @@ def mousePressed(app, event):
     for tkObject in app.tkObjectList.getList():
         if (tkObject.showIndicator):
             for element in tkObject.OwnElement:
-                if(element.showIndicator):
+                if (element.showIndicator):
                     if (str(element) == "Button"):
                         # Button don't need click-flag for constant happening event
                         x, x1, y, y1 = element.coordinate
@@ -390,8 +385,6 @@ def mousePressed(app, event):
                                 app.clickObject = None
 
 
-
-
 def mouseReleased(app, event):
     if (app.clickObject != None):
         if (str(app.clickObject) == "Button"):
@@ -408,71 +401,62 @@ def mouseMoved(app, event):
     pass
 
 
-
-
-
 def checkMouse(coordinate, mouse):
     x, x1, y, y1 = coordinate
     keyX, keyY = mouse
-    if (min(x,x1) <= keyX <= max(x,x1) and min(y,y1) <= keyY <= max(y,y1)):
+    if (min(x, x1) <= keyX <= max(x, x1) and min(y, y1) <= keyY <= max(y, y1)):
         return True
     return False
 
 
 def keyPressed(app, event):
-    if(app.clickObject != None and str(app.clickObject) == "Entry"):
-        if(event.key not in ["Up","Right","Down","Left"]):
-            if(event.key not in ["Tab","Backspace", "Delete", "Escape"]):
+    if (app.clickObject != None and str(app.clickObject) == "Entry"):
+        if (event.key not in ["Up", "Right", "Down", "Left"]):
+            if (event.key not in ["Tab", "Backspace", "Delete", "Escape"]):
                 # normal input
                 app.clickObject.executeCommand()
-                if(event.key == "Space"):
+                if (event.key == "Space"):
                     event.key = " "
                 app.clickObject.ElementStore = app.clickObject.ElementStore[0:app.clickObject.strTrack] \
-                                     + event.key \
-                                     + app.clickObject.ElementStore[app.clickObject.strTrack:]
+                                               + event.key \
+                                               + app.clickObject.ElementStore[app.clickObject.strTrack:]
                 app.clickObject.strTrack += 1
 
-
-            if(event.key == "Tab"):
+            if (event.key == "Tab"):
                 # change to another Entry&
                 masterObject = app.clickObject.attr_obj.object
                 index = masterObject.OwnElement.index(app.clickObject)
-                for element in masterObject.OwnElement[index+1:]:
-                    if(str(element) == "Entry" and element.showIndicator):
+                for element in masterObject.OwnElement[index + 1:]:
+                    if (str(element) == "Entry" and element.showIndicator):
                         # swicth
                         app.clickObject.clickFlag = False
                         app.clickObject = element
                         app.clickObject.clickFlag = True
                         break
-            elif(event.key in ["Backspace", "Delete"]):
+            elif (event.key in ["Backspace", "Delete"]):
                 # delete
-                if(app.clickObject.ElementStore != "" and app.clickObject.strTrack != 0):
+                if (app.clickObject.ElementStore != "" and app.clickObject.strTrack != 0):
                     tempStr = app.clickObject.ElementStore
                     tempI = app.clickObject.strTrack
-                    tempStr = tempStr[0:tempI-1] + tempStr[tempI:]
+                    tempStr = tempStr[0:tempI - 1] + tempStr[tempI:]
                     app.clickObject.ElementStore = tempStr
                     app.clickObject.strTrack -= 1
 
 
 
-            elif(event.key == "Escape"):
+            elif (event.key == "Escape"):
                 app.clickObject.clickFlag = False
                 app.clickObject = None
 
 
-        elif(event.key == "Right"):
+        elif (event.key == "Right"):
             if (len(app.clickObject.ElementStore) > app.clickObject.strTrack):
                 app.clickObject.strTrack += 1
                 print("right")
-        elif(event.key == "Left"):
+        elif (event.key == "Left"):
             if app.clickObject.strTrack > 0:
                 app.clickObject.strTrack -= 1
                 print("left")
-
-
-
-
-
 
 
 def main(w, d, title=""):
@@ -481,8 +465,10 @@ def main(w, d, title=""):
     else:
         runApp(width=w, height=d, title=title)
 
+
 def showMessage(text):
     App._theRoot.app.showMessage(text)
+
 
 def quit():
     App._theRoot.app.quit()

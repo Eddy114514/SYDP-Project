@@ -2,10 +2,11 @@ import json
 import os
 import csv
 
+import Messagebox112
+
 
 class CanoeDataBase:
-    # Designed to connect to STL database
-
+    # Design to be the bridge between MainGUI and Calculation
     def __init__(self, SectionDataDict, HullDataList):
         self.SDD = SectionDataDict
         self.HDL = HullDataList
@@ -23,6 +24,9 @@ class CanoeDataBase:
     def GetData_CDD(self):
         return (self.SDD, self.HDL)
 
+    def GetExponent(self,num):
+        return (self.SDD[num][3],self.SDD[num][4],self.SDD[num][5])
+
     def DeleteData_SDD(self):
         del self.SDD
 
@@ -39,19 +43,23 @@ class CanoeDataBase:
 
     def WriteDataIntoFile(self,CSVAddress,LogAddress,saveText, logName):
         CanoeDetailDataDict = saveText[2]
-        with open(CSVAddress+'.csv',"w") as CSV:
-            writer = csv.writer(CSV)
-            for key, value in CanoeDetailDataDict.items():
-                if (type(value) in [tuple, list, set]):
-                    writeIn = [key] + value
-                    writer.writerow(writeIn)
-                else:
-                    writer.writerow([key, value])
-        UserInput = saveText[0]
-        UserInput['Name'] = "__log"+str(logName)
-        with open(LogAddress, "w") as Userlog:
-            Userlog.write(json.dumps(UserInput))
-        print("File Config Complete")
+        try:
+            with open(CSVAddress + '.csv', "w") as CSV:
+                writer = csv.writer(CSV)
+                for key, value in CanoeDetailDataDict.items():
+                    if (type(value) in [tuple, list, set]):
+                        writeIn = [key] + value
+                        writer.writerow(writeIn)
+                    else:
+                        writer.writerow([key, value])
+            UserInput = saveText[0]
+            UserInput['Name'] = "__log" + str(logName)
+            with open(LogAddress, "w") as Userlog:
+                Userlog.write(json.dumps(UserInput))
+            Messagebox112.showMessage("File Config Complete")
+        except:
+            Messagebox112.showMessage("Permission Denied B/C the file is opened")
+
 
 
 

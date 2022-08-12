@@ -3,15 +3,15 @@ from tkinter import filedialog
 from matplotlib import pyplot
 from mpl_toolkits import mplot3d
 
-import Messagebox122 as messagebox
-import Tkinter_122 as tk
+import Messagebox112 as messagebox
+import Tkinter_112 as tk
 # Import other files
 from HealthCheck import *
+from OptimizationCalculation import OptimizationCalculation
 
 
-# change to 122 graphic
-# The mainGUI file's structure is mostly done before the July 4th.
-# Thus, I will rewrite it to receive points for that
+# change to 112 graphic
+# Done
 
 # learned how to use "with open", "eval" from
 # https://www.w3schools.com/python/python_file_open.asp
@@ -117,29 +117,31 @@ class MainGUI_Init():
 
     def PgSwitch_Open(self):
 
+        InputFile_Path = self.GetFilePath()
+
+        if (InputFile_Path != ""):
+            self.MainGUI_Init_MainFrame.destroy()
+            MainGUI_Open(self.master, InputFile_Path)
+
+    def PgSwitch_FindBest(self):
+        InputFile_Path = self.GetFilePath()
+
+        if (InputFile_Path != ""):
+            self.MainGUI_Init_MainFrame.destroy()
+            MainGUI_Optimization(self.master, InputFile_Path)
+
+    def GetFilePath(self):
         AbsFilePath = __file__
         AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
         AbsFilePath += f"asset\\__designHistory"
-        InputFile_Path = ""
         try:
             InputFile_Path = filedialog.askopenfilename(title="Open Your Previous Design",
                                                         filetypes=[('Text file', '.txt')],
                                                         initialdir=AbsFilePath)
-
-
+            return InputFile_Path
         except:
             messagebox.showMessage("Wrong Input")
-            return 0
-        if (InputFile_Path != ""):
-            self.MainGUI_Init_MainFrame.destroy()
-            MainGUI_Open(self.master, InputFile_Path)
-        else:
-            messagebox.showMessage("Wrong Input")
-            return 0
-
-    def PgSwitch_FindBest(self):
-        self.MainGUI_Init_MainFrame.destroy()
-        MainGUI_CreatNEW(self.master)
+            return ""
 
 
 class MainGUI_CreatNEW():
@@ -240,8 +242,6 @@ class MainGUI_CreatNEW():
         if (SON == True):
             self.MainGUI_Title.configure(bg="red")
             self.username_label.configure(text="Result Table")
-            self.DCCO = DataCalculation(self.CDD)  # DataCalculationCanoeObject
-            self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
 
             self.MainGUI_DisplayTable_Three = tk.Frame(self.master, height=500, width=self.master.geometry[0])
             self.MainGUI_DisplayTable_Three.columnconfigure(6, 6)
@@ -379,59 +379,57 @@ class MainGUI_CreatNEW():
 
         # Action
         try:
+            self.DCCO = DataCalculation(self.CDD)  # DataCalculationCanoeObject
+            self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
             self.DCCO.CanoeDataCalculation()
-        except:
-            messagebox.showMessage("Wrong Data Input")
-            self.MainGUI_InputTable_Two.destroy()
-            self.MainGUI_DisplayTable_Three.destroy()
-            self.Return()
-            return 0
-        # Print out Current Data
-        self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
+            # Print out Current Data
+            self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
 
-        # Canoe Hall type defined
-        tk.Label(self.MainGUI_DisplayTable_Three,
-                 text=f"{self.OperationNote[0]} || {self.OperationNote[1]} || {self.OperationNote[2]}", font=(
-                "Time", 12, "")).grid(column=0, row=0)
+            # Canoe Hall type defined
+            tk.Label(self.MainGUI_DisplayTable_Three,
+                     text=f"{self.OperationNote[0]} || {self.OperationNote[1]} || {self.OperationNote[2]}", font=(
+                    "Time", 12, "")).grid(column=0, row=0)
 
-        # Output display
-        VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
-        WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
-        BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
-        FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
-        Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
+            # Output display
+            VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
+            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
+            FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
+            Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
-        tk.Label(self.MainGUI_DisplayTable_Three, text=VolumeString, font=(
-            "Time", 12, "bold")).grid(column=0, row=1)
-        tk.Label(self.MainGUI_DisplayTable_Three, text=WeightSrting, font=(
-            "Time", 12, "bold")).grid(column=0, row=2)
-        tk.Label(self.MainGUI_DisplayTable_Three, text=BuoyancyString, font=(
-            "Time", 12, "bold")).grid(column=0, row=3)
-        tk.Label(self.MainGUI_DisplayTable_Three, text=FlowString, font=(
-            "Time", 12, "bold")).grid(column=0, row=4)
-        tk.Label(self.MainGUI_DisplayTable_Three, text=Submerge, font=(
-            "Time", 12, "bold")).grid(column=0, row=5)
+            tk.Label(self.MainGUI_DisplayTable_Three, text=VolumeString, font=(
+                "Time", 12, "bold")).grid(column=0, row=1)
+            tk.Label(self.MainGUI_DisplayTable_Three, text=WeightSrting, font=(
+                "Time", 12, "bold")).grid(column=0, row=2)
+            tk.Label(self.MainGUI_DisplayTable_Three, text=BuoyancyString, font=(
+                "Time", 12, "bold")).grid(column=0, row=3)
+            tk.Label(self.MainGUI_DisplayTable_Three, text=FlowString, font=(
+                "Time", 12, "bold")).grid(column=0, row=4)
+            tk.Label(self.MainGUI_DisplayTable_Three, text=Submerge, font=(
+                "Time", 12, "bold")).grid(column=0, row=5)
 
-        # Model related
-        try:
+            # Model related
             self.canoe_mesh_object = self.MCCO.Model_Generate()
+            # Generate the canoe
+            # consider the example from https://pypi.org/project/numpy-stl/
+            window = pyplot.figure()
+            canvas = pyplot.subplot(projection="3d")
+            # render
+            canvas.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+
+            scale = self.canoe_mesh_object.points.flatten()
+            canvas.auto_scale_xyz(scale, scale, scale)
+
+            pyplot.show()
+
+
         except:
             messagebox.showMessage("Wrong Data Input")
             self.MainGUI_DisplayTable_Three.destroy()
-            self.Return()
-            return 0
-
-        # Generate the canoe
-        # consider the example from https://pypi.org/project/numpy-stl/
-        window = pyplot.figure()
-        canvas = pyplot.subplot(projection="3d")
-        # render
-        canvas.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
-
-        scale = self.canoe_mesh_object.points.flatten()
-        canvas.auto_scale_xyz(scale, scale, scale)
-
-        pyplot.show()
+            self.CDD.DeleteData_CDD()
+            self.MainGUI_Menu_Button.destroy()
+            self.MainGUI_Title.destroy()
+            MainGUI_Init(self.master)
 
     def Addtable(self, booleanTable=0, NumCount=0):
         if (booleanTable and NumCount < 4):
@@ -452,10 +450,14 @@ class MainGUI_CreatNEW():
             messagebox.showMessage("Reach The MAX Section Number")
 
     def FileAcquire(self):
+
+        Folderpath = filedialog.askdirectory()
+        if (Folderpath == ""):  # no save when no input
+            return 0
         # Directly Save Design
         self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt)
         # Save the Model position by asking
-        Folderpath = filedialog.askdirectory()
+
         filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
         filePath = f"{Folderpath}/{filename}"
         print(f"Model Save @ {Folderpath}/{filename}")
@@ -560,6 +562,11 @@ class MainGUI_Open():
             "Time", 15, "bold"))
         self.username_label.pack(pady=30)
 
+        self.Return_Button = tk.Button(
+            self.MainGUI_Menu_Button, bg="gray", height=70, width=60, image=MainGUI_Init.img_resized_Return,
+            command=self.Return)
+        self.Return_Button.pack(anchor="w", padx=10, pady=5)
+
         self.DisplayTable_PageMain()
 
     def DisplayTable_PageMain(self):
@@ -588,14 +595,9 @@ class MainGUI_Open():
 
         self.Next_Button = tk.Button(
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_NextPage,
-            command=lambda: [self.FileTransfer(EntrySectionList, HallEntryList), self.ResultTableDisplay()], height=70,
+            command=lambda: [self.FileTransfer(EntrySectionList, HallEntryList)], height=70,
             width=60)  # Acquire File and call CanoeDateBase
         self.Next_Button.pack(anchor="e", padx=10, pady=5)
-
-        self.Return_Button = tk.Button(
-            self.MainGUI_Menu_Button, bg="gray", height=70, width=60, image=MainGUI_Init.img_resized_Return,
-            command=self.Return)
-        self.Return_Button.pack(anchor="w", padx=10, pady=5)
 
     def FileTransfer(self, EntryListSection, HallEntryList):
         SectionDictObject = {}
@@ -610,19 +612,29 @@ class MainGUI_Open():
             HullListObject.append(float(element.get()))
 
         self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
-        self.DCCO = DataCalculation(self.CDD)
-        self.MCCO = ModelCalculation(self.CDD)
+        try:
+            self.DCCO = DataCalculation(self.CDD)
+            self.MCCO = ModelCalculation(self.CDD)
+            self.ResultTableDisplay()
+        except:
+            messagebox.showMessage("Wrong Config")
+            self.DisplayTable_PageMain_Frame.destroy()
+            self.Next_Button.destroy()
+            self.DisplayTable_PageMain()
 
     def FileConfig(self):
         # Save the model at first
         Folderpath = filedialog.askdirectory()
         filename = self.OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
-        filePath = f"{Folderpath}/{filename}"
-        print(f"Model Save @ {Folderpath}/{filename}")
-        self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
+        if (Folderpath != ""):
+            filePath = f"{Folderpath}/{filename}"
+            print(f"Model Save @ {Folderpath}/{filename}")
+            self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile["Name"]
+        print(FileName)
         FileAddress = f"..\\..\\asset\\progressSave\\{'Design_' + FileName}"
+        print("")
 
         self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile['Name'])
 
@@ -686,6 +698,8 @@ class MainGUI_Open():
 
         except:
             messagebox.showMessage("Wrong Data Input")
+            self.DisplayTable_PageMain_Frame.destroyAllElement()
+            self.Save_Button.destroy()
             self.DisplayTable_PageMain()
 
     def Return(self):
@@ -836,6 +850,245 @@ class MainGUI_Open():
 
     def buildCommand_Delete(self, Target, Row, Col):
         return lambda: [self.DeleteLabelatEntry(Target, Row, Col)]
+
+
+class MainGUI_Optimization():
+    def __init__(self, master, InputFilePath):
+        self.master = master
+        self.InputFile_Path = InputFilePath
+
+        SectionDictObject = {}
+        HullListObject = []
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
+        self.creatWidgets_PageMain()
+
+    def creatWidgets_PageMain(self):
+        self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue", height=70)
+        self.MainGUI_Menu_Button.pack(fill="x")
+
+        self.Return_Button = tk.Button(
+            self.MainGUI_Menu_Button, bg="gray", height=70, width=60, image=MainGUI_Init.img_resized_Return,
+            command=self.Return)
+        self.Return_Button.pack(anchor="w", padx=10, pady=5)
+
+        self.MainGUI_Title = tk.Frame(self.master, height=70)
+        self.MainGUI_Title.pack(fill="x", pady=10)
+        self.username_label = tk.Label(self.MainGUI_Title, text="", font=(
+            "Time", 15, "bold"))
+        self.username_label.pack(pady=30)
+
+        self.DisplayTable_PageMain()
+
+    def DisplayTable_PageMain(self):
+
+        self.MainGUI_Title.configure(bg="green")
+        self.username_label.configure(text="Determine Optimize Variable")
+        self.DisplayTable_PageMain_Frame = tk.Frame(self.master, height=600, width=self.master.geometry[0])
+
+        self.CDDR = {"Interval": 0.125, "Section": 1,
+                     "ECurveF": [], "EDepthF": {0: []}, "EWidthF": {0: []}}
+
+        with open(self.InputFile_Path, "r") as InputFile:
+            self.InputFile = eval(InputFile.read())
+
+        # Make sure the size is larger than 0
+        size = len(self.InputFile["Length"])
+
+        Section = {}
+        Hall = [self.InputFile["CoverLength"],
+                self.InputFile["Density"],
+                self.InputFile["Thickness"],
+                self.InputFile["CrewWeight"]]
+        for index in range(size):
+            Section[index] = [self.InputFile["Length"][index],
+                              self.InputFile["Width"][index],
+                              self.InputFile["Depth"][index],
+                              self.InputFile["ECurveF"][index],
+                              self.InputFile["EWidthF"][index],
+                              self.InputFile["EDepthF"][index], ]
+
+        self.CDDR["Section"] = size
+
+        self.DisplayTable_PageMain_Frame.columnconfigure((size * 3) + 1, 5, weight=1)
+        self.DisplayTable_PageMain_Frame.pack(pady=50)
+
+        ButtonSectionList = []
+        # For Exponent of Curve
+        self.ExponentCuvreButton = tk.Button(master=self.DisplayTable_PageMain_Frame, text="Exponent of Curve",
+                                             width=100, height=50, command=lambda: [self.CreatRange_Curve()])
+        self.ExponentCuvreButton.grid(1, 1)
+        for createVariable in range(size):
+            self.CDDR["EWidthF"][createVariable] = []
+            self.CDDR["EDepthF"][createVariable] = []
+            tempButtonList = []
+            tempButtonList.append(
+                tk.Button(master=self.DisplayTable_PageMain_Frame, text="Exponent of Width", width=100, height=50,
+                          command=self.buildCommand_config(createVariable, 0, ButtonSectionList,
+                                                           "EWidthF")))
+            tempButtonList.append(
+                tk.Button(master=self.DisplayTable_PageMain_Frame, text="Exponent of Width", width=100, height=50,
+                          command=self.buildCommand_config(createVariable, 1, ButtonSectionList,
+                                                           "EDepthF")))
+            ButtonSectionList.append(tempButtonList)
+        for col, ButtonList in enumerate(ButtonSectionList):
+            for row, Button in enumerate(ButtonList):
+                Button.grid(col * 3 + 1, row + 2)
+        self.NextPage_Button = tk.Button(
+            self.MainGUI_Menu_Button, bg="gray", image=MainGUI_Init.img_resized_NextPage, width=60,
+            height=self.MainGUI_Menu_Button.height - 10,
+            command=lambda: [self.FileTransfer(Section, Hall), self.ResultTable_PageMain()])
+        self.NextPage_Button.pack(anchor="e", pady=5, padx=10)
+
+    def ResultTable_PageMain(self):
+        self.NextPage_Button.destroy()
+        self.DisplayTable_PageMain_Frame.destroyAllElement()
+        self.MainGUI_Title.configure(bg="red")
+        self.username_label.configure(text="Display Optimization report")
+
+        for element in self.CDDR["EWidthF"]:
+            if (self.CDDR["EWidthF"][element] == []):
+                self.CDDR["EWidthF"][element] = [self.CDD.SDD[element][4],
+                                                 self.CDD.SDD[element][4] + self.CDDR["Interval"]]
+        for element in self.CDDR["EDepthF"]:
+            if (self.CDDR["EDepthF"][element] == []):
+                self.CDDR["EDepthF"][element] = [self.CDD.SDD[element][5],
+                                                 self.CDD.SDD[element][5] + self.CDDR["Interval"]]
+            # Set Default ECurveF
+        if (self.CDDR["ECurveF"] == []):
+            self.CDDR["ECurveF"] = [self.InputFile["ECurveF"][0],
+                                    self.InputFile["ECurveF"][0] + self.CDDR["Interval"]]
+
+        self.OCCO = OptimizationCalculation(self.CDD, self.CDDR)
+        Top3list, ResultLog = self.OCCO.Optimization()
+        size = len(self.InputFile["Length"])
+        tk.Label(self.DisplayTable_PageMain_Frame,
+                 text=f"Top Three Optimize Design from {ResultLog} result",
+                 font=(
+                     "Time", 15, "")).grid(column=1, row=0)
+
+        tempdict = self.CDD.SDD
+        DCCOList = []
+        MCCOList = []
+
+        # ready for generate Data Result
+        for indexLabel, design in enumerate(Top3list):
+            ExpTuple: tuple = ()
+            for indexSet, (ECF, ECW, ECD) in enumerate(zip(design[1][0], design[1][1], design[1][2])):
+                tempdict[indexSet][3] = ECF
+                tempdict[indexSet][4] = ECW
+                tempdict[indexSet][5] = ECD
+                ExpTuple = (ECF, ECW, ECD)
+            self.CDD.SDD = tempdict
+            DCCOList.append(DataCalculation(self.CDD))
+            MCCOList.append(ModelCalculation(self.CDD))
+            DCCOList[-1].CanoeDataCalculation()
+            # Print out Current Data
+            logInt, CanoeData, OperationNote = DCCOList[-1].CalDataReturn()
+
+            # Canoe Hall type defined
+            tk.Label(self.DisplayTable_PageMain_Frame,
+                     text=f"Top {indexLabel + 1} ({ExpTuple})",
+                     font=(
+                         "Time", 12, "")).grid(column=indexLabel * size + 0.5, row=1)
+
+            # Output display
+            VolumeString = f"Volume :{round(CanoeData[1]['Volume'], 2)} cu in"
+            WeightSrting = f"Weight :{round(CanoeData[1]['Weight'], 2)} lbs"
+            BuoyancyString = f"Buoyancy :{round(CanoeData[1]['Buoyancy'], 2)} N"
+
+            tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
+                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=2)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=3)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
+                "Time", 12, "bold")).grid(column=indexLabel * size + 0.5, row=4)
+
+            tk.Button(
+                self.DisplayTable_PageMain_Frame, image=MainGUI_Init.img_resized_Save,
+                command=lambda: [self.DisplayAndSave(MCCOList[-1], logInt, CanoeData, OperationNote)],
+                destroySelf=True, height=70, width=60).grid(indexLabel * size + 0.5, row=5)
+        """try:
+            
+
+
+
+
+
+        except:
+            messagebox.showMessage("Fail to Optimize")
+            self.Return()"""
+
+    def DisplayAndSave(self, model, logInt, CanoeData, OperationNote):
+
+        # Model related
+        canoe_mesh_object = model.Model_Generate()
+        # Generate the canoe
+        # consider the example from https://pypi.org/project/numpy-stl/
+        window = pyplot.figure()
+        canvas = pyplot.subplot(projection="3d")
+        # render
+        canvas.add_collection3d(mplot3d.art3d.Poly3DCollection(canoe_mesh_object.vectors))
+
+        scale = canoe_mesh_object.points.flatten()
+        canvas.auto_scale_xyz(scale, scale, scale)
+
+        pyplot.show()
+
+        # Save the Model position by asking
+        Folderpath = filedialog.askdirectory()
+        if (Folderpath == ""):
+            return 0
+        # Directly Save Design
+        self.CDD.SaveDataIntoFile(OperationNote, CanoeData, logInt)
+        filename = OperationNote[-1].split("-> ")[-1] + "_Canoe.stl"
+        filePath = f"{Folderpath}/{filename}"
+        print(f"Model Save @ {Folderpath}/{filename}")
+        self.CDD.SaveStlIntoFile(filePath, canoe_mesh_object)
+
+    def FileTransfer(self, EntryListSection, HallEntryList):
+
+        self.CDD = CanoeDataBase(EntryListSection, HallEntryList)
+        self.DCCO = DataCalculation(self.CDD)
+        self.MCCO = ModelCalculation(self.CDD)
+
+    def buildCommand_config(self, SectionNum, target, TargetList, Name):
+        return lambda: [TargetList[SectionNum][target].configure(bg="yellow"
+        if TargetList[SectionNum][target].bg == None else None),
+                        self.CreateRange_WidthDepth(SectionNum, Name)]
+
+    def CreateRange_WidthDepth(self, SectionNum, Name):
+        mid = self.InputFile[Name][SectionNum]
+        if (mid + self.CDDR["Interval"] * 3 < 1):
+            if (mid - self.CDDR["Interval"] * 3 >= 0):
+                self.CDDR[Name][SectionNum] = [mid - 3 * self.CDDR["Interval"],
+                                               mid + 3 * self.CDDR["Interval"]] \
+                    if self.CDDR[Name].get(SectionNum, None) == None \
+                       or self.CDDR[Name][SectionNum] == [] else []
+            else:
+                self.CDDR[Name][SectionNum] = [0 + self.CDDR["Interval"],
+                                               mid + 3 * self.CDDR["Interval"]] \
+                    if self.CDDR[Name].get(SectionNum, None) == None \
+                       or self.CDDR[Name][SectionNum] == [] else []
+        else:
+            self.CDDR[Name][SectionNum] = [0 + self.CDDR["Interval"],
+                                           1] \
+                if self.CDDR[Name].get(SectionNum, None) == None \
+                   or self.CDDR[Name][SectionNum] == [] else []
+
+    def CreatRange_Curve(self):
+        mid = self.InputFile["ECurveF"][0]
+        if (mid - 3 > 0):
+            self.CDDR["ECurveF"] = [mid - 3, mid + 3] if self.CDDR["ECurveF"] == [] else []
+        else:
+            self.CDDR["ECurveF"] = [mid, mid + 3] if self.CDDR["ECurveF"] == [] else []
+        self.ExponentCuvreButton.configure(bg="yellow" if self.ExponentCuvreButton.bg == None else None)
+
+    def Return(self):
+        self.CDD.DeleteData_CDD()
+        self.MainGUI_Menu_Button.destroy()
+        self.MainGUI_Title.destroy()
+        self.DisplayTable_PageMain_Frame.destroy()
+        MainGUI_Init(self.master)
 
 
 if __name__ == "__main__":

@@ -34,7 +34,8 @@ class DataCalculation(Calculation):
         for num in self.Log:
             print(self.LogMenu[num])
             OperationNote.append(self.LogMenu[num])
-        self.DataPrint()
+        # uncomment to debug
+        # self.DataPrint()
 
         CanoeData = {
             0: {"Length": self.Length, "Width": self.Width,
@@ -48,12 +49,15 @@ class DataCalculation(Calculation):
                 "Hull subProperty": OperationNote[2].split('-> ')[-1],
                 "Unit": ["inch", "cubic Inch",
                          "lbs", "Newton"],
-                "Volume_Outside": self.SectionVolume_Outside + ["cu in"], "Volume_Inside": self.SectionVolume_Inside +["cu in"],
-                "Volume_Styrofoam": [round(self.Volume_Styrofoam,2),"cu in"], "Volume_Concrete": [round(self.Volume_Concrete,2),"cu in"],
+                "Volume_Outside": self.SectionVolume_Outside + ["cu in"],
+                "Volume_Inside": self.SectionVolume_Inside + ["cu in"],
+                "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
+                "Volume_Concrete": [round(self.Volume_Concrete, 2), "cu in"],
                 "WaterLine": [self.WaterLine, "inch"],
-                "Canoe Weight": [round(self.CanoeWeight,2),"lbs"], "Total Weight": [round(self.TotalWeight,2),"lbs"],
-                "Buoyancy": [round(self.Buoyancy,2), "N"],
-                "Buoyancy_Submerge": [round(self.Buoyancy_Submerge,2), "N"],
+                "Canoe Weight": [round(self.CanoeWeight, 2), "lbs"],
+                "Total Weight": [round(self.TotalWeight, 2), "lbs"],
+                "Buoyancy": [round(self.Buoyancy, 2), "N"],
+                "Buoyancy_Submerge": [round(self.Buoyancy_Submerge, 2), "N"],
                 "Capability": [self.Buoyancy * 0.225, "lbs"],
                 "Capabllity_Submerge": [self.Buoyancy_Submerge * 0.225, "lbs"],
                 "FlowTest": 'Pass' if self.FlowBoolean else 'Not Pass',
@@ -224,7 +228,7 @@ class DataCalculation(Calculation):
                             2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
                             quad(SwDFunction_List[index], 0, self.Length[index])[0])
         # Uncomment to Debug
-        [print(f"Inside Volume = {volume}") for volume in Volume_Inside_List]
+        # [print(f"Inside Volume = {volume}") for volume in Volume_Inside_List]
         self.SectionVolume_Inside = [round(volume, 2) for volume in Volume_Inside_List]
 
         return sum(Volume_Inside_List)

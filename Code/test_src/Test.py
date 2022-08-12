@@ -1,16 +1,5 @@
-import csv
+import numpy as np
+for i in np.arange(0,0.25,0.25):
+    print(i)
 
-dct = {'Name': 'John', 'Age': '23', 'Country': ['USA',"USB"]}
-
-"""with open('dct.csv', 'w') as f:
-    writer = csv.writer(f)
-    for k, v in dct.items():
-        if(type(v) in [tuple, list, set]):
-            writeIn = [k] + v
-            writer.writerow(writeIn)
-        else:
-            writer.writerow([k])"""
-
-with open('dct.csv',"w") as f:
-    writer = csv.writer(f)
-    writer.writerow(["CHINA","111"])
+print(0==0.0)
