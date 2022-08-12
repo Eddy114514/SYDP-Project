@@ -1,4 +1,6 @@
 from cmu_112_graphics import *
+import platform
+
 
 # font base
 fontdict = {"TIME": {"RE": "times.ttf", "BOLD": "timesbd.ttf", "ITALIC": "timesi.ttf"},
@@ -14,12 +16,16 @@ def FontBase(UserInput: tuple[str, int, str]) -> str:
     Fontshowtype = UserInput[2].upper()
 
     try:
+        if(platform.system().lower() == "windows"):
+            if (Fontshowtype == ""):
+                Fontshowtype = "RE"
+            return fontdict[Fonttype][Fontshowtype]
+        else:
+            return "Times.ttc"
 
-        if (Fontshowtype == ""):
-            Fontshowtype = "RE"
-        return fontdict[Fonttype][Fontshowtype]
+
     except BaseException:
-        return False
+        raise Exception("UDF font type or font config, only support Time and Arial, Bold and Italic")
 
 
 # we shall consider each tk and tk.frame as objects
