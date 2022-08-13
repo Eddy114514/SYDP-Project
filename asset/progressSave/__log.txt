@@ -1,1 +1,1 @@
-{"Canoe Design": 1, "One Body Design": 0, "Two Body Design": 0, "Three Body Design": 1}
+{"Canoe Design": 0, "One Body Design": 0, "Two Body Design": 0, "Three Body Design": 0}
