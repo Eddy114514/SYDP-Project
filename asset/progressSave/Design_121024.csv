@@ -1,0 +1,17 @@
+Hull Type,Three Body
+Hull Property,Symmetric
+Hull subProperty,Asymmetric_Hull
+Unit,inch,cubic Inch,lbs,Newton
+Volume_Outside,5976.59,50116.33,8756.39,cu in
+Volume_Inside,5169.23,45012.36,7753.85,cu in
+Volume_Styrofoam,12923.08,cu in
+Volume_Concrete,6913.88,cu in
+WaterLine,0,inch
+Canoe Weight,460.13,lbs
+Total Weight,1060.13,lbs
+Buoyancy,10383.12,N
+Buoyancy_Submerge,3176.12,N
+Capability,2336.201467938637,lbs
+Capabllity_Submerge,714.6278805284658,lbs
+FlowTest,Pass
+SubmergeTest,Pass
