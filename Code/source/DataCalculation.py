@@ -18,6 +18,8 @@ class DataCalculation(Calculation):
         self.CanoeWeight = 0
         self.TotalWeight = 0
 
+        self.WaterLine = 0
+
         self.SubmergeBoolean = False
         self.FlowBoolean = False
 
@@ -26,12 +28,36 @@ class DataCalculation(Calculation):
         # Print the OperationNote
         # Not Done Yet
         OperationNote = []
-        for num in self.Note:
-            print(self.NoteMenu[num])
-            OperationNote.append(self.NoteMenu[num])
-        self.DataPrint()
+        for num in self.Log:
+            print(self.LogMenu[num])
+            OperationNote.append(self.LogMenu[num])
 
-        return OperationNote
+        CanoeData = {
+            0: self.CalculationObject,
+            1: {"Volume": self.Volume_Outside, "Buoyancy": self.Buoyancy,
+                "Weight": self.CanoeWeight, "Flow": self.FlowBoolean, "Submerge": self.SubmergeBoolean},
+            2: {"Hull Type": OperationNote[0].split('-> ')[-1],
+                "Hull Property": OperationNote[1].split('-> ')[-1],
+                "Hull subProperty": OperationNote[2].split('-> ')[-1],
+                "Unit": ["inch", "cubic Inch",
+                         "lbs", "Newton"],
+                "Volume_Outside": self.SectionVolume_Outside + ["cu in"],
+                "Volume_Inside": self.SectionVolume_Inside + ["cu in"],
+                "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
+                "Volume_Concrete": [round(self.Volume_Concrete, 2), "cu in"],
+                "WaterLine": [self.WaterLine, "inch"],
+                "Canoe Weight": [round(self.CanoeWeight, 2), "lbs"],
+                "Total Weight": [round(self.TotalWeight, 2), "lbs"],
+                "Buoyancy": [round(self.Buoyancy, 2), "N"],
+                "Buoyancy_Submerge": [round(self.Buoyancy_Submerge, 2), "N"],
+                "Capability": [self.Buoyancy * 0.225, "lbs"],
+                "Capabllity_Submerge": [self.Buoyancy_Submerge * 0.225, "lbs"],
+                "FlowTest": 'Pass' if self.FlowBoolean else 'Not Pass',
+                "SubmergeTest": 'Pass' if self.SubmergeBoolean else 'Not Pass'}
+        }
+        #self.DataPrint()
+
+        return self.Log, CanoeData, OperationNote
 
     def DataPrint(self):
         print(f"Length: {self.Length}")
@@ -100,7 +126,7 @@ class DataCalculation(Calculation):
     def SignFunction_CanoeVolume(self):
         SwDFunction_List = []
         SwD_Out_Function_List = []
-        if (self.Note[2] != 24):  # Check if it is Asymmetric hall
+        if (self.Log[2] != 24):  # Check if it is Asymmetric hall
             for k in range(0, len(self.WidthFList)):
                 if (self.WidthFList[k] == -1 and self.DepthFList[k] == -1 and self.WidthFList_Outside[k] == -1 and
                         self.DepthFList_Outside[k] == -1):
@@ -113,7 +139,7 @@ class DataCalculation(Calculation):
                     SwDFunction_List.append(self.Sign_CurveFormula(k))
                     SwD_Out_Function_List.append(self.Sign_CurveFormula_Out(k))
 
-        elif (self.Note[2] == 24):  # Asymmetric hall
+        elif (self.Log[2] == 24):  # Asymmetric hall
 
             for k in range(0, len(self.WidthFList)):
                 if (k == 1):
@@ -135,7 +161,7 @@ class DataCalculation(Calculation):
                                        * quad(SwD_Out_Function_List[0], 0, self.Length[0] / 2 + self.Thickness)[0])
 
         elif (len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
-            if (self.Note[2] != 24):  # Check if it is Asymmetric hall
+            if (self.Log[2] != 24):  # Check if it is Asymmetric hall
                 for index in range(0, len(self.WidthFList)):
                     if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
                         Volume_Outside_List.append(
@@ -155,6 +181,7 @@ class DataCalculation(Calculation):
                     else:
                         Volume_Outside_List.append(2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) * quad(
                             SwD_Out_Function_List[index], 0, self.Length[index] + self.Thickness)[0])
+        self.SectionVolume_Outside = [round(volume, 2) for volume in Volume_Outside_List]
         # Uncomment to Debug
         return sum(Volume_Outside_List)
 
@@ -168,7 +195,7 @@ class DataCalculation(Calculation):
 
 
         elif (len(self.WidthFList) != 1 and len(self.DepthFList) != 1):
-            if (self.Note[2] != 24):  # Check if it is Asymmetric hall
+            if (self.Log[2] != 24):  # Check if it is Asymmetric hall
                 for index in range(0, len(self.WidthFList)):
                     if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
                         Volume_Inside_List.append(
@@ -189,15 +216,15 @@ class DataCalculation(Calculation):
                             2 * ((self.ECurveF[index]) / (self.ECurveF[index] + 1)) *
                             quad(SwDFunction_List[index], 0, self.Length[index])[0])
         # Uncomment to Debug
-        [print(f"Inside Volume = {volume}") for volume in Volume_Inside_List]
-
+        #[print(f"Inside Volume = {volume}") for volume in Volume_Inside_List]
+        self.SectionVolume_Inside = [round(volume, 2) for volume in Volume_Inside_List]
         return sum(Volume_Inside_List)
 
     def Styrofoam_Volume(self, SwDFunction_List):
         # if no cover
         if (float(self.CoverLength) == float(0)): return 0
 
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             # minus the B2
             self.Length[1] = self.Length[1] - self.B2
         len_sum = self.GetLengthList(self.Length)[1:]  # don't need 0
@@ -223,7 +250,7 @@ class DataCalculation(Calculation):
         for op in op_list:
             if(op[1] == 0):
                 pass # save time
-            elif(self.Note[2] != 24):
+            elif(self.Log[2] != 24):
                 # canoe that are not asymmetric
                 if (self.WidthFList[op[0]] == -1 and self.DepthFList[op[0]] == -1):
                     volume += op[1] * 2 * \

@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 import sys
 from multiprocessing import Process
 
@@ -34,10 +35,13 @@ class DebugBase():
                 print("""
                 Press 's' to enter setting mode
                 Press 'space' to end the program
+                Press 'reset' to reset all saveFile
                         """)
             elif (Profile == 's'):
                 print("enter Setting")
                 self.configureSetting()
+            elif (Profile == "reset"):
+                self.ResetAll()
 
             elif (Profile not in ProfileList):
                 Err = 'TestProfile not in the list'
@@ -48,6 +52,48 @@ class DebugBase():
             # End the Program
             print("Enter 'space' to end the program")
             Profile = input("Enter the TestProfile or 'space':")
+
+    def ResetAll(self):
+        # Make sure right fillpath index
+
+        if (platform.system().lower() == 'windows'):
+            FilePathlog = '..\\..\\asset\\progressSave\\__log.txt'
+            FilePathModel = "..\\..\\asset\\ModelFile"
+            FilePathModel1 = "..\\..\\asset\\ModelFile\\"
+            DesignHistory = "..\\..\\asset\\__designHistory"
+            DesignHistory1 = "..\\..\\asset\\__designHistory\\"
+            ProgressSave = "..\\..\\asset\\progressSave"
+            ProgressSave1 = "..\\..\\asset\\progressSave\\"
+        else:
+            FilePathlog = '././asset/progressSave/__log.txt'
+            FilePathModel = "././asset/ModelFile"
+            FilePathModel1 = "././asset/ModelFile/"
+            DesignHistory = "././asset/__designHistory"
+            DesignHistory1 = "././asset/__designHistory/"
+            ProgressSave = "././asset/progressSave"
+            ProgressSave1 = "././asset/progressSave/"
+
+        # reset Software Log
+        if (input("Reset Software Log? [y/n]") in ["y", "Y"]):
+            with open(FilePathlog, "w") as f:
+                resetFormat = {"Canoe Design": 0, "One Body Design": 0, "Two Body Design": 0,
+                               "Three Body Design": 0}
+                f.write(json.dumps(resetFormat))
+
+            # delet all savefiles
+        if (input("Delte All Model ? [y/n]") in ["y", "Y"]):
+            for file in os.listdir(FilePathModel):
+                os.remove(FilePathModel1 + file)
+
+        if (input("Delte AllHistory ? [y/n]") in ["y", "Y"]):
+            for file in os.listdir(DesignHistory):
+                os.remove(DesignHistory1 + file)
+
+        if (input("Delte All ProgressSave ? [y/n]") in ["y", "Y"]):
+            for file in os.listdir(ProgressSave):
+                if ("csv" in file):
+                    os.remove(ProgressSave1 + file)
+        print("Reset Done")
 
     def configureSetting(self):
         with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
@@ -93,7 +139,6 @@ class DebugBase():
             f.write(json.dumps(startSetUp))
         return True
 
-
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
         with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
@@ -122,21 +167,19 @@ class DebugBase():
             self.DCCO.CanoeDataCalculation()
             self.DCCO.CalDataReturn()
 
-        if((bool(startSetUp["BothMode"])) or bool(startSetUp["ModelCal"])):
+        if ((bool(startSetUp["BothMode"])) or bool(startSetUp["ModelCal"])):
             # save file
             filename = "Test_Canoe.stl"
             filePath = "..\\..\\asset\\ModelFile\\" + filename
-            saveProcess = Process(target = self.ConnectCanoeDateBase(filePath,canoe))
+            saveProcess = Process(target=self.ConnectCanoeDateBase(filePath, canoe))
             saveProcess.start()
             saveProcess.join()
             # Wait Until Save
 
         print("SaveEnd")
 
-    def ConnectCanoeDateBase(self,filePath,canoe):
-        CanoeDataBase.SaveStlIntoFile_static(filePath,canoe)
-
-
+    def ConnectCanoeDateBase(self, filePath, canoe):
+        CanoeDataBase.SaveStlIntoFile_static(filePath, canoe)
 
     @staticmethod
     def ChangDebug(debugBoolean):

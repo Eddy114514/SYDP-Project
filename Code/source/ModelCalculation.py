@@ -26,7 +26,7 @@ class ModelCalculation(Calculation):
     def Model_Generate(self):
 
         V_List = self.Mesh_Generate()
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             # minus the B2
             self.Length[1] = self.Length[1] - self.B2
 
@@ -301,7 +301,7 @@ class ModelCalculation(Calculation):
                         ModelLengthList[count], ModeString)  # length subtake
                     C_List.append([X_List, Y_List, Z_List])
                 else:
-                    if (self.Note[2] == 24):
+                    if (self.Log[2] == 24):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
                             ModelLengthList[count], ModeString)  # length subtake
@@ -433,7 +433,7 @@ class ModelCalculation(Calculation):
                 # For Debug
                 """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
-                    if (self.Note[2] == 24):
+                    if (self.Log[2] == 24):
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
                         if(self.FSDMode):
                             MeshSet.append([x, y + add, z + self.Thickness])
@@ -551,7 +551,7 @@ class ModelCalculation(Calculation):
 
     def LengthIndexGenerate(self):
         interval = 1
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             cover_list_in = [self.CoverLength - self.Thickness,
                              self.CoverLength_end - self.B2 + self.Thickness]
             cover_list_out = [self.CoverLength,
@@ -596,7 +596,7 @@ class ModelCalculation(Calculation):
             lenOut_list = []
 
             if (self.Num == 3 and numIndex == 1):
-                if (self.Note[2] == 24):
+                if (self.Log[2] == 24):
                     for length_In in np.arange(self.B2, self.Length[numIndex], interval):
                         lenIn_list.append(length_In)
                         if (length_In + interval >= self.Length[numIndex]):
@@ -649,7 +649,7 @@ class ModelCalculation(Calculation):
         for CoverIndex in CoverIndexList:
             if (CoverIndex[0] == numIndex):
                 if (CoverIndex[1] not in lenlist):
-                    if (self.Note[2] == 24 and numIndex == 1):
+                    if (self.Log[2] == 24 and numIndex == 1):
                         lenlist.append(CoverIndex[1] + B2)
                         lenlist.sort()
                     else:
@@ -657,7 +657,7 @@ class ModelCalculation(Calculation):
                         lenlist.sort()
 
     def ZIndexGenerate(self, LengthList, LenSum, B2):
-        if (self.Note[2] == 24):
+        if (self.Log[2] == 24):
             for index, element in enumerate(LengthList[1]):
                 LengthList[1][index] = element - B2
         resultList = []

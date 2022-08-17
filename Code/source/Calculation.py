@@ -31,13 +31,13 @@ class Calculation:
         self.Symmetricity = self.CalculationObject.GetSYM()
         self.FSDMode = self.CalculationObject.GetFSD()
 
-        self.Note = []
-        self.NoteMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
-                         10: "Set Deign SubProperty -> Symmetric", 11: "Set Deign SubProperty -> Asymmetric",
-                         20: "Assign HullType -> Symmetric_Hull", 21: "Assign HullType -> LongShort_Hull",
-                         22: "Assign HullType -> Symmetric_Constant Hull",
-                         23: "Assign HullType -> Asymmetric_Constant Hull",
-                         24: "Assign HullType -> Asymmetric_Hull"}
+        self.Log = []
+        self.LogMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
+                        10: "Set Deign SubProperty -> Symmetric", 11: "Set Deign SubProperty -> Asymmetric",
+                        20: "Assign HullType -> Symmetric_Hull", 21: "Assign HullType -> LongShort_Hull",
+                        22: "Assign HullType -> Symmetric_Constant Hull",
+                        23: "Assign HullType -> Asymmetric_Constant Hull",
+                        24: "Assign HullType -> Asymmetric_Hull"}
 
     def SignData(self):
         SDD, HDL = self.CalculationObject.GetData_CDD()
@@ -62,15 +62,15 @@ class Calculation:
 
         self.SignFunction_Main()
         if self.SymmetryBoolean == True:
-            self.Note.insert(1, 10)
+            self.Log.insert(1, 10)
         elif self.SymmetryBoolean == False:
-            self.Note.insert(1, 11)
+            self.Log.insert(1, 11)
 
     def CalDataReturn(self):
         # Print the OperationNote
 
-        for num in self.Note:
-            print(self.NoteMenu[num])
+        for num in self.Log:
+            print(self.LogMenu[num])
 
         self.DataPrint()
 
@@ -89,15 +89,15 @@ class Calculation:
     def SignFunction_Main(self):
 
         if (len(self.ECurveF) == 1):
-            self.Note.append(0)
+            self.Log.append(0)
             self.SignFunction_SymmetryHull()
 
         elif (len(self.ECurveF) == 2):
-            self.Note.append(1)
+            self.Log.append(1)
             self.SignFunction_TwoBodyHull()
 
         elif (len(self.ECurveF) == 3):
-            self.Note.append(2)
+            self.Log.append(2)
             self.SignFunction_ThreeBodyHull()
 
     def BuildLambda_Depth(self, index):
@@ -175,7 +175,7 @@ class Calculation:
         print(self.EDepthF)
 
     def SignFunction_SymmetryHull(self):
-        self.Note.append(20)
+        self.Log.append(20)
 
         self.SymmetryBoolean = True
 
@@ -191,9 +191,9 @@ class Calculation:
         if (self.Length[0] == self.Length[1] and self.SemiWidth[0] == self.SemiWidth[1] and self.Depth[0] == self.Depth[
             1] and self.EWidthF[0] == self.EWidthF[1] and self.EDepthF[0] == self.EDepthF[1]):
             self.SymmetryBoolean = True
-            self.Note.append(20)
+            self.Log.append(20)
         else:
-            self.Note.append(21)
+            self.Log.append(21)
 
         for index in range(0, len(self.EDepthF)):
             self.WidthFList.append(self.BuildLambda_Width(index))
@@ -216,9 +216,9 @@ class Calculation:
 
     def SignFunction_ThreeBodyHull_Constant(self, SBoolean):
         if (SBoolean == True):
-            self.Note.append(22)
+            self.Log.append(22)
         elif (SBoolean == False):
-            self.Note.append(23)
+            self.Log.append(23)
 
         for index in range(0, len(self.EDepthF)):
             if (self.EWidthF[index] != 0 and self.EDepthF[index] != 0):
@@ -235,7 +235,7 @@ class Calculation:
                 self.DepthFList_Outside.append(-1)
 
     def SignFunction_ThreeBodyHUll_Asymmetric(self):
-        self.Note.append(24)
+        self.Log.append(24)
         # Confirm Cross-sectional data for Middle Section
         self.Set_FormulaPoint_Asymmetric()
 
