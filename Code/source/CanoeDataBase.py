@@ -1,8 +1,9 @@
-import json
-import os
 import csv
+import json
 import platform
 from pathlib import Path
+
+
 class CanoeDataBase:
     # Designed to connect to STL database
 
@@ -24,12 +25,11 @@ class CanoeDataBase:
         self.FSDMode = not self.FSDMode
         print("to", self.FSDMode)
 
-
     def GetSYM(self):
-        return(self.SymmetryBoolean)
+        return (self.SymmetryBoolean)
 
     def GetFSD(self):
-        return(self.FSDMode)
+        return (self.FSDMode)
 
     def ConstructDict_SDD(self, SectionNum, DataList):
         self.SDD[SectionNum] = DataList
@@ -52,8 +52,9 @@ class CanoeDataBase:
     def DeleteData_CDD(self):
         del self.SDD
         del self.HDL
+
     def SaveDataToSQL(self):
-        #Save Data To SQL
+        # Save Data To SQL
         print('work')
 
     def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName):
@@ -66,7 +67,7 @@ class CanoeDataBase:
                     writer.writerow(writeIn)
                 else:
                     writer.writerow([key, value])
-        UserInput = [saveText[0].SDD,saveText[0].HDL]
+        UserInput = [saveText[0].SDD, saveText[0].HDL]
         UserInput[0]['Name'] = "__log" + str(logName)
         with open(LogAddress, "w") as Userlog:
             Userlog.write(json.dumps(UserInput))
@@ -75,7 +76,6 @@ class CanoeDataBase:
 
         # re-load the software Log
         self.FilePathlog = Path("..//..//asset//progressSave//__log.txt")
-
 
         with open(self.FilePathlog, "r") as log:
             logString = eval(log.read())
@@ -103,13 +103,11 @@ class CanoeDataBase:
         for l in logInt:
             fileName += str(l)
 
-
         # Save Model
-        Stlfilename = OperationNote[-1].split("-> ")[-1] +f"_{fileName}"+ "_Canoe.stl"
+        Stlfilename = OperationNote[-1].split("-> ")[-1] + f"_{fileName}" + "_Canoe.stl"
         StlfilePath = f"{STLfilePath}/{Stlfilename}"
         print(f"Model Save @ {STLfilePath}/{Stlfilename}")
         self.SaveStlIntoFile(StlfilePath, STLobj)
-
 
         # Save User Input for Open
         UserInput = [CanoeData[0].SDD, CanoeData[0].HDL]
@@ -135,21 +133,19 @@ class CanoeDataBase:
                     writer.writerow([key, value])
         AbsFilePath = __file__
         AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
-        AbsFilePath = AbsFilePath[:-1] + f"/asset/progressSave/{fileName}"\
-            if platform.system().lower() == 'windows'\
+        AbsFilePath = AbsFilePath[:-1] + f"/asset/progressSave/{fileName}" \
+            if platform.system().lower() == 'windows' \
             else AbsFilePath + f"\\asset\\progressSave\\{fileName}"
 
         print(f"Save Design File At {AbsFilePath}")
-    def SaveStlIntoFile(self,filePath,stlObject):
+
+    def SaveStlIntoFile(self, filePath, stlObject):
 
         print(f"File Save @ {filePath}")
         stlObject.save(filePath)
+
     @staticmethod
-    def SaveStlIntoFile_static(filePath,stlObject):
+    def SaveStlIntoFile_static(filePath, stlObject):
 
         print(f"File Save @ {filePath}")
         stlObject.save(filePath)
-
-
-
-

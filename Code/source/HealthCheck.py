@@ -7,6 +7,8 @@ from multiprocessing import Process
 from CanoeDataBase import CanoeDataBase
 from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
+from OptimizationCalculation import OptimizationCalculation
+
 
 
 class DebugBase():

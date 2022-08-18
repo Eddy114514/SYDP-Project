@@ -1,5 +1,12 @@
-from pathlib import Path
-a = Path("..//..//Code//source//Calculation.py")
-AbsFilePath = __file__
-AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
-print(AbsFilePath)
+from tkinter import *
+
+root = Tk()
+root.geometry("200x200")
+
+
+
+a = Button(root, text="click", command= lambda :[a.configure(bg="red") if a.cget("bg") != "red" else a.configure(bg="SystemButtonFace")])
+a.pack()
+
+root.mainloop()
+

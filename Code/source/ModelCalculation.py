@@ -32,11 +32,10 @@ class ModelCalculation(Calculation):
 
         Vertext_In_Set, Vertext_Out_Set, Vertext_Out_Set_Cover = self.Vertex_Generating(V_List)
 
-
-        Face_List  = self.Hall_Mesh_Generate(V_List)
+        Face_List = self.Hall_Mesh_Generate(V_List)
         Inside_Outside_Connection = self.Connection_Mesh_Generate(Vertext_In_Set, Vertext_Out_Set)
         Face_List.append(Inside_Outside_Connection)
-        if(not self.FSDMode):
+        if (not self.FSDMode):
             # Only for normal model that require cover, vertical cover.
             Cover_Vertical, Cset_Vertical_List = self.Vertical_Cover_Mesh_Generate([V_List[0][0], V_List[0][-1]])
 
@@ -45,11 +44,6 @@ class ModelCalculation(Calculation):
             Face_List.append(Cover_Vertical)
 
             Face_List.append(Horizontal_Cover)
-
-
-
-
-
 
         Face_Num = 0
         for l in Face_List:
@@ -80,7 +74,7 @@ class ModelCalculation(Calculation):
         # Create a new plot
         return canoe
 
-    def Hall_Mesh_Generate(self,V_List):
+    def Hall_Mesh_Generate(self, V_List):
         Face_List = []
         for number, V_set in enumerate(V_List):
             F_L = []
@@ -405,7 +399,7 @@ class ModelCalculation(Calculation):
         for VI in V_List[0]:
             Vertex_I.append([VI[0], VI[-1]])
         for VO in V_List[1]:
-            if(self.FSDMode):
+            if (self.FSDMode):
                 Vertex_O.append([VO[0], VO[-1]])
 
             else:
@@ -416,8 +410,6 @@ class ModelCalculation(Calculation):
                         Vertex_O_Cover[0].append([VO[0], VO[-1]])
                     else:
                         Vertex_O_Cover[-1].append([VO[0], VO[-1]])
-
-
 
         return (Vertex_I, Vertex_O, Vertex_O_Cover)
 
@@ -435,7 +427,7 @@ class ModelCalculation(Calculation):
                 for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
                     if (self.Log[2] == 24):
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if(self.FSDMode):
+                        if (self.FSDMode):
                             MeshSet.append([x, y + add, z + self.Thickness])
 
 
@@ -446,7 +438,7 @@ class ModelCalculation(Calculation):
                             """print(f"[{x},{y+add},{z+self.Thickness}]")"""
                     else:
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if(self.FSDMode):
+                        if (self.FSDMode):
                             MeshSet.append([x, y + add, z + self.Thickness])
 
                         elif ((self.CoverLength - self.Thickness) <= z <= (
@@ -551,6 +543,7 @@ class ModelCalculation(Calculation):
 
     def LengthIndexGenerate(self):
         interval = 1
+        print(self.Log)
         if (self.Log[2] == 24):
             cover_list_in = [self.CoverLength - self.Thickness,
                              self.CoverLength_end - self.B2 + self.Thickness]
