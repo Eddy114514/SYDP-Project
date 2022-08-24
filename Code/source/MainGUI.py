@@ -1,5 +1,6 @@
 import tkinter as tk
 from pathlib import Path
+from tkinter import simpledialog
 from tkinter import StringVar
 from tkinter import filedialog
 from tkinter import messagebox
@@ -55,6 +56,10 @@ class MainGUI_Init():
             img_CreatNew = CreatNew.resize((80, 100), Image.ANTIALIAS)
             self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
+        with Image.open('../../asset/Picture/Cut_Icon.png') as Cut:
+            img_Cut = Cut.resize((80, 100), Image.ANTIALIAS)
+            self.img_resized_Cut = ImageTk.PhotoImage(img_Cut)
+
         with Image.open('../../asset/Picture/Open_Icon.png') as Open:
             img_Open = Open.resize((80, 100), Image.ANTIALIAS)
             self.img_resized_Open = ImageTk.PhotoImage(img_Open)
@@ -98,7 +103,11 @@ class MainGUI_Init():
 
         # CreatNew_Button
         tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Findbest, text="Design Optimization", font=(
-            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_FindBest).pack(pady=0)
+            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_FindBest).pack(pady=40)
+
+        # Cut_Button
+        tk.Button(self.MainGUI_Init_MainFrame, image=self.img_resized_Cut, text="Canoe Cut", font=(
+            "Time", 15, "bold"), compound=tk.LEFT, command=self.PgSwitch_Cut).pack(pady=0)
 
         # Debug Button
         self.Debug_Button = tk.Button(
@@ -124,9 +133,17 @@ class MainGUI_Init():
             self.MainGUI_Init_MainFrame.destroy()
             MainGUI_Optimization(self.master, InputFile_Path)
 
+    def PgSwitch_Cut(self):
+        InputFile_Path = self.GetFilePath()
+        Cut_Inch = simpledialog.askfloat('CutInchInput',"How much do you want to cut (inch)")
+
+        if (InputFile_Path != ""):
+            self.MainGUI_Init_MainFrame.destroy()
+            MainGUI_Cut(self.master, InputFile_Path,Cut_Inch)
+
     def GetFilePath(self):
         AbsFilePath = __file__
-        AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
+        AbsFilePath = AbsFilePath[0:AbsFilePath.index("code")]
         if (platform.system().lower() == 'windows'):
             AbsFilePath += "asset\\__designHistory"
         else:
@@ -933,12 +950,7 @@ class MainGUI_Optimization():
         self.OptResultDisplay()
         """try:
             self.OptResultDisplay()
-
-
-
-
-
-
+            
         except:
             messagebox.showwarning(message="Fail to Optimize")
             self.Return()"""
@@ -1064,6 +1076,136 @@ class MainGUI_Optimization():
         self.MainGUI_Title.destroy()
         self.DisplayTable_PageMain_Frame.destroy()
         MainGUI_Init(self.master)
+
+class MainGUI_Cut():
+    def __init__(self, master, InputFilePath, CutInch):
+        self.master = master
+        self.InputFile_Path = InputFilePath
+        self.CutInch = CutInch
+        self.creatWidgets_PageMain()
+
+    def creatWidgets_PageMain(self):
+        self.MainGUI_Menu_Button = tk.Frame(self.master, bg="red")
+        self.MainGUI_Menu_Button.pack(fill="x")
+
+        self.MainGUI_Title = tk.Frame(self.master)
+        self.MainGUI_Title.pack(fill="x", pady=50)
+        self.username_label = tk.Label(self.MainGUI_Title, text="Cut Result Table", font=(
+            "Time", 15, "bold"))
+        self.username_label.pack(pady=10)
+
+        self.DisplayTable_PageMain()
+
+    def DisplayTable_PageMain(self):
+        with open(self.InputFile_Path, "r") as InputFile:
+            self.InputFile = eval(InputFile.read())
+
+        section = self.InputFile[0].copy()
+        section.pop("Name")
+        print(self.InputFile)
+
+        hall = self.InputFile[1]
+
+        # ensure key is Int
+        for var in section:
+            newDepth = section[var][2] - self.CutInch
+            newWidth = ((newDepth/section[var][2])**(1/section[var][3]))*section[var][1]
+            # depth config
+            section[var][2] = round(section[var][2] - self.CutInch,2)
+            # width config
+            section[var][1] = round(newWidth,2)
+
+        self.CDD = CanoeDataBase(section, hall)
+
+
+
+        self.DisplayTable_PageMain_Frame = tk.Frame(self.master)
+        self.DisplayTable_PageMain_Frame.columnconfigure(0, weight=3)
+        self.DisplayTable_PageMain_Frame.columnconfigure(1, weight=3)
+        self.DisplayTable_PageMain_Frame.columnconfigure(2, weight=3)
+        self.DisplayTable_PageMain_Frame.columnconfigure(3, weight=3)
+        self.DisplayTable_PageMain_Frame.pack(fill="both", expand=True)
+
+        self.DCCO = DataCalculation(self.CDD)  # DataCalculation# CanoeObject
+        self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
+        # Action
+        self.DCCO.CanoeDataCalculation()
+        # Print out Current Data
+        self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
+
+        # Output display
+        VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
+        WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+        BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
+        FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
+        Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
+
+        tk.Label(self.DisplayTable_PageMain_Frame, text="Result", font=(
+            "Time", 12, "bold")).grid(column=0, row=0, sticky=tk.SW, ipadx=5, ipady=5)
+
+        tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
+            "Time", 12, "bold")).grid(column=0, row=1, sticky=tk.W, ipadx=5, ipady=5)
+        tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+            "Time", 12, "bold")).grid(column=0, row=2, sticky=tk.W, ipadx=5, ipady=5)
+        tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
+            "Time", 12, "bold")).grid(column=0, row=3, sticky=tk.W, ipadx=5, ipady=5)
+        tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
+            "Time", 12, "bold")).grid(column=0, row=4, sticky=tk.W, ipadx=5, ipady=5)
+        tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
+            "Time", 12, "bold")).grid(column=0, row=5, sticky=tk.W, ipadx=5, ipady=5)
+
+        self.canoe_mesh_object = self.MCCO.Model_Generate()
+        # Create a new plot
+
+        fig = Figure(figsize=(3, 3),
+                     dpi=100)
+        axes = fig.add_subplot(111, projection="3d")
+        # Render the canoe
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+
+        scale = self.canoe_mesh_object.points.flatten()
+        axes.auto_scale_xyz(scale, scale, scale)
+        axes.set_xlabel("X axis")
+        axes.set_ylabel("Y axis")
+        axes.set_zlabel("Z axis")
+
+        canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
+        canvas.draw()
+        canvas.get_tk_widget().grid(column=3, row=0)
+
+        self.Save_Button = tk.Button(
+            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
+            command=lambda: [self.FileConfig(), self.Return()])  # Acquire File and call CanoeDateBase
+        self.Save_Button.pack(side="right", padx=10, pady=10)
+        """try:
+            
+
+        except:
+            messagebox.showwarning(message="Invalid Input")
+            self.Return()"""
+
+    def Return(self):
+        self.CDD.DeleteData_CDD()
+        self.MainGUI_Menu_Button.destroy()
+        self.MainGUI_Title.destroy()
+        self.DisplayTable_PageMain_Frame.destroy()
+        MainGUI_Init(self.master)
+
+    def FileConfig(self):
+        # Save the model at first
+        Folderpath = filedialog.askdirectory(title="Save STL Model")
+        filename = self.OperationNote[-1].split("-> ")[-1] + f"_{self.InputFile[0]['Name']}-Cut" + "_Canoe.stl"
+        if (Folderpath != ""):
+            filePath = f"{Folderpath}/{filename}"
+            print(f"Model Save @ {Folderpath}/{filename}")
+            self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
+
+        FileName = self.InputFile[0]["Name"]
+        FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
+
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'])
+
+
 
 
 if __name__ == "__main__":

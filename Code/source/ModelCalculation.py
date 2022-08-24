@@ -3,7 +3,6 @@ import math
 
 import numpy as np
 from stl import mesh
-from sympy import *
 
 from Calculation import Calculation
 
@@ -92,6 +91,8 @@ class ModelCalculation(Calculation):
                 for C_Index in range(1, len(V_set)):
                     inner = V_set[C_Index - 1]
                     outter = V_set[C_Index]
+
+
                     Point4_Set = []
 
                     for P4 in range(1, len(inner)):
@@ -460,29 +461,11 @@ class ModelCalculation(Calculation):
                 Vectors_O.append(MeshSet)
         return ([Vectors_I, Vectors_O])
 
-    def Single_Formula_Generate(self, ZLength, num):
-        SymX = Symbol('x')
-
-        F1 = self.WidthFList[num]
-        F2 = self.DepthFList[num]
-
-        if (F1 == -1):
-            def F1(x): return self.SemiWidth[num]
-
-        if (F2 == -1 or type(F2) in [int, float]):
-            def F2(x): return self.Depth[num]
-
-        Width = F1(ZLength)
-        Depth = F2(ZLength)
-
-        return (Depth * (SymX / Width) ** self.ECurveF[num], Width)
-
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
 
         xlist = []
         ylist = []
         zlist = []
-        nxlist = []
 
         if (ModeString == "3D"):
             # Find the largest Width, confirm the Width step interval
@@ -491,17 +474,17 @@ class ModelCalculation(Calculation):
             L_Width = Max_Width
             step_interval = width / L_Width
 
-            for i in range(0, int(L_Width) + 1):
+            for i in range(0, int(L_Width) ):
                 w = step_interval * i
 
                 xlist.append(w)
                 ylist.append(function(w))
                 zlist.append(zvalue)
 
-                if (w < width < (i + 1) * step_interval and int(L_Width) < Max_Width):
-                    xlist.append(width)
-                    ylist.append(function(width))
-                    zlist.append(zvalue)
+            # get the last one
+            xlist.append(width)
+            ylist.append(function(width))
+            zlist.append(zvalue)
 
         elif (ModeString == "Construction"):
             for i in np.arange(0, width, interval):
@@ -637,7 +620,6 @@ class ModelCalculation(Calculation):
 
         self.Inside_Length = self.ZIndexGenerate(copy.deepcopy(self.Inside_LengthList), len_sum_in, self.B2)
         self.Outside_Length = self.ZIndexGenerate(copy.deepcopy(self.Outside_LengthList), len_sum_out, self.B2_O)
-
     def InsertCover(self, lenlist, CoverIndexList, B2, numIndex):
         for CoverIndex in CoverIndexList:
             if (CoverIndex[0] == numIndex):

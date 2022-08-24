@@ -1,12 +1,5 @@
-from tkinter import *
-
-root = Tk()
-root.geometry("200x200")
-
-
-
-a = Button(root, text="click", command= lambda :[a.configure(bg="red") if a.cget("bg") != "red" else a.configure(bg="SystemButtonFace")])
-a.pack()
-
-root.mainloop()
-
+w = 19.02
+size = 20
+step = w/size
+for i in range(size+1):
+    print(i*step)

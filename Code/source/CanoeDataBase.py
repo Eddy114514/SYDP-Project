@@ -132,7 +132,7 @@ class CanoeDataBase:
                 else:
                     writer.writerow([key, value])
         AbsFilePath = __file__
-        AbsFilePath = AbsFilePath[0:AbsFilePath.index("Code")]
+        AbsFilePath = AbsFilePath[0:AbsFilePath.index("code")]
         AbsFilePath = AbsFilePath[:-1] + f"/asset/progressSave/{fileName}" \
             if platform.system().lower() == 'windows' \
             else AbsFilePath + f"\\asset\\progressSave\\{fileName}"
