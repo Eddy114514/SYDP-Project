@@ -126,14 +126,10 @@ class ModelCalculation(Calculation):
                 Vertex_Positive_List.append(Vertex_Set[-1])
                 Vertex_Negative_List.append(Vertex_Set[0])
 
-            if (index == 0):  # front cover
-                for Vertex_Index in range(1, len(Vertex_Positive_List)):
-                    Horizontal_Mesh.append([Vertex_Positive_List[Vertex_Index], Vertex_Positive_List[Vertex_Index - 1],
-                                            Vertex_Negative_List[Vertex_Index], Vertex_Negative_List[Vertex_Index - 1]])
-            else:  # end cover
-                for Vertex_Index in range(1, len(Vertex_Positive_List)):
-                    Horizontal_Mesh.append([Vertex_Positive_List[Vertex_Index], Vertex_Positive_List[Vertex_Index - 1],
-                                            Vertex_Negative_List[Vertex_Index], Vertex_Negative_List[Vertex_Index - 1]])
+            for Vertex_Index in range(1, len(Vertex_Positive_List)):
+                Horizontal_Mesh.append([Vertex_Positive_List[Vertex_Index], Vertex_Positive_List[Vertex_Index - 1],
+                                        Vertex_Negative_List[Vertex_Index], Vertex_Negative_List[Vertex_Index - 1]])
+
             Horizontal_Mesh_List.append(Horizontal_Mesh)
 
         return Horizontal_Mesh_List
