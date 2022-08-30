@@ -46,7 +46,7 @@ MainGUi : (Graphic User Interface file) is the file\
 that you should run, which will start the software
 * To properly use this software, you must input proper data\
 to access the functions of the software. Otherwise, the software
-will not generate proper result.\
+will not generate proper result.
 * It is **highly** recommend to read the introduction document to 
 understand the meaning of variables and the type of hulls \
 that you can design.
