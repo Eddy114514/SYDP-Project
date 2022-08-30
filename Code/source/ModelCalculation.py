@@ -184,6 +184,7 @@ class ModelCalculation(Calculation):
 
         Coordinate_Inside = []
         Coordinate_Outside = []
+        Construction_Outside = []
 
         interval = 1
 
@@ -197,9 +198,16 @@ class ModelCalculation(Calculation):
             CO_List, count_out = self.Coordinate_Section_Generate(
                 num, count_out, self.Outside_LengthList, self.Outside_Length,
                 CurveList_Outside, interval, ModeString)
+            Constru_List, count_out = self.Coordinate_Section_Generate(
+                num, count_out,self.Outside_LengthList,self.Outside_Length,
+            CurveList_Outside, interval, "Construction")
 
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
+            Construction_Outside.append(Constru_List)
+
+        "if userinput_constructoutput: " \
+        "   self.Construction_Graph_Output(Construction_Outside)"
 
         # Used to Debug
 
@@ -277,6 +285,12 @@ class ModelCalculation(Calculation):
         """
 
         return (Coordinate_Inside, Coordinate_Outside)
+    # work on
+    def Construction_Graph_Output(self, constru_List):
+        # a graph of coordinate per 4 inches
+        # print out and save in a folder
+
+        return 42
 
     def Coordinate_Section_Generate(self, num, count, CalculateLengthList, ModelLengthList, CurveList, interval,
                                     ModeString):
