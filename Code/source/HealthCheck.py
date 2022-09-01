@@ -12,6 +12,9 @@ from OptimizationCalculation import OptimizationCalculation
 
 
 class DebugBase():
+    address = '..\\..\\asset\\startSetup\\setUpinformation.txt'
+    if (platform.system().lower() != 'windows'):
+        address = '..//..//asset//startSetup//setUpinformation.txt'
     def __init__(self, debugBoolean):
         self.isDebug = debugBoolean
 
@@ -98,7 +101,7 @@ class DebugBase():
         print("Reset Done")
 
     def configureSetting(self):
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        with open(DebugBase.address, 'r') as f:
             startSetUp = eval(f.read())
         for mode, value in startSetUp.items():
             print(f"{mode} = {bool(value)}")
@@ -137,16 +140,20 @@ class DebugBase():
             startSetUp[operate] = int(booleanValue)
 
             print(f"{operate}: {bool(save)} ==>  {operate}: {bool(startSetUp[operate])}")
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as f:
+        with open(DebugBase.address, 'w') as f:
             f.write(json.dumps(startSetUp))
         return True
 
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        with open(f'..\\..\\asset\\TestProfile\\{FileName}') as List:
+        fileAddress=  f'..\\..\\asset\\TestProfile\\{FileName}'
+        if (platform.system().lower() != "windows"):
+            fileAddress = f'..//..//asset//TestProfile//{FileName}'
+
+        with open(fileAddress) as List:
             read = List.read()
             Data = eval(read)
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        with open(DebugBase.address, 'r') as f:
             startSetUp = eval(f.read())
         print(Data)
         SectionDictObject = Data[0]
@@ -185,7 +192,7 @@ class DebugBase():
 
     @staticmethod
     def ChangDebug(debugBoolean):
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'r') as f:
+        with open(DebugBase.address, 'r') as f:
             startSetUp = eval(f.read())
 
         if (debugBoolean):
@@ -194,7 +201,7 @@ class DebugBase():
             digit = 0
 
         startSetUp['isDebug'] = digit
-        with open(f'..\\..\\asset\\startSetup\\setUpinformation.txt', 'w') as file_dict:
+        with open(DebugBase.address, 'w') as file_dict:
             file_dict.write(json.dumps(startSetUp))
 
     @staticmethod

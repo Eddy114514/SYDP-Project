@@ -1,5 +1,6 @@
 import copy
 import math
+from typing import List, Union, Any
 
 import numpy as np
 from stl import mesh
@@ -182,13 +183,46 @@ class ModelCalculation(Calculation):
         # This part can be simplified into a one by another function. TDB
         CurveList_Inside, CurveList_Outside = self.Formula_Generate()
 
-        Coordinate_Inside = []
-        Coordinate_Outside = []
+        Coordinate_Inside: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
+        Coordinate_Outside: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
+        Coordinate_Construction: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
+
+        # Structure of Coordinate list above would be:
+        # Canoe[
+        #   Section[
+        #           CrossSection[
+        #                        X[float,float...],
+        #                        Y[float,float...],
+        #                        Z[float,float...],
+        #                        len(X) = len(Y) = len(Z)
+        #                        ],
+        #           CrossSection[],
+        #           CrossSection[],
+        #           ],
+        #   Section[]..
+        #       ]
+
+        # Addition structure for Coordinate_Construction
+        # Canoe[
+        #   Section[
+        #           CrossSection[
+        #                        X[float,float...],
+        #                        Y[float,float...],
+        #                        Z[float,float...],
+        #               differece-> infor[str: formula, int: inch]
+        #                        len(X) = len(Y) = len(Z)
+        #                        ],
+        #           CrossSection[],
+        #           CrossSection[],
+        #           ],
+        #   Section[]..
+        #       ]
 
         interval = 1
 
         count_in = 0
         count_out = 0
+        count_construct = 0
 
         for num in range(0, self.Num):
             CI_List, count_in = self.Coordinate_Section_Generate(
@@ -197,12 +231,27 @@ class ModelCalculation(Calculation):
             CO_List, count_out = self.Coordinate_Section_Generate(
                 num, count_out, self.Outside_LengthList, self.Outside_Length,
                 CurveList_Outside, interval, ModeString)
+            CU_List, count_construct = self.Coordinate_Section_Generate(
+                num, count_construct, self.Outside_LengthList, self.Outside_Length,
+                CurveList_Outside, interval, "Construction")
 
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
+            Coordinate_Construction.append(CU_List)
+
+
+
+
+        """# used to Debug of Construction
+        for i in Coordinate_Construction:
+            for j in i:
+                print(f"formula: {j[-1][0]} at {j[-1][1]} inch")
+                for x,y,z in zip(j[0],j[1],j[2]):
+                    print(f"X: {x}, Y: {y}, Z: {z}")
+                print("\n")
+            print("\n\n\n")"""
 
         # Used to Debug
-
         """
         print("First Section")
 
@@ -306,6 +355,12 @@ class ModelCalculation(Calculation):
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
                             ModelLengthList[count], ModeString)  # length subtake
                         C_List.append([X_List, Y_List, Z_List])
+            if(ModeString == "Construction"):
+                x = X_List[-1] * self.ECurveF[num]
+                y = Y_List[-1]
+                z = Z_List[-1]
+                formula = f"{round(y/x,4)}×x^{self.ECurveF[num]}" if x !=0 else 0
+                C_List[-1].append([formula,z])
             count += 1
 
         return C_List, count
@@ -487,16 +542,14 @@ class ModelCalculation(Calculation):
             zlist.append(zvalue)
 
         elif (ModeString == "Construction"):
-            for i in np.arange(0, width, interval):
+            for i in np.arange(0, int(width), interval):
 
                 xlist.append(i)
                 ylist.append(function(i))
                 zlist.append(zvalue)
-
-                if (i + interval >= width):
-                    xlist.append(width)
-                    ylist.append(function(width))
-                    zlist.append(zvalue)
+            xlist.append(width)
+            ylist.append(function(width))
+            zlist.append(zvalue)
 
         nxlist = xlist[1:]
 
