@@ -441,18 +441,18 @@ class MainGUI_CreatNEW():
             Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
             tk.Label(self.MainGUI_DisplayTable_Three, text="Result", font=(
-                "Time", 12, "bold")).grid(column=0, row=0, sticky=tk.SW, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=0, sticky=tk.SW, ipadx=5, ipady=5)
 
             tk.Label(self.MainGUI_DisplayTable_Three, text=VolumeString, font=(
-                "Time", 12, "bold")).grid(column=0, row=1, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.MainGUI_DisplayTable_Three, text=WeightSrting, font=(
-                "Time", 12, "bold")).grid(column=0, row=2, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.MainGUI_DisplayTable_Three, text=BuoyancyString, font=(
-                "Time", 12, "bold")).grid(column=0, row=3, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.MainGUI_DisplayTable_Three, text=FlowString, font=(
-                "Time", 12, "bold")).grid(column=0, row=4, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=5, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.MainGUI_DisplayTable_Three, text=Submerge, font=(
-                "Time", 12, "bold")).grid(column=0, row=5, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=6, sticky=tk.W, ipadx=5, ipady=5)
 
             self.canoe_mesh_object = self.MCCO.Model_Generate()
             # Create a new plot
@@ -472,7 +472,7 @@ class MainGUI_CreatNEW():
 
             canvas = FigureCanvasTkAgg(fig, self.MainGUI_DisplayTable_Three)
             canvas.draw()
-            canvas.get_tk_widget().grid(column=3, row=0)
+            canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
         except:
             messagebox.showwarning(message="Invalid Input")
             self.MainGUI_DisplayTable_Three.destroy()
@@ -710,18 +710,18 @@ class MainGUI_Open():
             Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
             tk.Label(self.DisplayTable_PageMain_Frame, text="Result", font=(
-                "Time", 12, "bold")).grid(column=0, row=0, sticky=tk.SW, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=0, sticky=tk.SW, ipadx=5, ipady=5)
 
             tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
-                "Time", 12, "bold")).grid(column=0, row=1, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
-                "Time", 12, "bold")).grid(column=0, row=2, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
-                "Time", 12, "bold")).grid(column=0, row=3, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
-                "Time", 12, "bold")).grid(column=0, row=4, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=5, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
-                "Time", 12, "bold")).grid(column=0, row=5, sticky=tk.W, ipadx=5, ipady=5)
+                "Time", 12, "bold")).grid(column=2, row=6, sticky=tk.W, ipadx=5, ipady=5)
 
             self.canoe_mesh_object = self.MCCO.Model_Generate()
             # Create a new plot
@@ -740,7 +740,7 @@ class MainGUI_Open():
 
             canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
             canvas.draw()
-            canvas.get_tk_widget().grid(column=3, row=0)
+            canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
 
         except:
             messagebox.showwarning("Wrong Data Input")
@@ -1092,7 +1092,7 @@ class MainGUI_Cut():
         self.MainGUI_Menu_Button = tk.Frame(self.master, bg="red")
         self.MainGUI_Menu_Button.pack(fill="x")
 
-        self.MainGUI_Title = tk.Frame(self.master)
+        self.MainGUI_Title = tk.Frame(self.master, bg="blue")
         self.MainGUI_Title.pack(fill="x", pady=50)
         self.username_label = tk.Label(self.MainGUI_Title, text="Cut Result Table", font=(
             "Time", 15, "bold"))
@@ -1145,18 +1145,18 @@ class MainGUI_Cut():
         Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
         tk.Label(self.DisplayTable_PageMain_Frame, text="Result", font=(
-            "Time", 12, "bold")).grid(column=0, row=0, sticky=tk.SW, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=0, sticky=tk.SW, ipadx=5, ipady=5)
 
         tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
-            "Time", 12, "bold")).grid(column=0, row=1, sticky=tk.W, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
         tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
-            "Time", 12, "bold")).grid(column=0, row=2, sticky=tk.W, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
         tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
-            "Time", 12, "bold")).grid(column=0, row=3, sticky=tk.W, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
         tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
-            "Time", 12, "bold")).grid(column=0, row=4, sticky=tk.W, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=5, sticky=tk.W, ipadx=5, ipady=5)
         tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
-            "Time", 12, "bold")).grid(column=0, row=5, sticky=tk.W, ipadx=5, ipady=5)
+            "Time", 12, "bold")).grid(column=2, row=6, sticky=tk.W, ipadx=5, ipady=5)
 
         self.canoe_mesh_object = self.MCCO.Model_Generate()
         # Create a new plot
@@ -1175,7 +1175,7 @@ class MainGUI_Cut():
 
         canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
         canvas.draw()
-        canvas.get_tk_widget().grid(column=3, row=0)
+        canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
 
         self.Save_Button = tk.Button(
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
