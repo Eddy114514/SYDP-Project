@@ -4,6 +4,7 @@ from typing import List, Union, Any
 
 import numpy as np
 from stl import mesh
+import matplotlib.pyplot as plt
 
 from Calculation import Calculation
 
@@ -73,6 +74,29 @@ class ModelCalculation(Calculation):
         print("Model Generated")
         # Create a new plot
         return canoe
+
+    def Construction_Graph_Generation(self):
+        graph_list = []
+
+
+        for section in self.Coordinate_Construction:
+            # cross_index == cross_section_index
+            graph_section_list = []
+            for cross_index in range(0,len(section),4):
+                coordinate_list = [section[cross_index][0],section[cross_index][1]]
+                title = section[cross_index][-1]
+                graph_section_list.append(self.Graph_Generate(title,coordinate_list))
+            if(len(section)%4 !=0):
+                graph_section_list.append(self.Graph_Generate(section[-1][-1], [section[-1][0],section[-1][1]]))
+            graph_list.append(graph_section_list)
+
+
+    def Graph_Generate(self, title, coordinate_list):
+        construction_fig = plt.figure(num=1,figsize=(max(self.SemiWidth),max(self.Depth)))
+        construction_fig.plot([coordinate_list[0]],[coordinate_list[1]])
+        construction_fig.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+
+
 
     def Hall_Mesh_Generate(self, V_List):
         Face_List = []
@@ -181,7 +205,7 @@ class ModelCalculation(Calculation):
 
         Coordinate_Inside: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
         Coordinate_Outside: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
-        Coordinate_Construction: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
+        self.Coordinate_Construction: list[list[list[Union[list[Union[int, Any]], list[Any]]]]] = []
 
         # Structure of Coordinate list above would be:
         # Canoe[
@@ -233,7 +257,7 @@ class ModelCalculation(Calculation):
 
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
-            Coordinate_Construction.append(CU_List)
+            self.Coordinate_Construction.append(CU_List)
 
 
 
