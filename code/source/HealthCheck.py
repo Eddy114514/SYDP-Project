@@ -15,6 +15,7 @@ class DebugBase():
     address = '..\\..\\asset\\startSetup\\setUpinformation.txt'
     if (platform.system().lower() != 'windows'):
         address = '..//..//asset//startSetup//setUpinformation.txt'
+
     def __init__(self, debugBoolean):
         self.isDebug = debugBoolean
 
@@ -146,7 +147,7 @@ class DebugBase():
 
     def DebugTest(self, p):
         FileName = "TestProfile_" + p + ".txt"
-        fileAddress=  f'..\\..\\asset\\TestProfile\\{FileName}'
+        fileAddress = f'..\\..\\asset\\TestProfile\\{FileName}'
         if (platform.system().lower() != "windows"):
             fileAddress = f'..//..//asset//TestProfile//{FileName}'
 

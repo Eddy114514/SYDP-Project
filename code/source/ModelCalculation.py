@@ -1,10 +1,11 @@
 import copy
 import math
-from typing import List, Union, Any
+from typing import Union, Any
 
+import matplotlib
 import numpy as np
 from stl import mesh
-import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -78,37 +79,33 @@ class ModelCalculation(Calculation):
         return canoe
 
     def Construction_Graph_Generation(self):
-        #TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
+        # TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
         graph_list = []
-
 
         for section in self.Coordinate_Construction:
             # cross_index == cross_section_index
             graph_section_list = []
-            for cross_index in range(0,len(section),4):
-                coordinate_list = [section[cross_index][0],section[cross_index][1]]
+            for cross_index in range(0, len(section), 4):
+                coordinate_list = [section[cross_index][0], section[cross_index][1]]
                 title = section[cross_index][-1]
-                graph_section_list.append(self.Graph_Generate(title,coordinate_list))
-            if(len(section)%4 !=0):
-                graph_section_list.append(self.Graph_Generate(section[-1][-1], [section[-1][0],section[-1][1]]))
+                graph_section_list.append(self.Graph_Generate(title, coordinate_list))
+            if (len(section) % 4 != 0):
+                graph_section_list.append(self.Graph_Generate(section[-1][-1], [section[-1][0], section[-1][1]]))
             graph_list.append(graph_section_list)
 
         return graph_list
 
-
     def Graph_Generate(self, title, coordinate_list):
         # wait to be improved
-        #TODO:
+        # TODO:
         # 1.Change the graph generate mode to semi
         # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
 
         construction_fig = plt.figure(num=1)
-        construction_fig.set_size_inches(max(self.Depth),max(self.SemiWidth))
-        plt.plot([coordinate_list[0]],[coordinate_list[1]])
+        construction_fig.set_size_inches(max(self.Depth), max(self.SemiWidth))
+        plt.plot([coordinate_list[0]], [coordinate_list[1]])
         plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
         return (construction_fig, title[1])
-
-
 
     def Hall_Mesh_Generate(self, V_List):
         Face_List = []
@@ -128,7 +125,6 @@ class ModelCalculation(Calculation):
                 for C_Index in range(1, len(V_set)):
                     inner = V_set[C_Index - 1]
                     outer = V_set[C_Index]
-
 
                     Point4_Set = []
 
@@ -271,9 +267,6 @@ class ModelCalculation(Calculation):
             Coordinate_Outside.append(CO_List)
             self.Coordinate_Construction.append(CU_List)
 
-
-
-
         """# used to Debug of Construction
         for i in Coordinate_Construction:
             for j in i:
@@ -387,12 +380,12 @@ class ModelCalculation(Calculation):
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
                             ModelLengthList[count], ModeString)  # length subtake
                         C_List.append([X_List, Y_List, Z_List])
-            if(ModeString == "Construction"):
+            if (ModeString == "Construction"):
                 x = X_List[-1] * self.ECurveF[num]
                 y = Y_List[-1]
                 z = Z_List[-1]
-                formula = f"{round(y/x,4)}×x^{self.ECurveF[num]}" if x !=0 else 0
-                C_List[-1].append([formula,z])
+                formula = f"{round(y / x, 4)}×x^{self.ECurveF[num]}" if x != 0 else 0
+                C_List[-1].append([formula, z])
             count += 1
 
         return C_List, count
@@ -561,7 +554,7 @@ class ModelCalculation(Calculation):
             L_Width = Max_Width
             step_interval = width / L_Width
 
-            for i in range(0, int(L_Width) ):
+            for i in range(0, int(L_Width)):
                 w = step_interval * i
 
                 xlist.append(w)
@@ -575,7 +568,6 @@ class ModelCalculation(Calculation):
 
         elif (ModeString == "Construction"):
             for i in np.arange(0, int(width), interval):
-
                 xlist.append(i)
                 ylist.append(function(i))
                 zlist.append(zvalue)
@@ -705,6 +697,7 @@ class ModelCalculation(Calculation):
 
         self.Inside_Length = self.ZIndexGenerate(copy.deepcopy(self.Inside_LengthList), len_sum_in, self.B2)
         self.Outside_Length = self.ZIndexGenerate(copy.deepcopy(self.Outside_LengthList), len_sum_out, self.B2_O)
+
     def InsertCover(self, lenlist, CoverIndexList, B2, numIndex):
         for CoverIndex in CoverIndexList:
             if (CoverIndex[0] == numIndex):

@@ -1,9 +1,9 @@
 import tkinter as tk
 from pathlib import Path
-from tkinter import simpledialog
 from tkinter import StringVar
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import simpledialog
 
 from PIL import Image, ImageTk
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
@@ -139,11 +139,11 @@ class MainGUI_Init():
 
     def PgSwitch_Cut(self):
         InputFile_Path = self.GetFilePath()
-        Cut_Inch = simpledialog.askfloat('CutInchInput',"How much do you want to cut (inch)")
+        Cut_Inch = simpledialog.askfloat('CutInchInput', "How much do you want to cut (inch)")
 
         if (InputFile_Path != ""):
             self.MainGUI_Init_MainFrame.destroy()
-            MainGUI_Cut(self.master, InputFile_Path,Cut_Inch)
+            MainGUI_Cut(self.master, InputFile_Path, Cut_Inch)
 
     def GetFilePath(self):
         AbsFilePath = __file__
@@ -472,7 +472,7 @@ class MainGUI_CreatNEW():
 
             canvas = FigureCanvasTkAgg(fig, self.MainGUI_DisplayTable_Three)
             canvas.draw()
-            canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
+            canvas.get_tk_widget().grid(column=2, row=1, sticky=tk.W)
 
             # Get the ConstructionGraphSet
             self.GraphSet = self.MCCO.Construction_Graph_Generation()
@@ -508,9 +508,8 @@ class MainGUI_CreatNEW():
 
         # Directly Save Design
 
-        self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt, Folderpath, self.canoe_mesh_object, self.GraphSet)
-
-
+        self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt, Folderpath, self.canoe_mesh_object,
+                                  self.GraphSet)
 
     def returnToMainPageAcquire(self):
         answer: bool = messagebox.askyesno(title="Back to the Menu?", message="Want To Return To MainPage?")
@@ -678,7 +677,8 @@ class MainGUI_Open():
         FileName = self.InputFile[0]["Name"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], self.GraphSet)
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+                                   self.GraphSet)
 
     def ResultTableDisplay(self):
         self.DisplayTable_PageMain_Frame.destroy()
@@ -745,7 +745,7 @@ class MainGUI_Open():
 
             canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
             canvas.draw()
-            canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
+            canvas.get_tk_widget().grid(column=2, row=1, sticky=tk.W)
 
             # Get the ConstructionGraphSet
             self.GraphSet = self.MCCO.Construction_Graph_Generation()
@@ -1036,15 +1036,16 @@ class MainGUI_Optimization():
 
             ButtonList.append(tk.Button(
                 self.DisplayTable_PageMain_Frame, image=MainGUI_Init.img_resized_Save,
-                command=self.buildCommandSave(OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel,GraphSet),
+                command=self.buildCommandSave(OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList,
+                                              indexLabel, GraphSet),
                 height=70, width=60))
             ButtonList[-1].grid(column=indexLabel, row=6)
 
-    def buildCommandSave(self, OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel,GraphSet):
-        return lambda: [self.FileAcquire(OperationNote, CanoeData, logInt, canoe_mesh_object,GraphSet),
+    def buildCommandSave(self, OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel, GraphSet):
+        return lambda: [self.FileAcquire(OperationNote, CanoeData, logInt, canoe_mesh_object, GraphSet),
                         ButtonList[indexLabel].destroy()]
 
-    def FileAcquire(self, OperationNote, CanoeData, logInt, canoe_mesh_object,GraphSet):
+    def FileAcquire(self, OperationNote, CanoeData, logInt, canoe_mesh_object, GraphSet):
         # Save the Model position by asking
         Folderpath = filedialog.askdirectory()
         if (Folderpath == ""):
@@ -1053,7 +1054,7 @@ class MainGUI_Optimization():
 
         # Directly Save Design
 
-        self.CDD.SaveDataIntoFile(OperationNote, CanoeData, logInt, Folderpath, canoe_mesh_object,GraphSet)
+        self.CDD.SaveDataIntoFile(OperationNote, CanoeData, logInt, Folderpath, canoe_mesh_object, GraphSet)
 
     def creatRange(self, Name, SectionNum):
 
@@ -1091,6 +1092,7 @@ class MainGUI_Optimization():
         self.MainGUI_Title.destroy()
         self.DisplayTable_PageMain_Frame.destroy()
         MainGUI_Init(self.master)
+
 
 class MainGUI_Cut():
     def __init__(self, master, InputFilePath, CutInch):
@@ -1217,9 +1219,8 @@ class MainGUI_Cut():
         FileName = self.InputFile[0]["Name"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], self.GraphSet)
-
-
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+                                   self.GraphSet)
 
 
 if __name__ == "__main__":

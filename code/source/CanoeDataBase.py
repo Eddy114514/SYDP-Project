@@ -76,7 +76,6 @@ class CanoeDataBase:
 
         self.SaveGraphIntoFile(f"Design_{str(logName)}", GraphSet)
 
-
     def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj, GraphSet):
 
         # re-load the software Log
@@ -145,8 +144,7 @@ class CanoeDataBase:
         print(f"Save Design File At {AbsFilePath}")
 
         # SaveGraph
-        self.SaveGraphIntoFile(fileName,GraphSet)
-
+        self.SaveGraphIntoFile(fileName, GraphSet)
 
     def SaveGraphIntoFile(self, fileName, GraphSet):
         FolderPath = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe")
@@ -156,12 +154,9 @@ class CanoeDataBase:
             section_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}")
             os.makedirs(section_path)
             for crossSection in section_graph:
-                graph_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[1]}.png")
-                crossSection[0].savefig(graph_path, dpi='figure', format="png",pad_inches=0)
-
-
-
-
+                graph_path = Path(
+                    f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[1]}.png")
+                crossSection[0].savefig(graph_path, dpi='figure', format="png", pad_inches=0)
 
     def SaveStlIntoFile(self, filePath, stlObject):
 
