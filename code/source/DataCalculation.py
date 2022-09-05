@@ -59,6 +59,7 @@ class DataCalculation(Calculation):
         return self.Log, CanoeData, OperationNote
 
     def DataPrint(self):
+        # use for debug only
         print(f"Length: {self.Length}")
         print(f"Width: {self.Width}")
         print(f"SemiWidth: {self.SemiWidth}")
