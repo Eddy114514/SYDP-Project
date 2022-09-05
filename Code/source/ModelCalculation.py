@@ -4,6 +4,8 @@ from typing import List, Union, Any
 
 import numpy as np
 from stl import mesh
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from Calculation import Calculation
@@ -76,6 +78,7 @@ class ModelCalculation(Calculation):
         return canoe
 
     def Construction_Graph_Generation(self):
+        #TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
         graph_list = []
 
 
@@ -90,11 +93,20 @@ class ModelCalculation(Calculation):
                 graph_section_list.append(self.Graph_Generate(section[-1][-1], [section[-1][0],section[-1][1]]))
             graph_list.append(graph_section_list)
 
+        return graph_list
+
 
     def Graph_Generate(self, title, coordinate_list):
-        construction_fig = plt.figure(num=1,figsize=(max(self.SemiWidth),max(self.Depth)))
-        construction_fig.plot([coordinate_list[0]],[coordinate_list[1]])
-        construction_fig.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+        # wait to be improved
+        #TODO:
+        # 1.Change the graph generate mode to semi
+        # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
+
+        construction_fig = plt.figure(num=1)
+        construction_fig.set_size_inches(max(self.Depth),max(self.SemiWidth))
+        plt.plot([coordinate_list[0]],[coordinate_list[1]])
+        plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+        return (construction_fig, title[1])
 
 
 
@@ -105,24 +117,24 @@ class ModelCalculation(Calculation):
             if (number == 0):  # meaning is inside
                 for C_Index in range(1, len(V_set)):
                     inner = V_set[C_Index - 1]
-                    outter = V_set[C_Index]
+                    outer = V_set[C_Index]
                     Point4_Set = []
 
                     for P4 in range(1, len(inner)):
                         Point4_Set.append(
-                            [inner[P4], inner[P4 - 1], outter[P4], outter[P4 - 1]])
+                            [inner[P4], inner[P4 - 1], outer[P4], outer[P4 - 1]])
                     F_L.append(Point4_Set)
             else:  # outside
                 for C_Index in range(1, len(V_set)):
                     inner = V_set[C_Index - 1]
-                    outter = V_set[C_Index]
+                    outer = V_set[C_Index]
 
 
                     Point4_Set = []
 
                     for P4 in range(1, len(inner)):
                         Point4_Set.append(
-                            [inner[P4 - 1], inner[P4], outter[P4 - 1], outter[P4]])
+                            [inner[P4 - 1], inner[P4], outer[P4 - 1], outer[P4]])
                     F_L.append(Point4_Set)
             Face_List.append(F_L)
         return Face_List
@@ -170,7 +182,7 @@ class ModelCalculation(Calculation):
 
             # assert coordinate sets
             for index_sub, coordinate_set in enumerate(Cover_Vertical):
-                if (index_sub != 0 and index == 0):
+                if (index_sub != 0 and 0 == index):
                     coordinate_set_copy = coordinate_set + []
                     coordinate_set_copy[1] = Cover_Vertical[0][1]  # same height as 0th element
                     Cset_Horizontal.append(coordinate_set_copy)
@@ -229,7 +241,7 @@ class ModelCalculation(Calculation):
         #                        X[float,float...],
         #                        Y[float,float...],
         #                        Z[float,float...],
-        #               differece-> infor[str: formula, int: inch]
+        #               difference-> infor[str: formula, int: inch]
         #                        len(X) = len(Y) = len(Z)
         #                        ],
         #           CrossSection[],
