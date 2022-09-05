@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import platform
 from pathlib import Path
 
@@ -57,7 +58,7 @@ class CanoeDataBase:
         # Save Data To SQL
         print('work')
 
-    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName):
+    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, GraphSet):
         CanoeDetailDataDict = saveText[2]
         with open(CSVAddress, "w") as CSV:
             writer = csv.writer(CSV)
@@ -68,11 +69,15 @@ class CanoeDataBase:
                 else:
                     writer.writerow([key, value])
         UserInput = [saveText[0].SDD, saveText[0].HDL]
-        UserInput[0]['Name'] = "__log" + str(logName)
+        UserInput[0]['Name'] = str(logName)
         with open(LogAddress, "w") as Userlog:
             Userlog.write(json.dumps(UserInput))
+        # TODO Give the log a count function that save the time of configuration on it, default is zero
 
-    def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj):
+        self.SaveGraphIntoFile(f"Design_{str(logName)}", GraphSet)
+
+
+    def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj, GraphSet):
 
         # re-load the software Log
         self.FilePathlog = Path("..//..//asset//progressSave//__log.txt")
@@ -138,6 +143,25 @@ class CanoeDataBase:
             else AbsFilePath + f"\\asset\\progressSave\\{fileName}"
 
         print(f"Save Design File At {AbsFilePath}")
+
+        # SaveGraph
+        self.SaveGraphIntoFile(fileName,GraphSet)
+
+
+    def SaveGraphIntoFile(self, fileName, GraphSet):
+        FolderPath = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe")
+        # Make the HullFolder
+        os.makedirs(FolderPath)
+        for index, section_graph in enumerate(GraphSet):
+            section_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}")
+            os.makedirs(section_path)
+            for crossSection in section_graph:
+                graph_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[1]}.png")
+                crossSection[0].savefig(graph_path, dpi='figure', format="png",pad_inches=0)
+
+
+
+
 
     def SaveStlIntoFile(self, filePath, stlObject):
 

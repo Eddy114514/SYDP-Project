@@ -473,6 +473,9 @@ class MainGUI_CreatNEW():
             canvas = FigureCanvasTkAgg(fig, self.MainGUI_DisplayTable_Three)
             canvas.draw()
             canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
+
+            # Get the ConstructionGraphSet
+            self.GraphSet = self.MCCO.Construction_Graph_Generation()
         except:
             messagebox.showwarning(message="Invalid Input")
             self.MainGUI_DisplayTable_Three.destroy()
@@ -505,7 +508,9 @@ class MainGUI_CreatNEW():
 
         # Directly Save Design
 
-        self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt, Folderpath, self.canoe_mesh_object)
+        self.CDD.SaveDataIntoFile(self.OperationNote, self.CanoeData, self.logInt, Folderpath, self.canoe_mesh_object, self.GraphSet)
+
+
 
     def returnToMainPageAcquire(self):
         answer: bool = messagebox.askyesno(title="Back to the Menu?", message="Want To Return To MainPage?")
@@ -673,7 +678,7 @@ class MainGUI_Open():
         FileName = self.InputFile[0]["Name"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'])
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], self.GraphSet)
 
     def ResultTableDisplay(self):
         self.DisplayTable_PageMain_Frame.destroy()
@@ -742,6 +747,9 @@ class MainGUI_Open():
             canvas.draw()
             canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
 
+            # Get the ConstructionGraphSet
+            self.GraphSet = self.MCCO.Construction_Graph_Generation()
+
         except:
             messagebox.showwarning("Wrong Data Input")
             self.DisplayTable_PageMain_Frame.destroy()
@@ -772,11 +780,11 @@ class MainGUI_Open():
         StrVarList = []
         for assign in self.InputFile[0]:
             temp = []
-            if (assign != "Name"):
+            if (assign != "Name" and assign != "Count"):
                 for section in self.InputFile[0][assign]:
-                    str = StringVar()
-                    str.set(section)
-                    temp.append(str)
+                    strVar = StringVar()
+                    strVar.set(section)
+                    temp.append(strVar)
                 StrVarList.append(temp)
 
         for ColIndex, createInput in enumerate(range(size)):
@@ -882,7 +890,7 @@ class MainGUI_Optimization():
         # ensure key is Int
         temp = {}
         for var in section:
-            if (var != "Name"):
+            if (var != "Name" and var != "Count"):
                 temp[index] = section[var]
                 index += 1
         section = temp
@@ -1023,17 +1031,20 @@ class MainGUI_Optimization():
             canvas.draw()
             canvas.get_tk_widget().grid(column=indexLabel, row=5)
 
+            # Get the ConstructionGraphSet
+            GraphSet = MCCOList[-1].Construction_Graph_Generation()
+
             ButtonList.append(tk.Button(
                 self.DisplayTable_PageMain_Frame, image=MainGUI_Init.img_resized_Save,
-                command=self.buildCommandSave(OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel),
+                command=self.buildCommandSave(OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel,GraphSet),
                 height=70, width=60))
             ButtonList[-1].grid(column=indexLabel, row=6)
 
-    def buildCommandSave(self, OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel):
-        return lambda: [self.FileAcquire(OperationNote, CanoeData, logInt, canoe_mesh_object),
+    def buildCommandSave(self, OperationNote, CanoeData, logInt, canoe_mesh_object, ButtonList, indexLabel,GraphSet):
+        return lambda: [self.FileAcquire(OperationNote, CanoeData, logInt, canoe_mesh_object,GraphSet),
                         ButtonList[indexLabel].destroy()]
 
-    def FileAcquire(self, OperationNote, CanoeData, logInt, canoe_mesh_object):
+    def FileAcquire(self, OperationNote, CanoeData, logInt, canoe_mesh_object,GraphSet):
         # Save the Model position by asking
         Folderpath = filedialog.askdirectory()
         if (Folderpath == ""):
@@ -1042,7 +1053,7 @@ class MainGUI_Optimization():
 
         # Directly Save Design
 
-        self.CDD.SaveDataIntoFile(OperationNote, CanoeData, logInt, Folderpath, canoe_mesh_object)
+        self.CDD.SaveDataIntoFile(OperationNote, CanoeData, logInt, Folderpath, canoe_mesh_object,GraphSet)
 
     def creatRange(self, Name, SectionNum):
 
@@ -1103,90 +1114,89 @@ class MainGUI_Cut():
     def DisplayTable_PageMain(self):
         with open(self.InputFile_Path, "r") as InputFile:
             self.InputFile = eval(InputFile.read())
+        try:
+            section = self.InputFile[0].copy()
+            section.pop("Name")
+            print(self.InputFile)
 
-        section = self.InputFile[0].copy()
-        section.pop("Name")
-        print(self.InputFile)
+            hall = self.InputFile[1]
 
-        hall = self.InputFile[1]
+            # ensure key is Int
+            for var in section:
+                newDepth = section[var][2] - self.CutInch
+                newWidth = ((newDepth / section[var][2]) ** (1 / section[var][3])) * section[var][1]
+                # depth config
+                section[var][2] = round(section[var][2] - self.CutInch, 2)
+                # width config
+                section[var][1] = round(newWidth, 2)
 
-        # ensure key is Int
-        for var in section:
-            newDepth = section[var][2] - self.CutInch
-            newWidth = ((newDepth/section[var][2])**(1/section[var][3]))*section[var][1]
-            # depth config
-            section[var][2] = round(section[var][2] - self.CutInch,2)
-            # width config
-            section[var][1] = round(newWidth,2)
+            self.CDD = CanoeDataBase(section, hall)
 
-        self.CDD = CanoeDataBase(section, hall)
+            self.DisplayTable_PageMain_Frame = tk.Frame(self.master)
+            self.DisplayTable_PageMain_Frame.columnconfigure(0, weight=3)
+            self.DisplayTable_PageMain_Frame.columnconfigure(1, weight=3)
+            self.DisplayTable_PageMain_Frame.columnconfigure(2, weight=3)
+            self.DisplayTable_PageMain_Frame.columnconfigure(3, weight=3)
+            self.DisplayTable_PageMain_Frame.pack(fill="both", expand=True)
 
+            self.DCCO = DataCalculation(self.CDD)  # DataCalculation# CanoeObject
+            self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
+            # Action
+            self.DCCO.CanoeDataCalculation()
+            # Print out Current Data
+            self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
 
+            # Output display
+            VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
+            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
+            FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
+            Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
 
-        self.DisplayTable_PageMain_Frame = tk.Frame(self.master)
-        self.DisplayTable_PageMain_Frame.columnconfigure(0, weight=3)
-        self.DisplayTable_PageMain_Frame.columnconfigure(1, weight=3)
-        self.DisplayTable_PageMain_Frame.columnconfigure(2, weight=3)
-        self.DisplayTable_PageMain_Frame.columnconfigure(3, weight=3)
-        self.DisplayTable_PageMain_Frame.pack(fill="both", expand=True)
+            tk.Label(self.DisplayTable_PageMain_Frame, text="Result", font=(
+                "Time", 12, "bold")).grid(column=2, row=0, sticky=tk.SW, ipadx=5, ipady=5)
 
-        self.DCCO = DataCalculation(self.CDD)  # DataCalculation# CanoeObject
-        self.MCCO = ModelCalculation(self.CDD)  # ModelCalculationCanoeObject
-        # Action
-        self.DCCO.CanoeDataCalculation()
-        # Print out Current Data
-        self.logInt, self.CanoeData, self.OperationNote = self.DCCO.CalDataReturn()
+            tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
+                "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+                "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
+                "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
+                "Time", 12, "bold")).grid(column=2, row=5, sticky=tk.W, ipadx=5, ipady=5)
+            tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
+                "Time", 12, "bold")).grid(column=2, row=6, sticky=tk.W, ipadx=5, ipady=5)
 
-        # Output display
-        VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
-        WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
-        BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
-        FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
-        Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
+            self.canoe_mesh_object = self.MCCO.Model_Generate()
+            # Create a new plot
 
-        tk.Label(self.DisplayTable_PageMain_Frame, text="Result", font=(
-            "Time", 12, "bold")).grid(column=2, row=0, sticky=tk.SW, ipadx=5, ipady=5)
+            fig = Figure(figsize=(3, 3),
+                         dpi=100)
+            axes = fig.add_subplot(111, projection="3d")
+            # Render the canoe
+            axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
 
-        tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
-            "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
-        tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
-            "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
-        tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
-            "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
-        tk.Label(self.DisplayTable_PageMain_Frame, text=FlowString, font=(
-            "Time", 12, "bold")).grid(column=2, row=5, sticky=tk.W, ipadx=5, ipady=5)
-        tk.Label(self.DisplayTable_PageMain_Frame, text=Submerge, font=(
-            "Time", 12, "bold")).grid(column=2, row=6, sticky=tk.W, ipadx=5, ipady=5)
+            scale = self.canoe_mesh_object.points.flatten()
+            axes.auto_scale_xyz(scale, scale, scale)
+            axes.set_xlabel("X axis")
+            axes.set_ylabel("Y axis")
+            axes.set_zlabel("Z axis")
 
-        self.canoe_mesh_object = self.MCCO.Model_Generate()
-        # Create a new plot
+            canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
+            canvas.draw()
+            canvas.get_tk_widget().grid(column=2, row=1, sticky=tk.W)
 
-        fig = Figure(figsize=(3, 3),
-                     dpi=100)
-        axes = fig.add_subplot(111, projection="3d")
-        # Render the canoe
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
+            # Get the ConstructionGraphSet
+            self.GraphSet = self.MCCO.Construction_Graph_Generation()
 
-        scale = self.canoe_mesh_object.points.flatten()
-        axes.auto_scale_xyz(scale, scale, scale)
-        axes.set_xlabel("X axis")
-        axes.set_ylabel("Y axis")
-        axes.set_zlabel("Z axis")
-
-        canvas = FigureCanvasTkAgg(fig, self.DisplayTable_PageMain_Frame)
-        canvas.draw()
-        canvas.get_tk_widget().grid(column=2, row=1,sticky=tk.W)
-
-        self.Save_Button = tk.Button(
-            self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
-            command=lambda: [self.FileConfig(), self.Return()])  # Acquire File and call CanoeDateBase
-        self.Save_Button.pack(side="right", padx=10, pady=10)
-        """try:
-            
+            self.Save_Button = tk.Button(
+                self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Save,
+                command=lambda: [self.FileConfig(), self.Return()])  # Acquire File and call CanoeDateBase
+            self.Save_Button.pack(side="right", padx=10, pady=10)
 
         except:
             messagebox.showwarning(message="Invalid Input")
-            self.Return()"""
+            self.Return()
 
     def Return(self):
         self.CDD.DeleteData_CDD()
@@ -1207,7 +1217,7 @@ class MainGUI_Cut():
         FileName = self.InputFile[0]["Name"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'])
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], self.GraphSet)
 
 
 
