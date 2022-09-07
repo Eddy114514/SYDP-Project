@@ -416,8 +416,12 @@ class MainGUI_CreatNEW():
         # CrewWeight_Label
         tk.Label(self.MainGUI_InputTable_Two, text="CrewWeight :", font=(
             "Time", 12)).grid(column=0, row=4, sticky=tk.E, ipadx=5, ipady=5)
+
+        # check Button
         tk.Checkbutton(self.MainGUI_InputTable_Two, text="FSD Mode",
                        command=lambda: [self.CDD.ConfigFSD()]).grid(column=0, row=5, sticky=tk.E, ipadx=5, ipady=5)
+        tk.Checkbutton(self.MainGUI_InputTable_Two, text= "Construction",
+                       command=lambda: [self.CDD.ConfigConstruction()]).grid(column=0, row=6, sticky=tk.E, ipadx=5, ipady=5)
 
         self.CoverLength_entry.grid(column=1, row=1, sticky=tk.W)
         self.Density_entry.grid(column=1, row=2, sticky=tk.W)
@@ -464,7 +468,6 @@ class MainGUI_CreatNEW():
             axes.add_collection3d(mplot3d.art3d.Poly3DCollection(self.canoe_mesh_object.vectors))
 
             scale = self.canoe_mesh_object.points.flatten()
-            print(scale)
             axes.auto_scale_xyz(scale, scale, scale)
             axes.set_xlabel("X axis")
             axes.set_ylabel("Y axis")
@@ -475,6 +478,7 @@ class MainGUI_CreatNEW():
             canvas.get_tk_widget().grid(column=2, row=1, sticky=tk.W)
 
             # Get the ConstructionGraphSet
+
             self.GraphSet = self.MCCO.Construction_Graph_Generation()
         except:
             messagebox.showwarning(message="Invalid Input")
@@ -613,6 +617,9 @@ class MainGUI_Open():
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Return, command=self.Return)
         self.Return_Button.pack(side="left", padx=10, pady=10)
 
+        tk.Checkbutton(self.MainGUI_Menu_Button, text= "Construction",bg="blue",
+                       command=lambda: [self.CDD.ConfigConstruction()]).pack(side="top")
+
         self.DisplayTable_PageMain()
 
     def DisplayTable_PageMain(self):
@@ -628,6 +635,8 @@ class MainGUI_Open():
             self.DisplayTable_PageMain_Frame.columnconfigure(add, weight=3)
 
         self.DisplayTable_PageMain_Frame.pack(fill="both", expand=True)
+
+
 
         # Store the Entry
         entry_section_list = []
@@ -654,7 +663,7 @@ class MainGUI_Open():
         for element in HallEntryList:
             HullListObject.append(float(element.get()))
 
-        self.CDD = CanoeDataBase(SectionDictObject, HullListObject)
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject, B3 = self.CDD.GetConstruction())
         try:
             self.DCCO = DataCalculation(self.CDD)
             self.MCCO = ModelCalculation(self.CDD)
@@ -859,6 +868,9 @@ class MainGUI_Optimization():
     def creatWidgets_PageMain(self):
         self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue")
         self.MainGUI_Menu_Button.pack(fill="x")
+
+        tk.Checkbutton(self.MainGUI_Menu_Button, text="Construction",bg="blue",
+                       command=lambda: [self.CDD.ConfigConstruction()]).pack(side="top")
 
         self.MainGUI_Title = tk.Frame(self.master)
         self.MainGUI_Title.pack(fill="x", pady=50)

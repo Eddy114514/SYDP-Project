@@ -29,6 +29,7 @@ class Calculation:
 
         self.Symmetricity = self.CalculationObject.GetSYM()
         self.FSDMode = self.CalculationObject.GetFSD()
+        self.Construction = self.CalculationObject.GetConstruction()
 
         self.Log = []
         self.LogMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
@@ -40,7 +41,7 @@ class Calculation:
 
     def SignData(self):
         SDD, HDL = self.CalculationObject.GetData_CDD()
-        # Write Function for generate testprofile
+        # Write Function for generate test profile
         # with open("SDDHDD",'w') as file: file.write(str([SDD,HDL]))
 
         for v in SDD.values():
@@ -161,7 +162,7 @@ class Calculation:
         return (lambda x: (Depth * (x / SemiWidth)
                            ** self.ECurveF[index]))
 
-    def Buldlambda_Curve_Zero(self):
+    def Buildlambda_Curve_Zero(self):
         # build 0 returner
         return (lambda x: 0.0)
 
@@ -277,13 +278,13 @@ class Calculation:
         self.DepthFList_Outside.append(self.BuildLambda_Depth_O(2))
 
     def Set_FormulaPoint_Asymmetric(self):
-        SWvalue = (self.SemiWidth[0]
-                   / self.SemiWidth[1]) ** (1 / self.EWidthF[1])
-        SWvalue_O = ((self.SemiWidth[0] + self.Thickness)
-                     / (self.SemiWidth[1] + self.Thickness)) ** (1 / self.EWidthF[1])
+        SW_value = (self.SemiWidth[0]
+                    / self.SemiWidth[1]) ** (1 / self.EWidthF[1])
+        SW_value_O = ((self.SemiWidth[0] + self.Thickness)
+                      / (self.SemiWidth[1] + self.Thickness)) ** (1 / self.EWidthF[1])
 
-        self.B2 = round((self.Length[1] * SWvalue) / (1 - SWvalue), 10)
-        self.B2_O = round(((self.Length[1]) * SWvalue_O) / (1 - SWvalue_O), 10)
+        self.B2 = round((self.Length[1] * SW_value) / (1 - SW_value), 10)
+        self.B2_O = round(((self.Length[1]) * SW_value_O) / (1 - SW_value_O), 10)
         self.B2_Diff = self.B2_O - self.B2
 
     def Sign_CurveFormula(self, k):
@@ -306,6 +307,5 @@ class Calculation:
                 self.WidthFList_Outside[k](x) * self.DepthFList_Outside[k]))
 
     def Sign_CurveFormula_Constant_Out(self, k):
-        return (lambda x: (
-                                  (((self.SemiWidth[k] + self.Thickness) ** self.ECurveF[k]) * x) / (
+        return (lambda x: ((((self.SemiWidth[k] + self.Thickness) ** self.ECurveF[k]) * x) / (
                                   self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))

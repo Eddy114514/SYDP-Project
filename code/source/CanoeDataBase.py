@@ -3,16 +3,19 @@ import json
 import os
 import platform
 from pathlib import Path
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 class CanoeDataBase:
     # Designed to connect to STL database
 
-    def __init__(self, SectionDataDict, HullDataList):
+    def __init__(self, SectionDataDict, HullDataList, B1 =False,B2 = False,B3 = False):
         self.SDD = SectionDataDict
         self.HDL = HullDataList
-        self.SymmetryBoolean = False
-        self.FSDMode = False
+        self.SymmetryBoolean = B1
+        self.FSDMode = B2
+        self.Construction = B3
 
     def ConfigSYM(self):
         print("Change from ", self.SymmetryBoolean)
@@ -26,11 +29,20 @@ class CanoeDataBase:
         self.FSDMode = not self.FSDMode
         print("to", self.FSDMode)
 
+    def ConfigConstruction(self):
+        print("Change from ", self.Construction)
+        # flap the Boolean
+        self.Construction = not self.Construction
+        print("to", self.Construction)
+
     def GetSYM(self):
         return (self.SymmetryBoolean)
 
     def GetFSD(self):
         return (self.FSDMode)
+
+    def GetConstruction(self):
+        return self.Construction
 
     def ConstructDict_SDD(self, SectionNum, DataList):
         self.SDD[SectionNum] = DataList
@@ -77,6 +89,7 @@ class CanoeDataBase:
         self.SaveGraphIntoFile(f"Design_{str(logName)}", GraphSet)
 
     def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj, GraphSet):
+
 
         # re-load the software Log
         self.FilePathlog = Path("..//..//asset//progressSave//__log.txt")
@@ -147,17 +160,48 @@ class CanoeDataBase:
         self.SaveGraphIntoFile(fileName, GraphSet)
 
     def SaveGraphIntoFile(self, fileName, GraphSet):
+        if(GraphSet == 42):
+            return 42
+
         FolderPath = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe")
         # Make the HullFolder
         os.makedirs(FolderPath)
+        num = 0
+        DataSet = GraphSet.pop()
+        self.Width = DataSet[0]
+        self.Depth = DataSet[1]
         for index, section_graph in enumerate(GraphSet):
             section_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}")
             os.makedirs(section_path)
             for crossSection in section_graph:
                 graph_path = Path(
-                    f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[1]}.png")
-                crossSection[0].savefig(graph_path, dpi='figure', format="png", pad_inches=0)
+                    f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[-1][-1]}.png")
+                self.Graph_Generate_Save(crossSection[-1],crossSection[0],crossSection[1], num, graph_path)
 
+            num +=1
+    def Graph_Generate_Save(self, title, X,Y, num, path):
+        # wait to be improved
+        # TODO:
+        # 1.Change the graph generate mode to semi
+        # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
+
+        construction_fig = plt.figure(num)
+        construction_fig.set_size_inches(self.Depth, self.Width)
+
+        # print out the coordinate through terminal
+        print(f"Cross-Section at {title[1]}, formula = {title[0]}")
+        for index,(x,y) in enumerate(zip(X,Y)):
+            if index % 250 == 0:
+                print(f"X: {round(x,3)} || Y: {round(y,3)}")
+
+        print("\n")
+
+        plt.plot(X, Y)
+        plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+        plt.xlim(0,self.Width)
+        plt.ylim(0,self.Depth)
+        plt.savefig(path,format ="png")
+        plt.close()
     def SaveStlIntoFile(self, filePath, stlObject):
 
         print(f"File Save @ {filePath}")

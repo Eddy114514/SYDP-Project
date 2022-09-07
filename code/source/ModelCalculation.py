@@ -2,12 +2,10 @@ import copy
 import math
 from typing import Union, Any
 
-import matplotlib
 import numpy as np
 from stl import mesh
 
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+
 
 from Calculation import Calculation
 
@@ -79,33 +77,25 @@ class ModelCalculation(Calculation):
         return canoe
 
     def Construction_Graph_Generation(self):
+        if (self.Construction == False):
+            return 42
+
         # TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
         graph_list = []
-
-        for section in self.Coordinate_Construction:
+        DateSet = (max(self.SemiWidth)+self.Thickness, max(self.Depth)+self.Thickness)
+        for Section_Index, section in enumerate(self.Coordinate_Construction):
             # cross_index == cross_section_index
             graph_section_list = []
-            for cross_index in range(0, len(section), 4):
-                coordinate_list = [section[cross_index][0], section[cross_index][1]]
-                title = section[cross_index][-1]
-                graph_section_list.append(self.Graph_Generate(title, coordinate_list))
-            if (len(section) % 4 != 0):
-                graph_section_list.append(self.Graph_Generate(section[-1][-1], [section[-1][0], section[-1][1]]))
+            for cross_index in range(0, len(section), 2):
+                graph_section_list.append([section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
+            graph_section_list.append([section[-1][0], section[-1][1], section[-1][-1]])
+
             graph_list.append(graph_section_list)
 
+        graph_list.append(DateSet)
         return graph_list
 
-    def Graph_Generate(self, title, coordinate_list):
-        # wait to be improved
-        # TODO:
-        # 1.Change the graph generate mode to semi
-        # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
 
-        construction_fig = plt.figure(num=1)
-        construction_fig.set_size_inches(max(self.Depth), max(self.SemiWidth))
-        plt.plot([coordinate_list[0]], [coordinate_list[1]])
-        plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
-        return (construction_fig, title[1])
 
     def Hall_Mesh_Generate(self, V_List):
         Face_List = []
@@ -237,7 +227,7 @@ class ModelCalculation(Calculation):
         #                        X[float,float...],
         #                        Y[float,float...],
         #                        Z[float,float...],
-        #               difference-> infor[str: formula, int: inch]
+        #           difference-> infor[str: formula, int: inch]
         #                        len(X) = len(Y) = len(Z)
         #                        ],
         #           CrossSection[],
@@ -250,7 +240,7 @@ class ModelCalculation(Calculation):
 
         count_in = 0
         count_out = 0
-        count_construct = 0
+
 
         for num in range(0, self.Num):
             CI_List, count_in = self.Coordinate_Section_Generate(
@@ -259,13 +249,19 @@ class ModelCalculation(Calculation):
             CO_List, count_out = self.Coordinate_Section_Generate(
                 num, count_out, self.Outside_LengthList, self.Outside_Length,
                 CurveList_Outside, interval, ModeString)
-            CU_List, count_construct = self.Coordinate_Section_Generate(
-                num, count_construct, self.Outside_LengthList, self.Outside_Length,
-                CurveList_Outside, interval, "Construction")
+
 
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
-            self.Coordinate_Construction.append(CU_List)
+
+
+        if(self.Construction == True):
+            count_construct = 0
+            for num in range(0,self.Num):
+                CU_List, count_construct = self.Coordinate_Section_Generate(
+                    num, count_construct, self.Outside_LengthList, self.Outside_Length,
+                    CurveList_Outside, interval, "Construction")
+                self.Coordinate_Construction.append(CU_List)
 
         """# used to Debug of Construction
         for i in Coordinate_Construction:
@@ -384,9 +380,11 @@ class ModelCalculation(Calculation):
                 x = X_List[-1] * self.ECurveF[num]
                 y = Y_List[-1]
                 z = Z_List[-1]
-                formula = f"{round(y / x, 4)}×x^{self.ECurveF[num]}" if x != 0 else 0
+                formula = f"{round(y / x, 4)}x^{self.ECurveF[num]}" if x != 0 else 0
                 C_List[-1].append([formula, z])
             count += 1
+            if(ModeString == "Construction" and self.EDepthF[num] == 0 and self.EWidthF[num] == 0):
+                break
 
         return C_List, count
 
@@ -414,7 +412,7 @@ class ModelCalculation(Calculation):
                     Width = self.WidthFList[num](length)
                     if (Width == 0 or Depth == 0):
                         CL_In.append(
-                            [self.Buldlambda_Curve_Zero(), Width, Depth])
+                            [self.Buildlambda_Curve_Zero(), Width, Depth])
 
                     else:
                         CL_In.append(
@@ -430,7 +428,7 @@ class ModelCalculation(Calculation):
                     Width_O = self.WidthFList_Outside[num](length_out)
                     if (Width_O == 0 or Depth_O == 0):
                         CL_Out.append(
-                            [self.Buldlambda_Curve_Zero(), Width_O, Depth_O])
+                            [self.Buildlambda_Curve_Zero(), Width_O, Depth_O])
                     else:
                         CL_Out.append(
                             [self.BuildLambda_Curve(Width_O, Depth_O, num), Width_O, Depth_O])
@@ -567,7 +565,8 @@ class ModelCalculation(Calculation):
             zlist.append(zvalue)
 
         elif (ModeString == "Construction"):
-            for i in np.arange(0, int(width), interval):
+            # config the interval from 1 to 0.5 to get more accuracy.
+            for i in np.arange(0, int(width), 0.001):
                 xlist.append(i)
                 ylist.append(function(i))
                 zlist.append(zvalue)
