@@ -87,12 +87,19 @@ class ModelCalculation(Calculation):
             # cross_index == cross_section_index
             graph_section_list = []
             for cross_index in range(0, len(section), 2):
-                graph_section_list.append([section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
-            graph_section_list.append([section[-1][0], section[-1][1], section[-1][-1]])
+                if not(self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
+                    graph_section_list.append(
+                        [section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
 
+            graph_section_list.append([section[-1][0], section[-1][1], section[-1][-1]])
             graph_list.append(graph_section_list)
 
+
         graph_list.append(DateSet)
+
+
+
+
         return graph_list
 
 
@@ -383,8 +390,7 @@ class ModelCalculation(Calculation):
                 formula = f"{round(y / x, 4)}x^{self.ECurveF[num]}" if x != 0 else 0
                 C_List[-1].append([formula, z])
             count += 1
-            if(ModeString == "Construction" and self.EDepthF[num] == 0 and self.EWidthF[num] == 0):
-                break
+
 
         return C_List, count
 
@@ -566,7 +572,7 @@ class ModelCalculation(Calculation):
 
         elif (ModeString == "Construction"):
             # config the interval from 1 to 0.5 to get more accuracy.
-            for i in np.arange(0, int(width), 0.001):
+            for i in np.arange(0, int(width), 0.1):
                 xlist.append(i)
                 ylist.append(function(i))
                 zlist.append(zvalue)

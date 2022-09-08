@@ -10,7 +10,6 @@ from ModelCalculation import ModelCalculation
 from OptimizationCalculation import OptimizationCalculation
 
 
-
 class DebugBase():
     address = '..\\..\\asset\\startSetup\\setUpinformation.txt'
     if (platform.system().lower() != 'windows'):
@@ -70,6 +69,7 @@ class DebugBase():
             DesignHistory1 = "..\\..\\asset\\__designHistory\\"
             ProgressSave = "..\\..\\asset\\progressSave"
             ProgressSave1 = "..\\..\\asset\\progressSave\\"
+            FilePathGraph = "..\\..\\asset\\ModelGraph"
         else:
             FilePathlog = '././asset/progressSave/__log.txt'
             FilePathModel = "././asset/ModelFile"
@@ -78,6 +78,7 @@ class DebugBase():
             DesignHistory1 = "././asset/__designHistory/"
             ProgressSave = "././asset/progressSave"
             ProgressSave1 = "././asset/progressSave/"
+            FilePathGraph = "././asset/ModelGraph"
 
         # reset Software Log
         if (input("Reset Software Log? [y/n]") in ["y", "Y"]):
@@ -90,16 +91,42 @@ class DebugBase():
         if (input("Delte All Model ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(FilePathModel):
                 os.remove(FilePathModel1 + file)
+            for file in os.listdir(FilePathGraph):
+                try:
+                    os.removedirs(FilePathGraph + file)
+                except OSError:
+                    for file in os.listdir(FilePathGraph):
+                        new_path = os.path.join(FilePathGraph, file)
+                        if (os.path.isdir(new_path)):
+                            self.RecursiveRemoveFolder(new_path)
 
         if (input("Delte AllHistory ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(DesignHistory):
+
                 os.remove(DesignHistory1 + file)
 
         if (input("Delte All ProgressSave ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(ProgressSave):
                 if ("csv" in file):
                     os.remove(ProgressSave1 + file)
+
         print("Reset Done")
+
+    def RecursiveRemoveFolder(self, Path):
+        try:
+            os.removedirs(Path)
+        except OSError:
+            if (os.path.isdir(Path)):
+                for file in os.listdir(Path):
+                    newPath = os.path.join(Path, file)
+                    if (os.path.isdir(newPath)):
+                        self.RecursiveRemoveFolder(newPath)
+                    else:
+                        # remove all files
+                        for file in os.listdir(Path):
+                            file_path = os.path.join(Path, file)
+                            os.remove(file_path)
+                        break
 
     def configureSetting(self):
         with open(DebugBase.address, 'r') as f:

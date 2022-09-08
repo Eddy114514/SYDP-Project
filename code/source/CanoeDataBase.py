@@ -191,7 +191,7 @@ class CanoeDataBase:
         # print out the coordinate through terminal
         print(f"Cross-Section at {title[1]}, formula = {title[0]}")
         for index,(x,y) in enumerate(zip(X,Y)):
-            if index % 250 == 0:
+            if(index % 5 ==0):
                 print(f"X: {round(x,3)} || Y: {round(y,3)}")
 
         print("\n")
