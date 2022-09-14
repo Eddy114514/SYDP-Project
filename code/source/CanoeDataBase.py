@@ -188,6 +188,7 @@ class CanoeDataBase:
         construction_fig = plt.figure(num)
         construction_fig.set_size_inches(self.Depth, self.Width)
 
+
         # print out the coordinate through terminal
         print(f"Cross-Section at {title[1]}, formula = {title[0]}")
         for index,(x,y) in enumerate(zip(X,Y)):
@@ -197,6 +198,7 @@ class CanoeDataBase:
         print("\n")
 
         plt.plot(X, Y)
+        plt.axis("off")
         plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
         plt.xlim(0,self.Width)
         plt.ylim(0,self.Depth)
