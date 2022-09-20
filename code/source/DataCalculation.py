@@ -268,6 +268,10 @@ class DataCalculation(Calculation):
                               quad(SwDFunction_List[op[0]], 0, op[1])[0]
         return volume
 
+    def WaterLine(self):
+
+        return 42
+
     # Helper Function
     @staticmethod
     def LocateCover(canoe_cover, length_list):

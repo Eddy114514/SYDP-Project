@@ -617,8 +617,9 @@ class MainGUI_Open():
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Return, command=self.Return)
         self.Return_Button.pack(side="left", padx=10, pady=10)
 
-        tk.Checkbutton(self.MainGUI_Menu_Button, text= "Construction",bg="blue",
-                       command=lambda: [self.CDD.ConfigConstruction()]).pack(side="top")
+        self.Construction_Button = tk.Checkbutton(self.MainGUI_Menu_Button, text= "Construction",bg="blue",
+                       command=lambda: [self.CDD.ConfigConstruction()])
+        self.Construction_Button.pack(side="top")
 
         self.DisplayTable_PageMain()
 
@@ -691,6 +692,7 @@ class MainGUI_Open():
 
     def ResultTableDisplay(self):
         self.DisplayTable_PageMain_Frame.destroy()
+        self.Construction_Button.destroy()
         self.Next_Button.destroy()
 
         # GUI construct

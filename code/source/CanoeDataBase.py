@@ -3,14 +3,30 @@ import json
 import os
 import platform
 from pathlib import Path
+
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+plt.axis('off')
+from PIL import Image
+import numpy as np
+
+# Get the DPI of the device
+from PyQt5.QtWidgets import QApplication
+import sys
+
+app = QApplication(sys.argv)
+screen = app.screens()[0]
+DPI_OF_DEVICE = screen.physicalDotsPerInch()
+app.quit()
+
 
 class CanoeDataBase:
     # Designed to connect to STL database
 
-    def __init__(self, SectionDataDict, HullDataList, B1 =False,B2 = False,B3 = False):
+    def __init__(self, SectionDataDict, HullDataList, B1=False, B2=False, B3=False):
         self.SDD = SectionDataDict
         self.HDL = HullDataList
         self.SymmetryBoolean = B1
@@ -90,7 +106,6 @@ class CanoeDataBase:
 
     def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj, GraphSet):
 
-
         # re-load the software Log
         self.FilePathlog = Path("..//..//asset//progressSave//__log.txt")
 
@@ -160,50 +175,97 @@ class CanoeDataBase:
         self.SaveGraphIntoFile(fileName, GraphSet)
 
     def SaveGraphIntoFile(self, fileName, GraphSet):
-        if(GraphSet == 42):
+        if (GraphSet == 42):
             return 42
 
         FolderPath = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe")
         # Make the HullFolder
         os.makedirs(FolderPath)
-        num = 0
-        DataSet = GraphSet.pop()
-        self.Width = DataSet[0]
-        self.Depth = DataSet[1]
         for index, section_graph in enumerate(GraphSet):
             section_path = Path(f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}")
             os.makedirs(section_path)
             for crossSection in section_graph:
                 graph_path = Path(
-                    f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[-1][-1]}.png")
-                self.Graph_Generate_Save(crossSection[-1],crossSection[0],crossSection[1], num, graph_path)
+                    f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[-1][1]}.png")
+                self.Graph_Generate_Save(crossSection[-1], crossSection[0], crossSection[1], graph_path)
 
-            num +=1
-    def Graph_Generate_Save(self, title, X,Y, num, path):
+    def Graph_Generate_Save(self, title, X, Y, path):
         # wait to be improved
         # TODO:
         # 1.Change the graph generate mode to semi
         # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
 
-        construction_fig = plt.figure(num)
-        construction_fig.set_size_inches(self.Depth, self.Width)
-
-
+        # PrintOut Data
         # print out the coordinate through terminal
         print(f"Cross-Section at {title[1]}, formula = {title[0]}")
-        for index,(x,y) in enumerate(zip(X,Y)):
-            if(index % 5 ==0):
-                print(f"X: {round(x,3)} || Y: {round(y,3)}")
-
+        Positive_X = []
+        Positive_Y = []
+        for index, (x, y) in enumerate(zip(X, Y)):
+            print(f"X: {round(x, 3)} || Y: {round(y, 3)}")
+            if (x >= 0):
+                Positive_X.append(x)
+                Positive_Y.append(y)
         print("\n")
 
-        plt.plot(X, Y)
-        plt.axis("off")
-        plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
-        plt.xlim(0,self.Width)
-        plt.ylim(0,self.Depth)
-        plt.savefig(path,format ="png")
-        plt.close()
+        count_index = 0
+        scale_factor = 7.5
+        if (Positive_Y[-1] > scale_factor or Positive_X[-1] > scale_factor):
+            currentY = Positive_Y[-1]
+            currentX = Positive_X[-1]
+            while (currentX  > 0 or currentY  > 0):
+                currentY -= scale_factor
+                currentX -= scale_factor
+                index = path.__str__().index(".png") # replace the png
+                splitPathStr = path.__str__()[0: index] + f"_{count_index}" + ".png"
+                splitPath = Path(splitPathStr)
+
+                # Draw Graph
+                construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
+                                              dpi=DPI_OF_DEVICE)
+                x_value = np.linspace(0, Positive_X[-1],100)
+                y_value = title[-1][0] * (x_value ** title[-1][1])
+                plt.plot(x_value, y_value)
+                #plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+
+                plt.xlim(0,7.5)
+                plt.ylim(0,7.5)
+
+                # decide the scale range of the graph
+                if(currentY > 0):
+                    range_factor = int(Positive_Y[-1]/scale_factor)
+                    plt.ylim(range_factor*scale_factor, (range_factor+1)*scale_factor)
+                if(currentX > 0):
+                    range_factor = int(Positive_X[-1]/scale_factor)
+                    plt.xlim(range_factor*scale_factor, (range_factor+1)*scale_factor)
+
+
+
+                plt.savefig(splitPath, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
+                plt.close()
+
+                im = Image.open(rf"{splitPath}")
+                im = im.resize((1500, 1510))
+                im.save(splitPath)
+
+                count_index += 1
+
+
+        else:
+            construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
+                                          dpi=DPI_OF_DEVICE)
+            x_value = np.linspace(0, Positive_X[-1], 100)
+            y_value = title[-1][0] * (x_value ** title[-1][1])
+            plt.plot(x_value, y_value)
+            #plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+
+            plt.xlim(0, 7.5)
+            plt.ylim(0, 7.5)
+            plt.savefig(path, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
+
+            im = Image.open(rf"{path}")
+            im = im.resize((1500, 1510))
+            im.save(path)
+
     def SaveStlIntoFile(self, filePath, stlObject):
 
         print(f"File Save @ {filePath}")

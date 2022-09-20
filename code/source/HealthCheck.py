@@ -1,7 +1,6 @@
 import json
 import os
 import platform
-import sys
 from multiprocessing import Process
 
 from CanoeDataBase import CanoeDataBase
@@ -9,8 +8,12 @@ from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
 from OptimizationCalculation import OptimizationCalculation
 
+import sys
 
-class DebugBase():
+
+
+
+class DebugBase:
     address = '..\\..\\asset\\startSetup\\setUpinformation.txt'
     if (platform.system().lower() != 'windows'):
         address = '..//..//asset//startSetup//setUpinformation.txt'

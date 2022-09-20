@@ -82,7 +82,6 @@ class ModelCalculation(Calculation):
 
         # TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
         graph_list = []
-        DateSet = (max(self.SemiWidth)+self.Thickness, max(self.Depth)+self.Thickness)
         for Section_Index, section in enumerate(self.Coordinate_Construction):
             # cross_index == cross_section_index
             graph_section_list = []
@@ -93,10 +92,6 @@ class ModelCalculation(Calculation):
 
             graph_section_list.append([section[-1][0], section[-1][1], section[-1][-1]])
             graph_list.append(graph_section_list)
-
-
-        graph_list.append(DateSet)
-
 
 
 
@@ -234,7 +229,7 @@ class ModelCalculation(Calculation):
         #                        X[float,float...],
         #                        Y[float,float...],
         #                        Z[float,float...],
-        #           difference-> infor[str: formula, int: inch]
+        #           difference-> infor[str: formula, int: inch, formulaCoefficient: set(Coefficient, Expoenent)]
         #                        len(X) = len(Y) = len(Z)
         #                        ],
         #           CrossSection[],
@@ -384,11 +379,12 @@ class ModelCalculation(Calculation):
                             ModelLengthList[count], ModeString)  # length subtake
                         C_List.append([X_List, Y_List, Z_List])
             if (ModeString == "Construction"):
-                x = X_List[-1] * self.ECurveF[num]
+                x = X_List[-1] ** self.ECurveF[num]
                 y = Y_List[-1]
                 z = Z_List[-1]
-                formula = f"{round(y / x, 4)}x^{self.ECurveF[num]}" if x != 0 else 0
-                C_List[-1].append([formula, z])
+                Coefficient = round(y / x, 8) if x != 0 else 0
+                formula = f"{round(Coefficient,4)}x^{self.ECurveF[num]}" if x != 0 else 0
+                C_List[-1].append([formula, z, (Coefficient, self.ECurveF[num])])
             count += 1
 
 
@@ -570,12 +566,21 @@ class ModelCalculation(Calculation):
             ylist.append(function(width))
             zlist.append(zvalue)
 
+
         elif (ModeString == "Construction"):
             # config the interval from 1 to 0.5 to get more accuracy.
-            for i in np.arange(0, int(width), 0.1):
-                xlist.append(i)
-                ylist.append(function(i))
+            step_interval = 0.5
+            step = width / step_interval
+
+
+            for i in range(0, int(step)+1):
+                w = step_interval * i
+
+                xlist.append(w)
+                ylist.append(function(w))
                 zlist.append(zvalue)
+
+            # get the last one
             xlist.append(width)
             ylist.append(function(width))
             zlist.append(zvalue)
