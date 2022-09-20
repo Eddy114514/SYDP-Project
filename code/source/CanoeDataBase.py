@@ -206,65 +206,82 @@ class CanoeDataBase:
                 Positive_X.append(x)
                 Positive_Y.append(y)
         print("\n")
+        index = path.__str__().index(".png")  # replace the png
+        splitPathStr = path.__str__()[0: index] # + f"_{count_index}" + ".png"
+        curve_formula = lambda x:title[2][0]*(x**title[2][1])
 
-        count_index = 0
+        scale_x = [0,7.5]
+        scale_y = [0,7.5]
         scale_factor = 7.5
-        if (Positive_Y[-1] > scale_factor or Positive_X[-1] > scale_factor):
-            currentY = Positive_Y[-1]
-            currentX = Positive_X[-1]
-            while (currentX  > 0 or currentY  > 0):
-                currentY -= scale_factor
-                currentX -= scale_factor
-                index = path.__str__().index(".png") # replace the png
-                splitPathStr = path.__str__()[0: index] + f"_{count_index}" + ".png"
-                splitPath = Path(splitPathStr)
-
-                # Draw Graph
-                construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
-                                              dpi=DPI_OF_DEVICE)
-                x_value = np.linspace(0, Positive_X[-1],100)
-                y_value = title[-1][0] * (x_value ** title[-1][1])
-                plt.plot(x_value, y_value)
-                #plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
-
-                plt.xlim(0,7.5)
-                plt.ylim(0,7.5)
-
-                # decide the scale range of the graph
-                if(currentY > 0):
-                    range_factor = int(Positive_Y[-1]/scale_factor)
-                    plt.ylim(range_factor*scale_factor, (range_factor+1)*scale_factor)
-                if(currentX > 0):
-                    range_factor = int(Positive_X[-1]/scale_factor)
-                    plt.xlim(range_factor*scale_factor, (range_factor+1)*scale_factor)
+        x_value = np.linspace(0, Positive_X[-1], 100)
+        y_value = title[-1][0] * (x_value ** title[-1][1])
 
 
+        if(Positive_X[-1] > scale_factor or Positive_Y[-1] > scale_factor):
+            if(Positive_X[-1] > scale_factor):
+                for x_index, x_factor in enumerate(range(int(Positive_X[-1]/scale_factor)+1)):
+                    x_range_low = x_factor * scale_factor
+                    x_range_high = x_range_low + scale_factor
 
-                plt.savefig(splitPath, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
-                plt.close()
+                    scale_x = [x_range_low, x_range_high]
+                    y_low = curve_formula(x_range_low)
+                    y_high = curve_formula(x_range_high) if Positive_X[-1] > x_range_high else curve_formula(Positive_X[-1])
 
-                im = Image.open(rf"{splitPath}")
-                im = im.resize((1500, 1510))
-                im.save(splitPath)
+                    for y_index, y_factor in enumerate(range(int(y_high/scale_factor)+1)):
+                        y_range_low = y_factor * scale_factor
+                        y_range_high = y_range_low + scale_factor
+                        if(y_low <= y_range_high):
 
-                count_index += 1
+                            scale_y = [y_range_low, y_range_high]
+                            splitPath = Path(splitPathStr + f"_Part[{x_index}x{y_index}]" + ".png")
+                            self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
+
+
+            else:
+                y_point = curve_formula(Positive_X[-1])
+                for y_index, y_factor in enumerate(range(int(y_point/scale_factor)+1)):
+                    y_range_low = y_factor * scale_factor
+                    y_range_high = y_range_low + scale_factor
+                    scale_y = [y_range_low, y_range_high]
+                    splitPath = Path(splitPathStr + f"_Part[{0}x{y_index}]" + ".png")
+                    self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         else:
-            construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
-                                          dpi=DPI_OF_DEVICE)
-            x_value = np.linspace(0, Positive_X[-1], 100)
-            y_value = title[-1][0] * (x_value ** title[-1][1])
-            plt.plot(x_value, y_value)
-            #plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
 
-            plt.xlim(0, 7.5)
-            plt.ylim(0, 7.5)
-            plt.savefig(path, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
+            self.DrawGraph(x_value,y_value,path,scale_x, scale_y)
 
-            im = Image.open(rf"{path}")
-            im = im.resize((1500, 1510))
-            im.save(path)
+
+
+    def DrawGraph(self, x_value,y_value,path, scale_x, scale_y):
+        # Draw Graph
+        construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
+                                      dpi=DPI_OF_DEVICE)
+
+        plt.plot(x_value, y_value)
+        # plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+
+        plt.xlim(scale_x[0], scale_x[1])
+        plt.ylim(scale_y[0], scale_y[1])
+        plt.savefig(path, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
+        plt.close()
+
+        im = Image.open(rf"{path}")
+        im = im.resize((1500, 1510))
+        im.save(path)
 
     def SaveStlIntoFile(self, filePath, stlObject):
 
