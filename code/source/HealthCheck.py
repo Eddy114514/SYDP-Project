@@ -88,7 +88,7 @@ class DebugBase:
                 f.write(json.dumps(resetFormat))
 
             # delet all savefiles
-        if (input("Delte All Model ? [y/n]") in ["y", "Y"]):
+        if (input("Delete All Model ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(FilePathModel):
                 os.remove(FilePathModel1 + file)
             for file in os.listdir(FilePathGraph):
@@ -100,11 +100,11 @@ class DebugBase:
                         if (os.path.isdir(new_path)):
                             self.RecursiveRemoveFolder(new_path)
 
-        if (input("Delte AllHistory ? [y/n]") in ["y", "Y"]):
+        if (input("Delete AllHistory ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(DesignHistory):
                 os.remove(DesignHistory1 + file)
 
-        if (input("Delte All ProgressSave ? [y/n]") in ["y", "Y"]):
+        if (input("Delete All ProgressSave ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(ProgressSave):
                 if ("csv" in file):
                     os.remove(ProgressSave1 + file)

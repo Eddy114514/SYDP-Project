@@ -50,7 +50,7 @@ class DataCalculation(Calculation):
                 "Buoyancy": [round(self.Buoyancy, 2), "N"],
                 "Buoyancy_Submerge": [round(self.Buoyancy_Submerge, 2), "N"],
                 "Capability": [self.Buoyancy * 0.225, "lbs"],
-                "Capabllity_Submerge": [self.Buoyancy_Submerge * 0.225, "lbs"],
+                "Capability_Submerge": [self.Buoyancy_Submerge * 0.225, "lbs"],
                 "FlowTest": 'Pass' if self.FlowBoolean else 'Not Pass',
                 "SubmergeTest": 'Pass' if self.SubmergeBoolean else 'Not Pass'}
         }
@@ -232,7 +232,7 @@ class DataCalculation(Calculation):
             # symmetric hall
             len_sum = [len_sum[0] / 2, len_sum[0]]
             operation_f = self.LocateCover(self.CoverLength, len_sum)
-            # avoid Out Erro
+            # avoid Out Error
             operation_e = operation_f + []
             operation_e[0][1] = self.CoverLength  # can be configured
             Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)

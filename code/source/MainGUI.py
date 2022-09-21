@@ -439,7 +439,7 @@ class MainGUI_CreatNEW():
 
             # Output display
             VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
-            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            WeightString = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
             BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
             FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
             Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
@@ -449,7 +449,7 @@ class MainGUI_CreatNEW():
 
             tk.Label(self.MainGUI_DisplayTable_Three, text=VolumeString, font=(
                 "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
-            tk.Label(self.MainGUI_DisplayTable_Three, text=WeightSrting, font=(
+            tk.Label(self.MainGUI_DisplayTable_Three, text=WeightString, font=(
                 "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.MainGUI_DisplayTable_Three, text=BuoyancyString, font=(
                 "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
@@ -719,7 +719,7 @@ class MainGUI_Open():
 
             # Output display
             VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
-            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            WeightString = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
             BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
             FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
             Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
@@ -729,7 +729,7 @@ class MainGUI_Open():
 
             tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
                 "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
-            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightString, font=(
                 "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
                 "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)
@@ -1164,7 +1164,7 @@ class MainGUI_Cut():
 
             # Output display
             VolumeString = f"Canoe Volume :{round(self.CanoeData[1]['Volume'], 2)} cubic inch"
-            WeightSrting = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
+            WeightString = f"Canoe Weight :{round(self.CanoeData[1]['Weight'], 2)} lbs"
             BuoyancyString = f"Canoe Buoyancy :{round(self.CanoeData[1]['Buoyancy'], 2)} N"
             FlowString = f"Flow Test :{'Pass!' if self.CanoeData[1]['Flow'] else 'Not Pass!'}"
             Submerge = f"Submerge Test: {'Pass!' if self.CanoeData[1]['Submerge'] else 'Not Pass!'}"
@@ -1174,7 +1174,7 @@ class MainGUI_Cut():
 
             tk.Label(self.DisplayTable_PageMain_Frame, text=VolumeString, font=(
                 "Time", 12, "bold")).grid(column=2, row=2, sticky=tk.W, ipadx=5, ipady=5)
-            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightSrting, font=(
+            tk.Label(self.DisplayTable_PageMain_Frame, text=WeightString, font=(
                 "Time", 12, "bold")).grid(column=2, row=3, sticky=tk.W, ipadx=5, ipady=5)
             tk.Label(self.DisplayTable_PageMain_Frame, text=BuoyancyString, font=(
                 "Time", 12, "bold")).grid(column=2, row=4, sticky=tk.W, ipadx=5, ipady=5)

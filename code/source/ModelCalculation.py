@@ -223,7 +223,7 @@ class ModelCalculation(Calculation):
         #                        X[float,float...],
         #                        Y[float,float...],
         #                        Z[float,float...],
-        #           difference-> infor[str: formula, int: inch, formulaCoefficient: set(Coefficient, Expoenent)]
+        #           difference-> infor[str: formula, int: inch, formulaCoefficient: set(Coefficient, Exponent)]
         #                        len(X) = len(Y) = len(Z)
         #                        ],
         #           CrossSection[],
@@ -738,7 +738,7 @@ class ModelCalculation(Calculation):
             elif (math.isclose(length_list[lenIndex], canoe_cover)):
                 return lenIndex + 1
 
-    def GetLengthList(self, lengthList, isOut=False, b2_indictae=False):
+    def GetLengthList(self, lengthList, isOut=False, b2_indicate=False):
         # return the list of length with correct x coordinate
         # exp: lengthList[36,120,36]
         # function return [0,36,156,192]
@@ -750,7 +750,7 @@ class ModelCalculation(Calculation):
             if (isOut):
                 if (index == len(lengthList) - 1 or index == 0):
                     Sum += self.Thickness
-            if (b2_indictae and index == 1):
+            if (b2_indicate and index == 1):
                 Sum -= self.B2
 
             Len_Sum.append(Sum)

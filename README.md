@@ -17,7 +17,7 @@ altering parameters and specifications to calculate and construct new models.
 INSTRUCTION ENTITLED "VScode tutorial Run.pdf" TO \
 Run the Program.
 
-You can see that there is an design example in the file,
+You can see that there is a design example in the file,
 use it as your canoe shape standard if you want.
 
 It contains 7 mian code file, which are:\
@@ -33,7 +33,7 @@ It contains 7 mian code file, which are:\
 There Are several external library need to be installed
 * numpy
 * numpy-stl
-* tkinter (Tkinter is not used to constructe the software\
+* tkinter (Tkinter is not used to construct the software\
 but the cmu_112_graphic.py need it)
 * scipy
 * matplotlib

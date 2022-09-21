@@ -30,7 +30,7 @@ class OptimizationCalculation(Calculation):
             # symmetric hall
             len_sum = [len_sum[0] / 2, len_sum[0]]
             self.operation_f = self.LocateCover(self.CoverLength, len_sum)
-            # avoid Out Erro
+            # avoid Out Error
             self.operation_e = self.operation_f + []
             self.operation_e[0][1] = self.CoverLength  # can be configured
         else:
@@ -53,7 +53,7 @@ class OptimizationCalculation(Calculation):
         if (len(self.SectionDict) == 1):
             self.Optimization_Onebody()
         elif (len(self.SectionDict) == 2):
-            self.Optimzation_TwoBody()
+            self.Optimization_TwoBody()
         elif (len(self.SectionDict) == 3):
             self.Optimzation_Threebody()
 
@@ -61,10 +61,10 @@ class OptimizationCalculation(Calculation):
         return self.Top3, self.ResultLog
 
     def Optimization_Onebody(self):
-        for Combaination in self.SectionDict[0]:
-            ECF = Combaination[0]
-            EWF = Combaination[1]
-            EDF = Combaination[2]
+        for Combination in self.SectionDict[0]:
+            ECF = Combination[0]
+            EWF = Combination[1]
+            EDF = Combination[2]
             # Get Basic Data
 
             InsideVolume = OptimizationCalculation.QuickIntegralMethod_Inconstant(
@@ -85,24 +85,24 @@ class OptimizationCalculation(Calculation):
 
             if (TotalWeight < Capability):
                 # Second Round
-                StryofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, [ECF], [EWF], [EDF]) + \
+                StyrofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, [ECF], [EWF], [EDF]) + \
                                   self.Styrofoam_Volume_Calculate(self.operation_e, [ECF], [EWF], [EDF])
-                submerge = (StryofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
+                submerge = (StyrofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
                 if (submerge > CanoeWeight):
-                    # Can be take into account
+                    # Can be taken into account
                     self.ResultLog.append([CanoeWeight, ([ECF], [EWF], [EDF])])
         self.ResultLog.sort(key=lambda x: x[0])
         self.Top3 = self.ResultLog[0: 3]
 
         self.ResultLog = len(self.ResultLog)
 
-    def Optimzation_TwoBody(self):
+    def Optimization_TwoBody(self):
         FrontList = []
         # Get Basic Data
-        for Combaination in self.SectionDict[0]:
-            ECF1 = Combaination[0]
-            EWF1 = Combaination[1]
-            EDF1 = Combaination[2]
+        for Combination in self.SectionDict[0]:
+            ECF1 = Combination[0]
+            EWF1 = Combination[1]
+            EDF1 = Combination[2]
 
             Front = OptimizationCalculation.QuickIntegralMethod_Inconstant(
                 self.Depth[0], self.SemiWidth[0],
@@ -119,10 +119,10 @@ class OptimizationCalculation(Calculation):
             FrontList.append([Weight, Front_Out, (ECF1, EWF1, EDF1), Front])
         EndList = []
 
-        for Combaination in self.SectionDict[1]:
-            ECF2 = Combaination[0]
-            EWF2 = Combaination[1]
-            EDF2 = Combaination[2]
+        for Combination in self.SectionDict[1]:
+            ECF2 = Combination[0]
+            EWF2 = Combination[1]
+            EDF2 = Combination[2]
 
             End = OptimizationCalculation.QuickIntegralMethod_Inconstant(
                 self.Depth[1], self.SemiWidth[1],
@@ -152,12 +152,12 @@ class OptimizationCalculation(Calculation):
                 ECF = [FrontList[indexF][2][0], EndList[indexE][2][0]]
                 EWF = [FrontList[indexF][2][1], EndList[indexE][2][1]]
                 EDF = [FrontList[indexF][2][2], EndList[indexE][2][2]]
-                StryofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, ECF, EWF, EDF) + \
+                StyrofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, ECF, EWF, EDF) + \
                                   self.Styrofoam_Volume_Calculate(self.operation_e, ECF, EWF, EDF)
                 ConcreteVolume = (Weight / self.Density) * 1728
-                submerge = (StryofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
+                submerge = (StyrofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
                 if (submerge > Weight):
-                    # Can be take into account
+                    # Can be taken into account
                     self.Top3.append([Weight, (ECF, EWF, EDF),
                                       (FrontList[indexF][-1], EndList[indexE][-1]),
                                       (FrontList[indexF][1], EndList[indexE][1])])
@@ -169,10 +169,10 @@ class OptimizationCalculation(Calculation):
 
     def Optimzation_Threebody(self):
         FrontList = []
-        for Combaination in self.SectionDict[0]:
-            ECF1 = Combaination[0]
-            EWF1 = Combaination[1]
-            EDF1 = Combaination[2]
+        for Combination in self.SectionDict[0]:
+            ECF1 = Combination[0]
+            EWF1 = Combination[1]
+            EDF1 = Combination[2]
 
             Front = OptimizationCalculation.QuickIntegralMethod_Inconstant(
                 self.Depth[0], self.SemiWidth[0],
@@ -188,10 +188,10 @@ class OptimizationCalculation(Calculation):
 
             FrontList.append([Weight, Front_Out, (ECF1, EWF1, EDF1), Front])
         MidList = []
-        for Combaination in self.SectionDict[1]:
-            ECF2 = Combaination[0]
-            EWF2 = Combaination[1]
-            EDF2 = Combaination[2]
+        for Combination in self.SectionDict[1]:
+            ECF2 = Combination[0]
+            EWF2 = Combination[1]
+            EDF2 = Combination[2]
 
             # Get Basic Data
             if (self.Log[2] == 24):
@@ -249,10 +249,10 @@ class OptimizationCalculation(Calculation):
             MidList.append([Weight, Mid_Out, (ECF2, EWF2, EDF2), Mid])
 
         EndList = []
-        for Combaination in self.SectionDict[2]:
-            ECF3 = Combaination[0]
-            EWF3 = Combaination[1]
-            EDF3 = Combaination[2]
+        for Combination in self.SectionDict[2]:
+            ECF3 = Combination[0]
+            EWF3 = Combination[1]
+            EDF3 = Combination[2]
 
             End = OptimizationCalculation.QuickIntegralMethod_Inconstant(
                 self.Depth[2], self.SemiWidth[2],
@@ -285,12 +285,12 @@ class OptimizationCalculation(Calculation):
                 ECF = [FrontList[indexF][2][0], MidList[indexM][2][0], EndList[indexE][2][0]]
                 EWF = [FrontList[indexF][2][1], MidList[indexM][2][1], EndList[indexE][2][1]]
                 EDF = [FrontList[indexF][2][2], MidList[indexM][2][2], EndList[indexE][2][2]]
-                StryofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, ECF, EWF, EDF) + \
+                StyrofoamVolume = self.Styrofoam_Volume_Calculate(self.operation_f, ECF, EWF, EDF) + \
                                   self.Styrofoam_Volume_Calculate(self.operation_e, ECF, EWF, EDF)
                 ConcreteVolume = (Weight / self.Density) * 1728
-                submerge = (StryofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
+                submerge = (StyrofoamVolume + ConcreteVolume) * 0.160111447518 * 0.225
                 if (submerge > Weight):
-                    # Can be take into account
+                    # Can be taken into account
                     self.Top3.append([Weight, (ECF, EWF, EDF),
                                       (FrontList[indexF][-1], MidList[indexM][-1], EndList[indexE][-1]),
                                       (FrontList[indexF][1], MidList[indexM][1], EndList[indexE][1])])
