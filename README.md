@@ -34,7 +34,7 @@ Requirement:\
 under the system root of SYDP-Project/code/source\
 use command: pip install -r requirements.txt
 
-Packages include:
+Packages include:\
 matplotlib\
 numpy\
 numpy_stl\

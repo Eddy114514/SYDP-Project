@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 plt.axis('off')
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 
 # Get the DPI of the device
@@ -258,7 +258,13 @@ class CanoeDataBase:
 
     def DrawGraph(self, x_value, y_value, path, scale_x, scale_y):
         # Draw Graph
-        construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
+        X_pixel = 1500
+        Y_pixel = 1510
+        if(scale_x[1] > 7.5):
+            X_pixel=1505
+        if(scale_y[1] > 7.5):
+            Y_pixel = 1515
+        construction_fig = plt.figure(figsize=(X_pixel / DPI_OF_DEVICE, Y_pixel / DPI_OF_DEVICE),
                                       dpi=DPI_OF_DEVICE)
 
         plt.plot(x_value, y_value)
@@ -270,8 +276,17 @@ class CanoeDataBase:
         plt.close()
 
         im = Image.open(rf"{path}")
-        im = im.resize((1500, 1510))
-        im.save(path)
+        im = im.resize((X_pixel, Y_pixel))
+
+        flip = ImageOps.mirror(im)
+        index = path.__str__().index(".png")  # replace the png
+        splitPathStr = path.__str__()[0: index]
+        left_save = Path(splitPathStr+"_left"+".png")
+        right_save = Path(splitPathStr+"_right"+".png")
+
+        im.save(right_save)
+        flip.save(left_save)
+        os.remove(path)
 
     def SaveStlIntoFile(self, filePath, stlObject):
 

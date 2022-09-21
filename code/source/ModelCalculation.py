@@ -83,7 +83,18 @@ class ModelCalculation(Calculation):
             # cross_index == cross_section_index
             graph_section_list = []
             # construction graph interval setting
-            for cross_index in range(0, len(section), 4):
+            Copy_Section = []
+
+            #process to take off the cover
+            for check in range(0, len(section)):
+                if(section[check][2][-1] - int(section[check][2][-1]) == 0):
+                    Copy_Section.append(section[check])
+
+
+
+
+
+            for cross_index in range(0, len(Copy_Section),4):
                 if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
                     graph_section_list.append(
                         [section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
