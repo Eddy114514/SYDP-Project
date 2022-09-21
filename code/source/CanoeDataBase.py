@@ -78,14 +78,18 @@ class CanoeDataBase:
         del self.HDL
 
     def DeleteData_CDD(self):
+        # delete all data and reset all setting
         del self.SDD
         del self.HDL
+        self.SymmetryBoolean = False
+        self.FSDMode = False
+        self.Construction = False
 
     def SaveDataToSQL(self):
         # Save Data To SQL
         print('work')
 
-    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, GraphSet):
+    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, Config_Count,GraphSet):
         CanoeDetailDataDict = saveText[2]
         with open(CSVAddress, "w") as CSV:
             writer = csv.writer(CSV)
@@ -97,7 +101,7 @@ class CanoeDataBase:
                     writer.writerow([key, value])
         UserInput = [saveText[0].SDD, saveText[0].HDL]
         UserInput[0]['Name'] = str(logName)
-        UserInput[0]["Count"] = UserInput[0]["Count"] + 1
+        UserInput[0]["Config_Count"] = Config_Count
         with open(LogAddress, "w") as Userlog:
             Userlog.write(json.dumps(UserInput))
         # TODO Give the log a count function that save the time of configuration on it, default is zero
@@ -144,7 +148,7 @@ class CanoeDataBase:
         # Save User Input for Open
         UserInput = [CanoeData[0].SDD, CanoeData[0].HDL]
         UserInput[0]["Name"] = fileName
-        UserInput[0]["Count"] = 0
+        UserInput[0]["Config_Count"] = 0
         self.DesignHistoryLog = Path(f'..//..//asset//__designHistory//__log{fileName}.txt')
 
         with open(self.DesignHistoryLog, "w") as Userlog:

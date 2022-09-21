@@ -631,7 +631,7 @@ class MainGUI_Open():
         with open(self.InputFile_Path, "r") as InputFile:
             self.InputFile = eval(InputFile.read())
 
-        self.size = len(self.InputFile[0]) - 1
+        self.size = len(self.InputFile[0]) - 2
         for add in range((3 * self.size) + 1):
             self.DisplayTable_PageMain_Frame.columnconfigure(add, weight=3)
 
@@ -683,9 +683,10 @@ class MainGUI_Open():
             self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile[0]["Name"]
+        Config_Count = self.InputFile[0]["Config_Count"] + self.InputFile[0]["Config_Count"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],Config_Count,
                                    self.GraphSet)
 
     def ResultTableDisplay(self):
@@ -789,7 +790,7 @@ class MainGUI_Open():
         StrVarList = []
         for assign in self.InputFile[0]:
             temp = []
-            if (assign != "Name" and assign != "Count"):
+            if (assign != "Name" and assign != "Config_Count"):
                 for section in self.InputFile[0][assign]:
                     strVar = StringVar()
                     strVar.set(section)
@@ -902,7 +903,7 @@ class MainGUI_Optimization():
         # ensure key is Int
         temp = {}
         for var in section:
-            if (var != "Name" and var != "Count"):
+            if (var != "Name" and var != "Config_Count"):
                 temp[index] = section[var]
                 index += 1
         section = temp
@@ -1131,7 +1132,7 @@ class MainGUI_Cut():
         try:
             section = self.InputFile[0].copy()
             section.pop("Name")
-            section.pop("Count")
+            section.pop("Config_Count")
             print(self.InputFile)
 
             hall = self.InputFile[1]
@@ -1230,9 +1231,10 @@ class MainGUI_Cut():
             self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile[0]["Name"]
+        Config_Count = self.InputFile[0]["Config_Count"] + self.InputFile[0]["Config_Count"]
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], Config_Count,
                                    self.GraphSet)
 
 

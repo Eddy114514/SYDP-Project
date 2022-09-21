@@ -570,6 +570,8 @@ class ModelCalculation(Calculation):
                 ylist.append(function(w))
                 zlist.append(zvalue)
 
+            #@TODO: avoid the siutation that i == width.
+
             # get the last one
             xlist.append(width)
             ylist.append(function(width))
