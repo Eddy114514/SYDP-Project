@@ -85,7 +85,8 @@ class ModelCalculation(Calculation):
         for Section_Index, section in enumerate(self.Coordinate_Construction):
             # cross_index == cross_section_index
             graph_section_list = []
-            for cross_index in range(0, len(section), 2):
+            # construction graph interval setting
+            for cross_index in range(0, len(section), 4):
                 if not(self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
                     graph_section_list.append(
                         [section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
@@ -382,8 +383,8 @@ class ModelCalculation(Calculation):
                 x = X_List[-1] ** self.ECurveF[num]
                 y = Y_List[-1]
                 z = Z_List[-1]
-                Coefficient = round(y / x, 8) if x != 0 else 0
-                formula = f"{round(Coefficient,4)}x^{self.ECurveF[num]}" if x != 0 else 0
+                Coefficient = y / x if x != 0 else 0
+                formula = f"{round(Coefficient,8)}x^{self.ECurveF[num]}" if x != 0 else 0
                 C_List[-1].append([formula, z, (Coefficient, self.ECurveF[num])])
             count += 1
 

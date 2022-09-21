@@ -198,6 +198,7 @@ class CanoeDataBase:
         # PrintOut Data
         # print out the coordinate through terminal
         print(f"Cross-Section at {title[1]}, formula = {title[0]}")
+
         Positive_X = []
         Positive_Y = []
         for index, (x, y) in enumerate(zip(X, Y)):
@@ -245,19 +246,6 @@ class CanoeDataBase:
                     scale_y = [y_range_low, y_range_high]
                     splitPath = Path(splitPathStr + f"_Part[{0}x{y_index}]" + ".png")
                     self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         else:
