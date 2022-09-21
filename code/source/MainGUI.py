@@ -683,7 +683,7 @@ class MainGUI_Open():
             self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile[0]["Name"]
-        Config_Count = self.InputFile[0]["Config_Count"] + self.InputFile[0]["Config_Count"]
+        Config_Count = self.InputFile[0]["Config_Count"] + 1
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
         self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],Config_Count,
@@ -1231,7 +1231,7 @@ class MainGUI_Cut():
             self.CDD.SaveStlIntoFile(filePath, self.canoe_mesh_object)
 
         FileName = self.InputFile[0]["Name"]
-        Config_Count = self.InputFile[0]["Config_Count"] + self.InputFile[0]["Config_Count"]
+        Config_Count = self.InputFile[0]["Config_Count"] + 1
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
         self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], Config_Count,
