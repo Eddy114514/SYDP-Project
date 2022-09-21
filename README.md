@@ -30,13 +30,19 @@ It contains 7 mian code file, which are:\
 7.OptimizationCalculation.py
 
 
-There Are several external library need to be installed
-* numpy
-* numpy-stl
-* tkinter (Tkinter is not used to construct the software\
-but the cmu_112_graphic.py need it)
-* scipy
-* matplotlib
+Requirement:\
+under the system root of SYDP-Project/code/source\
+use command: pip install -r requirements.txt
+
+Packages include:
+matplotlib\
+numpy\
+numpy_stl\
+Pillow\
+PyQt5\
+scipy\
+stl\
+pathlib\
 
 #
 

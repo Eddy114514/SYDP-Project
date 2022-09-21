@@ -56,39 +56,39 @@ class MainGUI_Init():
 
     def ConfigImg(self):
         with Image.open('../../asset/Picture/CreatNew_Icon.png') as CreatNew:
-            img_CreatNew = CreatNew.resize((80, 100), Image.ANTIALIAS)
+            img_CreatNew = CreatNew.resize((80, 100))
             self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
 
         with Image.open('../../asset/Picture/Cut_Icon.png') as Cut:
-            img_Cut = Cut.resize((80, 100), Image.ANTIALIAS)
+            img_Cut = Cut.resize((80, 100))
             self.img_resized_Cut = ImageTk.PhotoImage(img_Cut)
 
         with Image.open('../../asset/Picture/Open_Icon.png') as Open:
-            img_Open = Open.resize((80, 100), Image.ANTIALIAS)
+            img_Open = Open.resize((80, 100))
             self.img_resized_Open = ImageTk.PhotoImage(img_Open)
 
         with Image.open('../../asset/Picture/FindBest_Icon.png') as Findbest:
-            img_Findbest = Findbest.resize((80, 100), Image.ANTIALIAS)
+            img_Findbest = Findbest.resize((80, 100))
             self.img_resized_Findbest = ImageTk.PhotoImage(img_Findbest)
 
         with Image.open('../../asset/Picture/Menu_Icon.png') as Return:
-            img_Return = Return.resize((50, 50), Image.ANTIALIAS)
+            img_Return = Return.resize((50, 50))
             MainGUI_Init.img_resized_Return = ImageTk.PhotoImage(img_Return)
 
         with Image.open('../../asset/Picture/Add_Icon.png') as Add:
-            img_Add = Add.resize((50, 50), Image.ANTIALIAS)
+            img_Add = Add.resize((50, 50))
             MainGUI_Init.img_resized_Add = ImageTk.PhotoImage(img_Add)
 
         with Image.open('../../asset/Picture/NextPage_Icon.png') as NextPage:
-            img_NextPage = NextPage.resize((50, 50), Image.ANTIALIAS)
+            img_NextPage = NextPage.resize((50, 50))
             MainGUI_Init.img_resized_NextPage = ImageTk.PhotoImage(img_NextPage)
 
         with Image.open('../../asset/Picture/BackPage_Icon.png') as BackPage:
-            img_BackPage = BackPage.resize((50, 50), Image.ANTIALIAS)
+            img_BackPage = BackPage.resize((50, 50))
             MainGUI_Init.img_resized_BackPage = ImageTk.PhotoImage(img_BackPage)
 
         with Image.open('../../asset/Picture/Save_Icon.png') as Save:
-            img_Save = Save.resize((50, 50), Image.ANTIALIAS)
+            img_Save = Save.resize((50, 50))
             MainGUI_Init.img_resized_Save = ImageTk.PhotoImage(img_Save)
 
     def CreateWidgets(self):

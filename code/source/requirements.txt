@@ -1,0 +1,9 @@
+matplotlib==3.5.1
+numpy==1.22.2
+numpy_stl==2.16.3
+Pillow==9.2.0
+PyQt5==5.15.7
+scipy==1.8.0
+stl==0.0.3
+pathlib==3.4
+
