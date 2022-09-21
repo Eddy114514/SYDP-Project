@@ -308,4 +308,4 @@ class Calculation:
 
     def Sign_CurveFormula_Constant_Out(self, k):
         return (lambda x: ((((self.SemiWidth[k] + self.Thickness) ** self.ECurveF[k]) * x) / (
-                                  self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))
+                self.Depth[k] + self.Thickness)) ** (1 / self.ECurveF[k]))

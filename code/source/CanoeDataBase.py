@@ -1,10 +1,9 @@
 import csv
 import json
+import matplotlib
 import os
 import platform
 from pathlib import Path
-
-import matplotlib
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -98,6 +97,7 @@ class CanoeDataBase:
                     writer.writerow([key, value])
         UserInput = [saveText[0].SDD, saveText[0].HDL]
         UserInput[0]['Name'] = str(logName)
+        UserInput[0]["Count"] = UserInput[0]["Count"] + 1
         with open(LogAddress, "w") as Userlog:
             Userlog.write(json.dumps(UserInput))
         # TODO Give the log a count function that save the time of configuration on it, default is zero
@@ -144,6 +144,7 @@ class CanoeDataBase:
         # Save User Input for Open
         UserInput = [CanoeData[0].SDD, CanoeData[0].HDL]
         UserInput[0]["Name"] = fileName
+        UserInput[0]["Count"] = 0
         self.DesignHistoryLog = Path(f'..//..//asset//__designHistory//__log{fileName}.txt')
 
         with open(self.DesignHistoryLog, "w") as Userlog:
@@ -208,31 +209,30 @@ class CanoeDataBase:
                 Positive_Y.append(y)
         print("\n")
         index = path.__str__().index(".png")  # replace the png
-        splitPathStr = path.__str__()[0: index] # + f"_{count_index}" + ".png"
-        curve_formula = lambda x:title[2][0]*(x**title[2][1])
+        splitPathStr = path.__str__()[0: index]  # + f"_{count_index}" + ".png"
+        curve_formula = lambda x: title[2][0] * (x ** title[2][1])
 
-        scale_x = [0,7.5]
-        scale_y = [0,7.5]
+        scale_x = [0, 7.5]
+        scale_y = [0, 7.5]
         scale_factor = 7.5
         x_value = np.linspace(0, Positive_X[-1], 100)
         y_value = title[-1][0] * (x_value ** title[-1][1])
 
-
-        if(Positive_X[-1] > scale_factor or Positive_Y[-1] > scale_factor):
-            if(Positive_X[-1] > scale_factor):
-                for x_index, x_factor in enumerate(range(int(Positive_X[-1]/scale_factor)+1)):
+        if (Positive_X[-1] > scale_factor or Positive_Y[-1] > scale_factor):
+            if (Positive_X[-1] > scale_factor):
+                for x_index, x_factor in enumerate(range(int(Positive_X[-1] / scale_factor) + 1)):
                     x_range_low = x_factor * scale_factor
                     x_range_high = x_range_low + scale_factor
 
                     scale_x = [x_range_low, x_range_high]
                     y_low = curve_formula(x_range_low)
-                    y_high = curve_formula(x_range_high) if Positive_X[-1] > x_range_high else curve_formula(Positive_X[-1])
+                    y_high = curve_formula(x_range_high) if Positive_X[-1] > x_range_high else curve_formula(
+                        Positive_X[-1])
 
-                    for y_index, y_factor in enumerate(range(int(y_high/scale_factor)+1)):
+                    for y_index, y_factor in enumerate(range(int(y_high / scale_factor) + 1)):
                         y_range_low = y_factor * scale_factor
                         y_range_high = y_range_low + scale_factor
-                        if(y_low <= y_range_high):
-
+                        if (y_low <= y_range_high):
                             scale_y = [y_range_low, y_range_high]
                             splitPath = Path(splitPathStr + f"_Part[{x_index}x{y_index}]" + ".png")
                             self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
@@ -240,7 +240,7 @@ class CanoeDataBase:
 
             else:
                 y_point = curve_formula(Positive_X[-1])
-                for y_index, y_factor in enumerate(range(int(y_point/scale_factor)+1)):
+                for y_index, y_factor in enumerate(range(int(y_point / scale_factor) + 1)):
                     y_range_low = y_factor * scale_factor
                     y_range_high = y_range_low + scale_factor
                     scale_y = [y_range_low, y_range_high]
@@ -250,11 +250,9 @@ class CanoeDataBase:
 
         else:
 
-            self.DrawGraph(x_value,y_value,path,scale_x, scale_y)
+            self.DrawGraph(x_value, y_value, path, scale_x, scale_y)
 
-
-
-    def DrawGraph(self, x_value,y_value,path, scale_x, scale_y):
+    def DrawGraph(self, x_value, y_value, path, scale_x, scale_y):
         # Draw Graph
         construction_fig = plt.figure(figsize=(1500 / DPI_OF_DEVICE, 1510 / DPI_OF_DEVICE),
                                       dpi=DPI_OF_DEVICE)

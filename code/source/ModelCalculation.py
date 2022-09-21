@@ -1,11 +1,8 @@
 import copy
 import math
-from typing import Union, Any
-
 import numpy as np
 from stl import mesh
-
-
+from typing import Union, Any
 
 from Calculation import Calculation
 
@@ -87,18 +84,14 @@ class ModelCalculation(Calculation):
             graph_section_list = []
             # construction graph interval setting
             for cross_index in range(0, len(section), 4):
-                if not(self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
+                if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
                     graph_section_list.append(
                         [section[cross_index][0], section[cross_index][1], section[cross_index][-1]])
 
             graph_section_list.append([section[-1][0], section[-1][1], section[-1][-1]])
             graph_list.append(graph_section_list)
 
-
-
         return graph_list
-
-
 
     def Hall_Mesh_Generate(self, V_List):
         Face_List = []
@@ -244,7 +237,6 @@ class ModelCalculation(Calculation):
         count_in = 0
         count_out = 0
 
-
         for num in range(0, self.Num):
             CI_List, count_in = self.Coordinate_Section_Generate(
                 num, count_in, self.Inside_LengthList, self.Inside_Length,
@@ -253,17 +245,16 @@ class ModelCalculation(Calculation):
                 num, count_out, self.Outside_LengthList, self.Outside_Length,
                 CurveList_Outside, interval, ModeString)
 
-
             Coordinate_Inside.append(CI_List)
             Coordinate_Outside.append(CO_List)
 
-
-        if(self.Construction == True):
+        if (self.Construction == True):
             count_construct = 0
-            for num in range(0,self.Num):
+            # male module for construction, thus use inner data.
+            for num in range(0, self.Num):
                 CU_List, count_construct = self.Coordinate_Section_Generate(
-                    num, count_construct, self.Outside_LengthList, self.Outside_Length,
-                    CurveList_Outside, interval, "Construction")
+                    num, count_construct, self.Inside_LengthList, self.Inside_Length,
+                    CurveList_Inside, interval, "Construction")
                 self.Coordinate_Construction.append(CU_List)
 
         """# used to Debug of Construction
@@ -384,10 +375,9 @@ class ModelCalculation(Calculation):
                 y = Y_List[-1]
                 z = Z_List[-1]
                 Coefficient = y / x if x != 0 else 0
-                formula = f"{round(Coefficient,8)}x^{self.ECurveF[num]}" if x != 0 else 0
+                formula = f"{round(Coefficient, 8)}x^{self.ECurveF[num]}" if x != 0 else 0
                 C_List[-1].append([formula, z, (Coefficient, self.ECurveF[num])])
             count += 1
-
 
         return C_List, count
 
@@ -573,8 +563,7 @@ class ModelCalculation(Calculation):
             step_interval = 0.5
             step = width / step_interval
 
-
-            for i in range(0, int(step)+1):
+            for i in range(0, int(step) + 1):
                 w = step_interval * i
 
                 xlist.append(w)

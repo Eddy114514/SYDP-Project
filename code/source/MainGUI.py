@@ -1,14 +1,13 @@
 import tkinter as tk
+from PIL import Image, ImageTk
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
+from matplotlib.figure import Figure
+from mpl_toolkits import mplot3d
 from pathlib import Path
 from tkinter import StringVar
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import simpledialog
-
-from PIL import Image, ImageTk
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
-from matplotlib.figure import Figure
-from mpl_toolkits import mplot3d
 
 # Import other files
 from HealthCheck import *
@@ -420,8 +419,9 @@ class MainGUI_CreatNEW():
         # check Button
         tk.Checkbutton(self.MainGUI_InputTable_Two, text="FSD Mode",
                        command=lambda: [self.CDD.ConfigFSD()]).grid(column=0, row=5, sticky=tk.E, ipadx=5, ipady=5)
-        tk.Checkbutton(self.MainGUI_InputTable_Two, text= "Construction",
-                       command=lambda: [self.CDD.ConfigConstruction()]).grid(column=0, row=6, sticky=tk.E, ipadx=5, ipady=5)
+        tk.Checkbutton(self.MainGUI_InputTable_Two, text="Construction",
+                       command=lambda: [self.CDD.ConfigConstruction()]).grid(column=0, row=6, sticky=tk.E, ipadx=5,
+                                                                             ipady=5)
 
         self.CoverLength_entry.grid(column=1, row=1, sticky=tk.W)
         self.Density_entry.grid(column=1, row=2, sticky=tk.W)
@@ -617,8 +617,8 @@ class MainGUI_Open():
             self.MainGUI_Menu_Button, image=MainGUI_Init.img_resized_Return, command=self.Return)
         self.Return_Button.pack(side="left", padx=10, pady=10)
 
-        self.Construction_Button = tk.Checkbutton(self.MainGUI_Menu_Button, text= "Construction",bg="blue",
-                       command=lambda: [self.CDD.ConfigConstruction()])
+        self.Construction_Button = tk.Checkbutton(self.MainGUI_Menu_Button, text="Construction", bg="blue",
+                                                  command=lambda: [self.CDD.ConfigConstruction()])
         self.Construction_Button.pack(side="top")
 
         self.DisplayTable_PageMain()
@@ -636,8 +636,6 @@ class MainGUI_Open():
             self.DisplayTable_PageMain_Frame.columnconfigure(add, weight=3)
 
         self.DisplayTable_PageMain_Frame.pack(fill="both", expand=True)
-
-
 
         # Store the Entry
         entry_section_list = []
@@ -664,7 +662,7 @@ class MainGUI_Open():
         for element in HallEntryList:
             HullListObject.append(float(element.get()))
 
-        self.CDD = CanoeDataBase(SectionDictObject, HullListObject, B3 = self.CDD.GetConstruction())
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject, B3=self.CDD.GetConstruction())
         try:
             self.DCCO = DataCalculation(self.CDD)
             self.MCCO = ModelCalculation(self.CDD)
@@ -871,7 +869,7 @@ class MainGUI_Optimization():
         self.MainGUI_Menu_Button = tk.Frame(self.master, bg="blue")
         self.MainGUI_Menu_Button.pack(fill="x")
 
-        tk.Checkbutton(self.MainGUI_Menu_Button, text="Construction",bg="blue",
+        tk.Checkbutton(self.MainGUI_Menu_Button, text="Construction", bg="blue",
                        command=lambda: [self.CDD.ConfigConstruction()]).pack(side="top")
 
         self.MainGUI_Title = tk.Frame(self.master)
@@ -1133,6 +1131,7 @@ class MainGUI_Cut():
         try:
             section = self.InputFile[0].copy()
             section.pop("Name")
+            section.pop("Count")
             print(self.InputFile)
 
             hall = self.InputFile[1]

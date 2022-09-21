@@ -1,16 +1,13 @@
 import json
 import os
 import platform
+import sys
 from multiprocessing import Process
 
 from CanoeDataBase import CanoeDataBase
 from DataCalculation import DataCalculation
 from ModelCalculation import ModelCalculation
 from OptimizationCalculation import OptimizationCalculation
-
-import sys
-
-
 
 
 class DebugBase:
@@ -105,7 +102,6 @@ class DebugBase:
 
         if (input("Delte AllHistory ? [y/n]") in ["y", "Y"]):
             for file in os.listdir(DesignHistory):
-
                 os.remove(DesignHistory1 + file)
 
         if (input("Delte All ProgressSave ? [y/n]") in ["y", "Y"]):
