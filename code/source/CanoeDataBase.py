@@ -207,7 +207,7 @@ class CanoeDataBase:
         Positive_X = []
         Positive_Y = []
         for index, (x, y) in enumerate(zip(X, Y)):
-            print(f"X: {round(x, 3)} || Y: {round(y, 3)}")
+            print(f"X: {round(x, 8)} || Y: {round(y, 8)}")
             if (x >= 0):
                 Positive_X.append(x)
                 Positive_Y.append(y)
@@ -216,9 +216,10 @@ class CanoeDataBase:
         splitPathStr = path.__str__()[0: index]  # + f"_{count_index}" + ".png"
         curve_formula = lambda x: title[2][0] * (x ** title[2][1])
 
-        scale_x = [0, 7.5]
-        scale_y = [0, 7.5]
-        scale_factor = 7.5
+        scale_factor = 7.25
+        scale_x = [0, 7.25]
+        scale_y = [0, 7.25]
+
         x_value = np.linspace(0, Positive_X[-1], 100)
         y_value = title[-1][0] * (x_value ** title[-1][1])
 
@@ -239,7 +240,7 @@ class CanoeDataBase:
                         if (y_low <= y_range_high):
                             scale_y = [y_range_low, y_range_high]
                             splitPath = Path(splitPathStr + f"_Part[{x_index}x{y_index}]" + ".png")
-                            self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
+                            self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y, title)
 
 
             else:
@@ -249,35 +250,43 @@ class CanoeDataBase:
                     y_range_high = y_range_low + scale_factor
                     scale_y = [y_range_low, y_range_high]
                     splitPath = Path(splitPathStr + f"_Part[{0}x{y_index}]" + ".png")
-                    self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y)
+                    self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y, title)
 
 
         else:
 
-            self.DrawGraph(x_value, y_value, path, scale_x, scale_y)
+            self.DrawGraph(x_value, y_value, path, scale_x, scale_y, title)
 
-    def DrawGraph(self, x_value, y_value, path, scale_x, scale_y):
+    def DrawGraph(self, x_value, y_value, path, scale_x, scale_y, title):
         # Draw Graph
-        X_pixel = 1500
-        Y_pixel = 1510
-        if(scale_x[1] > 7.5):
-            X_pixel=1505
-        if(scale_y[1] > 7.5):
-            Y_pixel = 1515
-        construction_fig = plt.figure(figsize=(X_pixel / DPI_OF_DEVICE, Y_pixel / DPI_OF_DEVICE),
-                                      dpi=DPI_OF_DEVICE)
+        left_margin = 0.25 # inch
+        right_margin = 0.25  # inch
+        figure_width = 7.5  # inch
+        figure_height = 7.5  # inch
+        top_margin = 1.75   # inch
+        bottom_margin = 1.75  # inch
 
-        plt.plot(x_value, y_value)
-        # plt.title(f"Cross-Section at {title[1]}, formula = {title[0]}")
+        box_width = left_margin + figure_width + right_margin
+        box_height = top_margin + figure_height + bottom_margin
+
+        # specifying the width and the height of the box in inches
+        fig = plt.figure(figsize=(box_width, box_height))
+        ax = fig.add_subplot(111)
+        ax.plot(x_value, y_value)
+        plt.title(f"Cross-Section at {title[1]}, formula = {title[2][0]}x^{title[2][1]}")
+
+        fig.subplots_adjust(left=left_margin / box_width,
+                            bottom=bottom_margin / box_height,
+                            right=1. - right_margin / box_width,
+                            top=1. - top_margin / box_height,
+                            )
 
         plt.xlim(scale_x[0], scale_x[1])
         plt.ylim(scale_y[0], scale_y[1])
-        plt.savefig(path, format="png", dpi=DPI_OF_DEVICE, bbox_inches='tight')
+        plt.savefig(path, format="png", dpi=DPI_OF_DEVICE)
         plt.close()
 
         im = Image.open(rf"{path}")
-        im = im.resize((X_pixel, Y_pixel))
-
         flip = ImageOps.mirror(im)
         index = path.__str__().index(".png")  # replace the png
         splitPathStr = path.__str__()[0: index]
