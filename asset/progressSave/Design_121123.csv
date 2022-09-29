@@ -1,7 +1,9 @@
 Hull Type,Three Body
 Hull Property,Asymmetric
 Hull subProperty,Asymmetric_Constant Hull
-Unit,inch,cubic Inch,lbs,Newton
+Unit,inch,cubic inch,lbs,newton,square inch
+Surface Area,7614.150708532861,sq in
+Surface Area by Sections,1097.9679228792036,5210.59584818956,1305.586937464098,sq in
 Volume_Outside,4937.33,35468.18,7241.42,cu in
 Volume_Inside,4284.3,31418.18,6283.64,cu in
 Volume_Styrofoam,10567.93,cu in

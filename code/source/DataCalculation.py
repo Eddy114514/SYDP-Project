@@ -45,9 +45,10 @@ class DataCalculation(Calculation):
             2: {"Hull Type": OperationNote[0].split('-> ')[-1],
                 "Hull Property": OperationNote[1].split('-> ')[-1],
                 "Hull subProperty": OperationNote[2].split('-> ')[-1],
-                "Unit": ["inch", "cubic Inch",
-                         "lbs", "Newton"],
-                "Surface Area":[self.SurfaceArea, "cu in"],
+                "Unit": ["inch", "cubic inch",
+                         "lbs", "newton", "square inch"],
+                "Surface Area":[self.SurfaceArea, "sq in"],
+                "Surface Area by Sections":self.SurfaceArea_Section + ["sq in"],
                 "Volume_Outside": self.SectionVolume_Outside + ["cu in"],
                 "Volume_Inside": self.SectionVolume_Inside + ["cu in"],
                 "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
@@ -95,6 +96,7 @@ class DataCalculation(Calculation):
         self.Canoe_Weight()
         self.Canoe_Buoyancy()
         self.Canoe_Flowability()
+        self.Surfacearea()
 
     def Canoe_Weight(self):
         # inch_to_feet = 1728 || inch³ ==> feet³
@@ -289,7 +291,7 @@ class DataCalculation(Calculation):
         self.Thickness = self.Thickness/2
         self.SignFunction_Main()
 
-        self.SurfaceArea = self.SurfaceArea_Calculation()
+        self.SurfaceArea_Calculation()
 
 
         # Redo the Assign
@@ -300,29 +302,69 @@ class DataCalculation(Calculation):
     def SurfaceArea_Calculation(self):
         interval = 0.1
 
-        for num in range(len(self.Num)):
+        for num in range(self.Num):
             print(f"Surface Num is {num}")
             # get width, depth at that index by using the self.WidthFlist, then get the length, add up
-            if(num == 1):
-                if(self.Log[2] == 24):
-                    for lengthIndex in np.arange(self.B2_O, self.Length[num]+self. B2_Diff, interval):
+            CrossSection_SurfaceArea_Sum = 0
+            if(self.Log[2] == 24 and num ==1):
+                for lengthIndex in np.arange(self.B2_O, self.Length[num]+self.B2_Diff, interval):
+                    formula, high_range = self.BuildLambda_ArcLength_Formula(num, lengthIndex)
+                    if(formula == 0):
+                        CrossSection_SurfaceArea_Sum +=0
+                    else:
+                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range)
+                formula, high_range = self.BuildLambda_ArcLength_Formula(num, self.Length[num]+self.B2_Diff)
+                CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range)* interval
 
-                        return 42
-
+            elif(self.WidthFList[num] == -1 and self.DepthFList[num] == -1 and self.WidthFList_Outside[num] == -1 and
+                        self.DepthFList_Outside[num] == -1):
+                formula, high_range = self.Buildlambda_ArcLength_Constant_Formula(num)
+                if(formula ==0):
+                    CrossSection_SurfaceArea_Sum +=0
                 else:
-                    for lengthIndex in np.arange(0, self.Length[num], interval):
-                        return 42
+                    CrossSection_SurfaceArea_Sum += self.Length[num] * self.ArcLength(formula, 0, high_range)
+
+            else:
+                for lengthIndex in np.arange(0, self.Length[num] + self.Thickness,interval):
+
+                    formula, high_range = self.BuildLambda_ArcLength_Formula(num, lengthIndex)
+                    if (formula == 0):
+                        CrossSection_SurfaceArea_Sum += 0
+
+                    else:
+
+                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range) * interval
+
+                formula, high_range = self.BuildLambda_ArcLength_Formula(num, self.Length[num] + self.Thickness)
+                CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0, high_range)
 
 
-            for lengthIndex in np.arange(0, self.Length[num] + self.Thickness,interval):
-                return 42
+            self.SurfaceArea_Section.append(CrossSection_SurfaceArea_Sum)
 
-    def BuildLambda_ArcLength_Formula(self, width, depth, exponent):
-        coefficient = (width * exponent)/(depth**exponent)
-        return lambda x: ((1 + (coefficient*(x**exponent))**2)**(1/2))
+        self.SurfaceArea = sum(self.SurfaceArea_Section)
+
+    def BuildLambda_ArcLength_Formula(self, num, lengthIndex):
+        width = self.WidthFList_Outside[num](lengthIndex)
+        depth = self.DepthFList_Outside[num](lengthIndex)
+
+        if(depth == 0):
+            return 0,0
+        exponent = self.ECurveF[num]
+        coefficient = (depth * exponent)/(width**exponent)
+
+        return lambda x: (1+(coefficient**2)*(x**(2*(exponent-1))))**(1/2), width
+
+    def Buildlambda_ArcLength_Constant_Formula(self, num):
+        width = self.SemiWidth[num]+self.Thickness
+        depth = self.Depth[num]+self.Thickness
+        if (depth == 0):
+            return 0,0
+        exponent = self.ECurveF[num]
+        coefficient = (depth * exponent) / (width ** exponent)
+        return lambda x: (1+(coefficient**2)*(x**(2*(exponent-1))))**(1/2), width
 
     def ArcLength(self, arc_length_formula, low_range, high_range):
-        return 2 * quad(arc_length_formula, low_range, high_range)
+        return 2 * quad(arc_length_formula, low_range, high_range)[0]
 
 
     # Helper Function
