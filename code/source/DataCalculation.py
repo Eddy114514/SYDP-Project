@@ -1,3 +1,4 @@
+import numpy as np
 from scipy.integrate import quad
 
 from Calculation import Calculation
@@ -12,6 +13,10 @@ class DataCalculation(Calculation):
         self.Volume_Styrofoam = 0
         self.Volume_Concrete = 0
 
+        self.SurfaceArea = 0
+        self.SurfaceArea_Section = []
+
+
         self.Buoyancy = 0
         self.Buoyancy_Submerge = 0
 
@@ -19,6 +24,8 @@ class DataCalculation(Calculation):
         self.TotalWeight = 0
 
         self.WaterLine = 0
+
+
 
         self.SubmergeBoolean = False
         self.FlowBoolean = False
@@ -40,6 +47,7 @@ class DataCalculation(Calculation):
                 "Hull subProperty": OperationNote[2].split('-> ')[-1],
                 "Unit": ["inch", "cubic Inch",
                          "lbs", "Newton"],
+                "Surface Area":[self.SurfaceArea, "cu in"],
                 "Volume_Outside": self.SectionVolume_Outside + ["cu in"],
                 "Volume_Inside": self.SectionVolume_Inside + ["cu in"],
                 "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
@@ -243,6 +251,10 @@ class DataCalculation(Calculation):
             Volume_FrontCover = self.Styrofoam_Volume_Calculate(operation_f, SwDFunction_List)
             Volume_EndCover = self.Volume_Inside - self.Styrofoam_Volume_Calculate(operation_e, SwDFunction_List)
 
+        if (self.Log[2] == 24):
+            # Redo the B2
+            self.Length[1] = self.Length[1] + self.B2
+
         return (Volume_EndCover + Volume_FrontCover)
 
     def Styrofoam_Volume_Calculate(self, op_list, SwDFunction_List):
@@ -271,6 +283,47 @@ class DataCalculation(Calculation):
     def WaterLine(self):
 
         return 42
+
+    def Surfacearea(self):
+        # Reassign the thickness to the 1/2 of thickness and recalculate the outside formulas for the surface Area
+        self.Thickness = self.Thickness/2
+        self.SignFunction_Main()
+
+        self.SurfaceArea = self.SurfaceArea_Calculation()
+
+
+        # Redo the Assign
+        self.Thickness *=2
+        self.SignFunction_Main()
+
+
+    def SurfaceArea_Calculation(self):
+        interval = 0.1
+
+        for num in range(len(self.Num)):
+            print(f"Surface Num is {num}")
+            # get width, depth at that index by using the self.WidthFlist, then get the length, add up
+            if(num == 1):
+                if(self.Log[2] == 24):
+                    for lengthIndex in np.arange(self.B2_O, self.Length[num]+self. B2_Diff, interval):
+
+                        return 42
+
+                else:
+                    for lengthIndex in np.arange(0, self.Length[num], interval):
+                        return 42
+
+
+            for lengthIndex in np.arange(0, self.Length[num] + self.Thickness,interval):
+                return 42
+
+    def BuildLambda_ArcLength_Formula(self, width, depth, exponent):
+        coefficient = (width * exponent)/(depth**exponent)
+        return lambda x: ((1 + (coefficient*(x**exponent))**2)**(1/2))
+
+    def ArcLength(self, arc_length_formula, low_range, high_range):
+        return 2 * quad(arc_length_formula, low_range, high_range)
+
 
     # Helper Function
     @staticmethod

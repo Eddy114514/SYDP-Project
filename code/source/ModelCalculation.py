@@ -597,23 +597,6 @@ class ModelCalculation(Calculation):
 
         return (xlist, ylist, zlist)
 
-    def Symmetriclize(self):
-        print("Being Symmetriclize")
-        self.Num += 1
-        self.Length.append(self.Length[0] / 2)
-        self.Length[0] = self.Length[1]
-        self.Width.append(self.Width[0])
-        self.SemiWidth.append(self.SemiWidth[0])
-        self.Depth.append(self.Depth[0])
-        self.ECurveF.append(self.ECurveF[0])
-        self.EWidthF.append(self.EWidthF[0])
-        self.EDepthF.append(self.EDepthF[0])
-
-        self.WidthFList.append(self.WidthFList[0])
-        self.WidthFList_Outside.append(self.WidthFList_Outside[0])
-        self.DepthFList.append(self.DepthFList[0])
-        self.DepthFList_Outside.append(self.DepthFList_Outside[0])
-
     def LengthIndexGenerate(self):
         interval = 1
         print(self.Log)
@@ -766,3 +749,19 @@ class ModelCalculation(Calculation):
 
             Len_Sum.append(Sum)
         return Len_Sum
+    def Symmetriclize(self):
+        print("Being Symmetriclize")
+        self.Num += 1
+        self.Length.append(self.Length[0] / 2)
+        self.Length[0] = self.Length[1]
+        self.Width.append(self.Width[0])
+        self.SemiWidth.append(self.SemiWidth[0])
+        self.Depth.append(self.Depth[0])
+        self.ECurveF.append(self.ECurveF[0])
+        self.EWidthF.append(self.EWidthF[0])
+        self.EDepthF.append(self.EDepthF[0])
+
+        self.WidthFList.append(self.WidthFList[0])
+        self.WidthFList_Outside.append(self.WidthFList_Outside[0])
+        self.DepthFList.append(self.DepthFList[0])
+        self.DepthFList_Outside.append(self.DepthFList_Outside[0])

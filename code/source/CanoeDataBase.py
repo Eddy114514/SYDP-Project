@@ -1,16 +1,17 @@
 import csv
 import json
-import matplotlib
 import os
 import platform
 from pathlib import Path
 
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
 plt.axis('off')
 from PIL import Image, ImageOps
 import numpy as np
+
+
 
 # Get the DPI of the device
 from PyQt5.QtWidgets import QApplication
@@ -89,7 +90,7 @@ class CanoeDataBase:
         # Save Data To SQL
         print('work')
 
-    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, Config_Count,GraphSet):
+    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, Config_Count, GraphSet):
         CanoeDetailDataDict = saveText[2]
         with open(CSVAddress, "w") as CSV:
             writer = csv.writer(CSV)
@@ -259,11 +260,11 @@ class CanoeDataBase:
 
     def DrawGraph(self, x_value, y_value, path, scale_x, scale_y, title):
         # Draw Graph
-        left_margin = 0.25 # inch
+        left_margin = 0.25  # inch
         right_margin = 0.25  # inch
         figure_width = 7.5  # inch
         figure_height = 7.5  # inch
-        top_margin = 1.75   # inch
+        top_margin = 1.75  # inch
         bottom_margin = 1.75  # inch
 
         box_width = left_margin + figure_width + right_margin
@@ -290,8 +291,8 @@ class CanoeDataBase:
         flip = ImageOps.mirror(im)
         index = path.__str__().index(".png")  # replace the png
         splitPathStr = path.__str__()[0: index]
-        left_save = Path(splitPathStr+"_left"+".png")
-        right_save = Path(splitPathStr+"_right"+".png")
+        left_save = Path(splitPathStr + "_left" + ".png")
+        right_save = Path(splitPathStr + "_right" + ".png")
 
         im.save(right_save)
         flip.save(left_save)
