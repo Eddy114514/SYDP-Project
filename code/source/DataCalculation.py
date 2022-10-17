@@ -98,6 +98,10 @@ class DataCalculation(Calculation):
         self.Canoe_Flowability()
         self.Surfacearea()
 
+        if(self.FlowBoolean and self.SubmergeBoolean):
+            self.WaterLine_Caculation()
+
+
     def Canoe_Weight(self):
         # inch_to_feet = 1728 || inch³ ==> feet³
         self.CanoeWeight = (self.Volume_Concrete / 1728) * self.Density
@@ -282,12 +286,75 @@ class DataCalculation(Calculation):
                               quad(SwDFunction_List[op[0]], 0, op[1])[0]
         return volume
 
-    def WaterLine(self):
+    def WaterLine_Caculation(self):
+        self.WaterLine_TotalCrew = self.WaterLine_Approximate(self.TotalWeight)
+        self.WaterLine_HalfCrew = self.WaterLine_Approximate(self.TotalWeight/2)
+        self.WaterLine_NoneCrew = self.WaterLine_Approximate(self.CanoeWeight)
 
-        return 42
+    def WaterLine_Approximate(self, weight):
+        def margin_median(left, right):
+            return (right-left)/2
+
+        # Median Depth
+        approx_depth = (self.Depth[0] + self.Thickness)/2
+        approx_weight = self.Depth_Aspect_Capability_Acqurie(approx_depth)
+        # Binary-method finding
+        left_margin = 0
+        right_margin = self.Depth[0] + self.Thickness
+
+        while(not abs(weight - approx_weight) <= 0.1):
+            if(approx_weight < weight):
+                left_margin = approx_depth
+                approx_depth = margin_median(left_margin,right_margin)
+            elif(approx_weight > weight):
+                right_margin = approx_depth
+                approx_depth = margin_median(left_margin,right_margin)
+
+        return approx_depth
+
+    def Depth_Aspect_Capability_Acqurie(self, depth):
+        # Constant is created with the simplifying of the formula, the constant in the front of integral.
+        # Since the Depth_Aspect_Capability_calculation use different formula for constant and changing
+        # Thus, constant1 represent constant_section's constant
+        # constant2 represent changing_section's constant
+
+        """
+         self.Length[index] + self.B2_Diff - self.B2_O = Length of mid section of asymmetric hull
+
+        """
+
+        sum_capability = 0
+        for num in range(len(self.Depth)):
+            if(num != 1):
+                length = self.Length[num] + self.Thickness
+                #constant2
+                constant = (2 * (self.SemiWidth[num] + self.Thickness) * (length))\
+                           /((self.EWidthF[num]+1)*((self.Depth[num]+self.Thickness)**(1/self.ECurveF[num])))
+                depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_NonConstant(num)
+                sum_capability += constant*quad(depth_aspect_integral,0,depth)[0]
+            elif(num == 1):
+                length = self.Length[num] if not self.Log[2] == 24 else self.Length[num] + self.B2_Diff - self.B2_O
+                if(self.Log[2] == 24):
+                    # constant2
+                    constant = (2 * (self.SemiWidth[num] + self.Thickness) * (length)) \
+                               / ((self.EWidthF[num] + 1) * (
+                                (self.Depth[num] + self.Thickness) ** (1 / self.ECurveF[num])))
+                    depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_NonConstant(num)
+                    sum_capability += constant * quad(depth_aspect_integral, 0, depth)[0]
+                else:
+                    #constant1
+                    constant = (2*length*(self.SemiWidth[num]+self.Thickness))/\
+                               ((self.EWidthF[num]+1)*((self.Depth[num]+self.Thickness)**(1/self.ECurveF[num])))
+                    depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_Constant(num)
+                    sum_capability += constant * quad(depth_aspect_integral, 0, depth)[0]
+
+
+        return sum_capability
+
 
     def Surfacearea(self):
         # Reassign the thickness to the 1/2 of thickness and recalculate the outside formulas for the surface Area
+        save = self.Thickness
         self.Thickness = self.Thickness/2
         self.SignFunction_Main()
 
@@ -295,7 +362,7 @@ class DataCalculation(Calculation):
 
 
         # Redo the Assign
-        self.Thickness *=2
+        self.Thickness = save
         self.SignFunction_Main()
 
 
@@ -342,6 +409,15 @@ class DataCalculation(Calculation):
             self.SurfaceArea_Section.append(CrossSection_SurfaceArea_Sum)
 
         self.SurfaceArea = sum(self.SurfaceArea_Section)
+
+    def BuildLambda_Depth_Aspect_Integral_NonConstant(self, num):
+        exp_a = 1/self.ECurveF[num]
+        exp_b = 1/self.EWidthF[num]
+        return lambda x: (x**exp_a)*(1-((x-self.Depth[num]-self.Thickness)
+                                        /(self.Depth[num]+self.Thickness))**exp_b)
+    def BuildLambda_Depth_Aspect_Integral_Constant(self, num):
+        exp_a = 1/self.ECurveF[num]
+        return lambda x: (x**exp_a)
 
     def BuildLambda_ArcLength_Formula(self, num, lengthIndex):
         width = self.WidthFList_Outside[num](lengthIndex)
