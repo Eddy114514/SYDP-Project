@@ -94,7 +94,7 @@ class ModelCalculation(Calculation):
 
 
 
-            for cross_index in range(0, len(Copy_Section),4):
+            for cross_index in range(0, len(Copy_Section),1):
                 if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
                     graph_section_list.append(
                         [Copy_Section[cross_index][0], Copy_Section[cross_index][1], Copy_Section[cross_index][-1]])

@@ -98,8 +98,8 @@ class DataCalculation(Calculation):
         self.Canoe_Flowability()
         self.Surfacearea()
 
-        if(self.FlowBoolean and self.SubmergeBoolean):
-            self.WaterLine_Caculation()
+        """if(self.FlowBoolean and self.SubmergeBoolean):
+            self.WaterLine_Caculation()"""
 
 
     def Canoe_Weight(self):
@@ -421,7 +421,7 @@ class DataCalculation(Calculation):
 
     def BuildLambda_ArcLength_Formula(self, num, lengthIndex):
         width = self.WidthFList_Outside[num](lengthIndex)
-        depth = self.DepthFList_Outside[num](lengthIndex)
+        depth = self.DepthFList_Outside[num](lengthIndex) if type(self.DepthFList_Outside[num]) not in [int,float] else self.Depth[num]
 
         if(depth == 0):
             return 0,0
