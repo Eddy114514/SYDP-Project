@@ -137,7 +137,7 @@ class CanoeDataBase:
 
         # Generate file name
         fileName = f"{DesignNumber}"
-        for l in logInt[0:2]:
+        for l in logInt[0:3]:
             fileName += str(l)
 
         # Save Model
