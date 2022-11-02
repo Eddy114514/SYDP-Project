@@ -2,7 +2,10 @@ import numpy as np
 
 from Calculation import Calculation
 
-
+# The optimization calculation class will manipulate the exponent variable of the canoe and try all possible
+# combination of the exponent variable to find the best combination of the exponent variable. In which the best
+# combination of the exponent variable means the canoe use it will have the lightest weight and can pass the
+# floating test and submerage test.
 class OptimizationCalculation(Calculation):
     def __init__(self, CDD, CDDRange):
         # DataStructure of CDDRange:

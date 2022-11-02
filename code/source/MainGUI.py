@@ -12,7 +12,7 @@ from tkinter import simpledialog
 # Import other files
 from HealthCheck import *
 
-
+# This is the base GUI class that every other GUI class inherits from and initializes the main window.
 class MainGUI_Base():
     # read startUp file
     address = '..\\..\\asset\\startSetup\\setUpinformation.txt' \
@@ -44,7 +44,7 @@ class MainGUI_Base():
             self.root.title("Canoe Design Software")
             MainGUI_Init(self.root)
 
-
+# The initial menu GUI class that is called when the program is first run.
 class MainGUI_Init():
 
     def __init__(self, master):
@@ -55,6 +55,7 @@ class MainGUI_Init():
         self.CreateWidgets()
 
     def ConfigImg(self):
+        # import image and resize for button.
         with Image.open('../../asset/Picture/CreatNew_Icon.png') as CreatNew:
             img_CreatNew = CreatNew.resize((80, 100))
             self.img_resized_CreatNew = ImageTk.PhotoImage(img_CreatNew)
@@ -117,7 +118,7 @@ class MainGUI_Init():
             self.MainGUI_Init_MainFrame, text="Debug",
             command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
         self.Debug_Button.pack(side="bottom", padx=10, pady=self.master.winfo_height() * (3 / 4))
-
+    # PgSwitch function will end the current GUI and start a new GUI for specific function.
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
         MainGUI_Init.CreatNewWindow = MainGUI_CreatNEW(self.master)
@@ -162,6 +163,7 @@ class MainGUI_Init():
 
 
 class MainGUI_CreatNEW():
+    # CreatNewWindow is the GUI for creating a new project of a canoe.
     Num_Counter = 0
     Page_Counter = 0
 
@@ -295,7 +297,7 @@ class MainGUI_CreatNEW():
                 self.FrameStoreList[2][2] = self.Save_Button
 
     def DataInputTable(self, NumCount):
-        # Defind Input table
+        # Defined Input table
 
         Length_entry_1 = tk.Entry(self.MainGUI_InputTable)
         Width_entry_1 = tk.Entry(self.MainGUI_InputTable)

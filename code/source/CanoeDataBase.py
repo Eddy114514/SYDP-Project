@@ -5,6 +5,7 @@ import platform
 from pathlib import Path
 
 import matplotlib
+# Remove the following line if you want to use the default matplotlib backend (line 9)
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.axis('off')
@@ -13,7 +14,7 @@ import numpy as np
 
 
 
-# Get the DPI of the device
+# This part is to get the DPI of the device that excutes the code.
 from PyQt5.QtWidgets import QApplication
 import sys
 
@@ -22,7 +23,8 @@ screen = app.screens()[0]
 DPI_OF_DEVICE = screen.physicalDotsPerInch()
 app.quit()
 
-
+# This class will be used to store the data of the canoe and manipulate the output of the program.
+# The CanoeDataBase Object will be used to connect MainGUI.py and Calculate.py.
 class CanoeDataBase:
     # Designed to connect to STL database
 
@@ -108,7 +110,6 @@ class CanoeDataBase:
         # TODO Give the log a count function that save the time of configuration on it, default is zero
 
         self.SaveGraphIntoFile(f"Design_{str(logName)}", GraphSet)
-
     def SaveDataIntoFile(self, OperationNote, CanoeData, logInt, STLfilePath, STLobj, GraphSet):
 
         # re-load the software Log
@@ -135,7 +136,7 @@ class CanoeDataBase:
 
         # Covert saveText (dict) to csv file
 
-        # Generate file name
+        # Generate the file name
         fileName = f"{DesignNumber}"
         for l in logInt[0:3]:
             fileName += str(l)
@@ -196,8 +197,6 @@ class CanoeDataBase:
                 self.Graph_Generate_Save(crossSection[-1], crossSection[0], crossSection[1], graph_path)
 
     def Graph_Generate_Save(self, title, X, Y, path):
-        # wait to be improved
-        # TODO:
         # 1.Change the graph generate mode to semi
         # 2.When the semi-graph size is larger than some size, automatically cut it in to two graph
 
@@ -208,6 +207,7 @@ class CanoeDataBase:
         Positive_X = []
         Positive_Y = []
         for index, (x, y) in enumerate(zip(X, Y)):
+            # print the coordinate through terminal of each point of cross-section.
             print(f"X: {round(x, 8)} || Y: {round(y, 8)}")
             if (x >= 0):
                 Positive_X.append(x)
@@ -224,7 +224,11 @@ class CanoeDataBase:
         x_value = np.linspace(0, Positive_X[-1], 100)
         y_value = title[-1][0] * (x_value ** title[-1][1])
 
+        # 1.1 Generate the graph
         if (Positive_X[-1] > scale_factor or Positive_Y[-1] > scale_factor):
+            # 1.2 Cut the graph if the Y is larger than 7.25 inch or X is larger than 7.25 inch.
+            # Because the graph is too large to be printed out in a A4 paper.
+            # This algorithm will cut the graph into two graph and print them out in two A4 paper.
             if (Positive_X[-1] > scale_factor):
                 for x_index, x_factor in enumerate(range(int(Positive_X[-1] / scale_factor) + 1)):
                     x_range_low = x_factor * scale_factor
@@ -242,8 +246,7 @@ class CanoeDataBase:
                             scale_y = [y_range_low, y_range_high]
                             splitPath = Path(splitPathStr + f"_Part[{x_index}x{y_index}]" + ".png")
                             self.DrawGraph(x_value, y_value, splitPath, scale_x, scale_y, title)
-
-
+            # 1.2 Generate the graph when the Y is within the scale factor
             else:
                 y_point = curve_formula(Positive_X[-1])
                 for y_index, y_factor in enumerate(range(int(y_point / scale_factor) + 1)):

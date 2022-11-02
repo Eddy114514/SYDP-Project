@@ -2,7 +2,7 @@ class Calculation:
 
     def __init__(self, CanoeDataBase_Object):
         self.SymmetryBoolean = False
-
+        # The data below are the data that will be used in the calculation of the canoe for its specs and STL 3D model.
         self.CalculationObject = CanoeDataBase_Object
         self.Length = []
         self.Width = []
@@ -87,6 +87,7 @@ class Calculation:
         return Len_Sum
 
     def SignFunction_Main(self):
+        # To recognize the type of canoe and assign the function to the variable.
 
         if (len(self.ECurveF) == 1):
             self.Log.append(0)
@@ -100,6 +101,8 @@ class Calculation:
             self.Log.append(2)
             self.SignFunction_ThreeBodyHull()
 
+    # These "BuildLamda" functions will be used to simulate the mathematical functions of the canoe.
+    # And they will be mainly used in the calculus part through the scipy.integrate.quad function.
     def BuildLambda_Depth(self, index):
         return (lambda x: self.Depth[index] * (x / self.Length[index]) ** self.EDepthF[index])
 
@@ -287,6 +290,7 @@ class Calculation:
         self.B2_O = round(((self.Length[1]) * SW_value_O) / (1 - SW_value_O), 10)
         self.B2_Diff = self.B2_O - self.B2
 
+    # This series of "Sign formula" are for the exact data point generation of 3D STL canoe.
     def Sign_CurveFormula(self, k):
         return (lambda x: (
                 self.WidthFList[k](x) * self.DepthFList[k](x)))

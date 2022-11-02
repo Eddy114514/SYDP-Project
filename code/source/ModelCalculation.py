@@ -77,7 +77,6 @@ class ModelCalculation(Calculation):
         if (self.Construction == False):
             return 42
 
-        # TODO something is wrong with the graph that there is no points, probably because of the Array slicing, wrong address
         graph_list = []
         for Section_Index, section in enumerate(self.Coordinate_Construction):
             # cross_index == cross_section_index
@@ -105,6 +104,10 @@ class ModelCalculation(Calculation):
         return graph_list
 
     def Hall_Mesh_Generate(self, V_List):
+        # The Hall_Mesh_Generate is for generating the mesh of the hall in a data structure that can be mathmatically convert in
+        # to a STL formate.
+
+        # The V_List is the list of the vertex of the hall.
         Face_List = []
         for number, V_set in enumerate(V_List):
             F_L = []
@@ -165,6 +168,7 @@ class ModelCalculation(Calculation):
         return Horizontal_Mesh_List
 
     def Vertical_Cover_Mesh_Generate(self, VerticalCoverList):
+        # Vertical Cover Mesh Generation (Only for normal model that require cover, vertical cover.)
 
         FaceVertical = []
         Cset_Vertical_List = []
@@ -175,6 +179,7 @@ class ModelCalculation(Calculation):
 
             # assert coordinate sets
             for index_sub, coordinate_set in enumerate(Cover_Vertical):
+
                 if (index_sub != 0 and 0 == index):
                     coordinate_set_copy = coordinate_set + []
                     coordinate_set_copy[1] = Cover_Vertical[0][1]  # same height as 0th element
@@ -356,6 +361,8 @@ class ModelCalculation(Calculation):
     def Coordinate_Section_Generate(self, num, count, CalculateLengthList, ModelLengthList, CurveList, interval,
                                     ModeString):
         C_List = []
+        # C_List = [CrossSection, CrossSection, CrossSection, ...]
+
         for dataIndex in range(len(CalculateLengthList[num])):
             if (num == 0):
                 X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
@@ -363,7 +370,7 @@ class ModelCalculation(Calculation):
                     ModelLengthList[count], ModeString)
                 C_List.append([X_List, Y_List, Z_List])
             else:
-
+                # if the change rate of this section's width and depth both are 0.
                 if (self.EWidthF[num] == 0.0 and self.EDepthF[num] == 0.0):
 
                     X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
@@ -374,13 +381,14 @@ class ModelCalculation(Calculation):
                     if (self.Log[2] == 24):
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
-                            ModelLengthList[count], ModeString)  # length subtake
+                            ModelLengthList[count], ModeString)
                         C_List.append([X_List, Y_List, Z_List])
                     else:
                         X_List, Y_List, Z_List = self.CrossSection_Coordinate_Generate(
                             CurveList[num][dataIndex][1], interval, CurveList[num][dataIndex][0],
-                            ModelLengthList[count], ModeString)  # length subtake
+                            ModelLengthList[count], ModeString)
                         C_List.append([X_List, Y_List, Z_List])
+            # the extra actions that only for the condition when the user choose to generate construction graphs.
             if (ModeString == "Construction"):
                 x = X_List[-1] ** self.ECurveF[num]
                 y = Y_List[-1]
@@ -501,7 +509,7 @@ class ModelCalculation(Calculation):
 
         Vectors_I = []
         Vectors_O = []
-
+        # Convert the coordinate format in to vectors formate. In which they are X,Y,Z (Width,Depth,Length)
         for num in range(0, self.Num):
             for c_set in CI[num]:
                 MeshSet = []
@@ -520,6 +528,8 @@ class ModelCalculation(Calculation):
                             MeshSet.append([x, y + add, z + self.Thickness])
                             """print(f"[{x},{y+add},{z+self.Thickness}]")"""
                     else:
+                        # add is the value to add to the Y coordinate to make the top of canoe body start at same
+                        # point (the depth of the canoe body).
                         add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
                         if (self.FSDMode):
                             MeshSet.append([x, y + add, z + self.Thickness])
@@ -598,8 +608,27 @@ class ModelCalculation(Calculation):
         return (xlist, ylist, zlist)
 
     def LengthIndexGenerate(self):
+        # 1.1
+        # Inside_Length and Outside_Length are list, in which they contain the specific length index of each section of the canoe.
+        # For example, if the canoe is 3 sections, and each section's length is 100, 200, 300.
+        # Then the Inside_Length = [[0...100],[0...200],[0...300]], and for the Outside_Length, we need to add the thickness of the canoe body.
+        # In which Outside_Length = [[0...100+Thickness],[0...200+Thickness],[0...300+Thickness]]
+
+        # 1.2
+        # Inside_LengthList and Outside_LengthList are list, in which they culmulatively calculate each length index along the canoe and store them.
+        # For example, if the canoe is 3 sections, and each section's length is 100, 200, 300.
+        # Then the Inside_LengthList = [[0...100],[100...300],[300...600]], and for the Outside_LengthList, we need to add the thickness of the canoe body.
+        # In which Outside_LengthList = [[0...100+Thickness],[100+Thickness...300+Thickness],[300+Thickness...600+Thickness]]
+
+        # 1.3
+        # Since the canoe contain at least one cover, we need to find the index of the cover in either Length and LengthList.
+
+
+
+
         interval = 1
         print(self.Log)
+        # Assign the length index of covers.
         if (self.Log[2] == 24):
             cover_list_in = [self.CoverLength - self.Thickness,
                              self.CoverLength_end - self.B2 + self.Thickness]
@@ -620,6 +649,7 @@ class ModelCalculation(Calculation):
 
         CoverIndexList_in = []
         CoverIndexList_out = []
+        # Find the index of the cover in the length list.
         for cover_in, cover_out in zip(cover_list_in, cover_list_out):
             numIn = ModelCalculation.LocateCover(cover_in, len_sum_in) - 1
             numOut = ModelCalculation.LocateCover(cover_out, len_sum_out) - 1
@@ -695,6 +725,7 @@ class ModelCalculation(Calculation):
         self.Outside_Length = self.ZIndexGenerate(copy.deepcopy(self.Outside_LengthList), len_sum_out, self.B2_O)
 
     def InsertCover(self, lenlist, CoverIndexList, B2, numIndex):
+        # Inser the cover into the length list.
         for CoverIndex in CoverIndexList:
             if (CoverIndex[0] == numIndex):
                 if (CoverIndex[1] not in lenlist):
@@ -722,6 +753,7 @@ class ModelCalculation(Calculation):
 
     @staticmethod
     def LocateCover(canoe_cover, length_list):
+        # This function is used to find the which section of canoe the cover is in.
         for lenIndex in range(1, len(length_list)):
             if (canoe_cover < length_list[lenIndex - 1] and lenIndex - 1 == 0):
                 return lenIndex - 1

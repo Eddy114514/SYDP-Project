@@ -235,7 +235,7 @@ class DataCalculation(Calculation):
         return sum(Volume_Inside_List)
 
     def Styrofoam_Volume(self, SwDFunction_List):
-        # if no cover
+        # If user select to design the canoe with no Cover.
         if (float(self.CoverLength) == float(0)): return 0
 
         if (self.Log[2] == 24):

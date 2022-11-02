@@ -11,6 +11,7 @@ from OptimizationCalculation import OptimizationCalculation
 
 
 class DebugBase:
+    # Determine the operating system and set up the appropriate path.
     address = '..\\..\\asset\\startSetup\\setUpinformation.txt'
     if (platform.system().lower() != 'windows'):
         address = '..//..//asset//startSetup//setUpinformation.txt'
@@ -19,6 +20,7 @@ class DebugBase:
         self.isDebug = debugBoolean
 
     def DebugMode(self, Profile):
+        # continue the while loop until the user enter 'space'
         self.command_Read(Profile)
         End_Parameter = input("""End the debug mode? Enter: [y/n]""")
 
@@ -172,6 +174,7 @@ class DebugBase:
         return True
 
     def DebugTest(self, p):
+        # allow user to determine which particular function of the software to test.
         FileName = "TestProfile_" + p + ".txt"
         fileAddress = f'..\\..\\asset\\TestProfile\\{FileName}'
         if (platform.system().lower() != "windows"):
@@ -191,6 +194,7 @@ class DebugBase:
         # Actions base on Configuration
         # Test
         canoe = None
+        # both mode = Model generation and Data Calculation.
         if (bool(startSetUp["BothMode"])):
             self.MCCO = ModelCalculation(self.CDD)
             self.DCCO.CanoeDataCalculation()
