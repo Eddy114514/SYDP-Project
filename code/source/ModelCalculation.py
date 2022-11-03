@@ -58,14 +58,14 @@ class ModelCalculation(Calculation):
         face_Counter = 0
         for face_sub_list in Face_List:
             for face in face_sub_list:
-                for set in face:
+                for two_traingle_set in face:
                     # Sign Two faces
                     for num in range(3):
-                        canoe.vectors[face_Counter][num] = set[num]
-                        canoe.vectors[face_Counter + 1][num] = set[(num + 1) * -1]
+                        canoe.vectors[face_Counter][num] = two_traingle_set[num]
+                        canoe.vectors[face_Counter + 1][num] = two_traingle_set[(num + 1) * -1]
 
                     face_Counter += 2
-
+        # To ensure the canoe modle is facing the right direction.
         canoe.rotate([0.0, 0.5, 0.0], math.radians(90))
         canoe.rotate([0.5, 0.0, 0.0], math.radians(-1 * 90))
 
@@ -73,35 +73,54 @@ class ModelCalculation(Calculation):
         # Create a new plot
         return canoe
 
-    def Construction_Graph_Generation(self):
-        if (self.Construction == False):
-            return 42
+    def Mesh_Generate(self):
+        CI, CO = self.Coordinate_Generate("3D")
 
-        graph_list = []
-        for Section_Index, section in enumerate(self.Coordinate_Construction):
-            # cross_index == cross_section_index
-            graph_section_list = []
-            # construction graph interval setting
-            Copy_Section = []
-
-            #process to take off the cover
-            for check in range(0, len(section)):
-                if(section[check][2][-1] - int(section[check][2][-1]) == 0):
-                    Copy_Section.append(section[check])
-
-
-
+        Vectors_I = []
+        Vectors_O = []
+        # Convert the coordinate format in to vectors formate. In which they are X,Y,Z (Width,Depth,Length)
+        for num in range(0, self.Num):
+            for c_set in CI[num]:
+                MeshSet = []
+                # For Debug
+                """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
+                for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
+                    if (self.Log[2] == 24):
+                        add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
+                        if (self.FSDMode):
+                            MeshSet.append([x, y + add, z + self.Thickness])
 
 
-            for cross_index in range(0, len(Copy_Section),1):
-                if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
-                    graph_section_list.append(
-                        [Copy_Section[cross_index][0], Copy_Section[cross_index][1], Copy_Section[cross_index][-1]])
-            if([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]] not in graph_section_list):
-                graph_section_list.append([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]])
-            graph_list.append(graph_section_list)
+                        elif ((self.CoverLength - self.Thickness) <= z <= (
+                                sum(self.Length) - self.CoverLength - self.B2 + self.Thickness)):
 
-        return graph_list
+                            MeshSet.append([x, y + add, z + self.Thickness])
+                            """print(f"[{x},{y+add},{z+self.Thickness}]")"""
+                    else:
+                        # add is the value to add to the Y coordinate to make the top of canoe body start at same
+                        # point (the depth of the canoe body).
+                        add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
+                        if (self.FSDMode):
+                            MeshSet.append([x, y + add, z + self.Thickness])
+
+                        elif ((self.CoverLength - self.Thickness) <= z <= (
+                                sum(self.Length) - self.CoverLength + self.Thickness)):
+
+                            MeshSet.append([x, y + add, z + self.Thickness])
+                            """print(f"[{x},{y+add},{z+self.Thickness}]")"""
+
+                if (MeshSet != []):
+                    Vectors_I.append(MeshSet)
+
+            for c_set_o in CO[num]:
+                MeshSet = []
+                # For Debug
+                """print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))"""
+                for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
+                    add = (self.Depth[num] + self.Thickness) - c_set_o[1][-1]
+                    MeshSet.append([x, y + add, z])
+                Vectors_O.append(MeshSet)
+        return ([Vectors_I, Vectors_O])
 
     def Hall_Mesh_Generate(self, V_List):
         # The Hall_Mesh_Generate is for generating the mesh of the hall in a data structure that can be mathmatically convert in
@@ -207,6 +226,38 @@ class ModelCalculation(Calculation):
 
         return FaceVertical, Cset_Vertical_List
 
+    # To generate Graph of consecration per a specific interval.
+    def Construction_Graph_Generation(self):
+        if (self.Construction == False):
+            return 42
+
+        graph_list = []
+        for Section_Index, section in enumerate(self.Coordinate_Construction):
+            # cross_index == cross_section_index
+            graph_section_list = []
+            # construction graph interval setting
+            Copy_Section = []
+
+            #process to take off the cover
+            for check in range(0, len(section)):
+                if(section[check][2][-1] - int(section[check][2][-1]) == 0):
+                    Copy_Section.append(section[check])
+
+
+
+
+
+            for cross_index in range(0, len(Copy_Section),1):
+                if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
+                    graph_section_list.append(
+                        [Copy_Section[cross_index][0], Copy_Section[cross_index][1], Copy_Section[cross_index][-1]])
+            if([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]] not in graph_section_list):
+                graph_section_list.append([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]])
+            graph_list.append(graph_section_list)
+
+        return graph_list
+
+    # To generate all coordinate of the canoe.
     def Coordinate_Generate(self, ModeString):
         # The list that save the curve function for each 1 inch in length
 
@@ -504,55 +555,6 @@ class ModelCalculation(Calculation):
 
         return (Vertex_I, Vertex_O, Vertex_O_Cover)
 
-    def Mesh_Generate(self):
-        CI, CO = self.Coordinate_Generate("3D")
-
-        Vectors_I = []
-        Vectors_O = []
-        # Convert the coordinate format in to vectors formate. In which they are X,Y,Z (Width,Depth,Length)
-        for num in range(0, self.Num):
-            for c_set in CI[num]:
-                MeshSet = []
-                # For Debug
-                """print("X:%s || Y:%s || Z:%s"%(c_set[0][0], c_set[1][0], c_set[2][0]))"""
-                for x, y, z in zip(c_set[0], c_set[1], c_set[2]):
-                    if (self.Log[2] == 24):
-                        add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if (self.FSDMode):
-                            MeshSet.append([x, y + add, z + self.Thickness])
-
-
-                        elif ((self.CoverLength - self.Thickness) <= z <= (
-                                sum(self.Length) - self.CoverLength - self.B2 + self.Thickness)):
-
-                            MeshSet.append([x, y + add, z + self.Thickness])
-                            """print(f"[{x},{y+add},{z+self.Thickness}]")"""
-                    else:
-                        # add is the value to add to the Y coordinate to make the top of canoe body start at same
-                        # point (the depth of the canoe body).
-                        add = (self.Depth[num] + self.Thickness) - c_set[1][-1]
-                        if (self.FSDMode):
-                            MeshSet.append([x, y + add, z + self.Thickness])
-
-                        elif ((self.CoverLength - self.Thickness) <= z <= (
-                                sum(self.Length) - self.CoverLength + self.Thickness)):
-
-                            MeshSet.append([x, y + add, z + self.Thickness])
-                            """print(f"[{x},{y+add},{z+self.Thickness}]")"""
-
-                if (MeshSet != []):
-                    Vectors_I.append(MeshSet)
-
-            for c_set_o in CO[num]:
-                MeshSet = []
-                # For Debug
-                """print("X_O:%s || Y_O:%s || Z_O:%s"%(c_set_o[0][0], c_set_o[1][0], c_set_o[2][0]))"""
-                for x, y, z in zip(c_set_o[0], c_set_o[1], c_set_o[2]):
-                    add = (self.Depth[num] + self.Thickness) - c_set_o[1][-1]
-                    MeshSet.append([x, y + add, z])
-                Vectors_O.append(MeshSet)
-        return ([Vectors_I, Vectors_O])
-
     def CrossSection_Coordinate_Generate(self, width, interval, function, zvalue, ModeString):
 
         xlist = []
@@ -607,6 +609,8 @@ class ModelCalculation(Calculation):
 
         return (xlist, ylist, zlist)
 
+
+    # To generate all z index along the canoe body.
     def LengthIndexGenerate(self):
         # 1.1
         # Inside_Length and Outside_Length are list, in which they contain the specific length index of each section of the canoe.
