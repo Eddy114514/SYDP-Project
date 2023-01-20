@@ -146,20 +146,27 @@ class MainGUI_Init():
             MainGUI_Cut(self.master, InputFile_Path, Cut_Inch)
 
     def GetFilePath(self):
-        AbsFilePath = __file__
-        AbsFilePath = AbsFilePath[0:AbsFilePath.index("code")]
-        if (platform.system().lower() == 'windows'):
-            AbsFilePath += "asset\\__designHistory"
+        # Get the file path of the design file.
+
+        # recognize the operating system.
+        if(platform.system() == "Windows"):
+            rootFilePath = "..\\..\\asset\\_designHistory\\"
         else:
-            AbsFilePath += "asset/__designHistory"
+            rootFilePath = "../../asset/_designHistory/"
+
+        # get the file path. Use "try" to avoid crushing
         try:
             InputFile_Path = filedialog.askopenfilename(title="Open Your Previous Design",
                                                         filetypes=[('Text file', '.txt')],
-                                                        initialdir=AbsFilePath)
+                                                        initialdir=rootFilePath)
             return InputFile_Path
         except:
             messagebox.showwarning("Wrong Folder Choice")
             return ""
+
+
+
+
 
 
 class MainGUI_CreatNEW():

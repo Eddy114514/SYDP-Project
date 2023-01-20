@@ -367,6 +367,9 @@ class DataCalculation(Calculation):
 
 
     def SurfaceArea_Calculation(self):
+        # SurfaceArea Calculation algorithm use approximation method to calculate the arc length of the cross
+        # section of canoe per 0.1 inches The arc length is calculated by the arc length formula through
+        # scipy.integrate.quad By sum the calculated arc length, the total surface area is acquired.
         interval = 0.1
 
         for num in range(self.Num):

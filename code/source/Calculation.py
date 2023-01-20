@@ -23,6 +23,7 @@ class Calculation:
         self.DepthFList = []
         self.DepthFList_Outside = []
 
+        # B2 is a specfic variable that will be only used in calculation of the 3 body assymetric canoe.
         self.B2 = 0
         self.B2_O = 0
         self.B2_Diff = 0
@@ -32,6 +33,7 @@ class Calculation:
         self.Construction = self.CalculationObject.GetConstruction()
 
         self.Log = []
+        # LogMenu is the menu of the operation note.That program will be able to recognize the type of canoe.
         self.LogMenu = {0: "Set Deign -> One Body", 1: "Set Deign -> Two Body", 2: "Set Deign -> Three Body",
                         10: "Set Deign SubProperty -> Symmetric", 11: "Set Deign SubProperty -> Asymmetric",
                         20: "Assign HullType -> Symmetric_Hull", 21: "Assign HullType -> LongShort_Hull",
@@ -214,6 +216,7 @@ class Calculation:
             2] and self.EWidthF[0] == self.EWidthF[2] and self.EDepthF[0] == self.EDepthF[2]):
             self.SymmetryBoolean = True
 
+        # If the three body hull don't have a constant section, then it is Asymmetrical
         if (self.EWidthF[1] == 0 and self.EDepthF[1] == 0):
             self.SignFunction_ThreeBodyHull_Constant(self.SymmetryBoolean)
         elif (self.EWidthF[1] != 0 and self.EDepthF[1] != 0):
