@@ -1,8 +1,12 @@
 import csv
 import json
-import os
 import platform
 from pathlib import Path
+import os
+from datetime import datetime
+from pylatex import *
+from pylatex.utils import italic
+
 
 import matplotlib
 # Remove the following line if you want to use the default matplotlib backend (line 9)
@@ -158,6 +162,7 @@ class CanoeDataBase:
 
         # OutPutCSVFile
         fileName = "Design_" + fileName
+        CanoeDataDict = CanoeData[1]
         CanoeDetailDataDict = CanoeData[2]
         self.fileAddress = Path(f"..//..//asset//progressSave//{fileName}")
 
@@ -180,6 +185,9 @@ class CanoeDataBase:
 
         # SaveGraph
         self.SaveGraphIntoFile(fileName, GraphSet)
+
+        # Save PDF
+
 
     def SaveGraphIntoFile(self, fileName, GraphSet):
         if (GraphSet == 42):
@@ -300,6 +308,15 @@ class CanoeDataBase:
         im.save(right_save)
         flip.save(left_save)
         os.remove(path)
+
+
+
+
+
+
+
+
+
 
     def SaveStlIntoFile(self, filePath, stlObject):
 
