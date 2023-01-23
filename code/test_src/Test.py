@@ -239,7 +239,7 @@ def canoeScaleGenerate(UserInput):
                         table.add_hline()
                         for index, label in enumerate(labelList):
                             text = f'{UserInput[0][f"{sectionIndex}"][index]}'
-                            if (index <= 2): text = f'{UserInput[0][f"{sectionIndex}"][index] + thickness} Inch'
+                            if (index <= 2 ): text = f'{UserInput[0][f"{sectionIndex}"][index] + thickness} Inch'
                             if (index == 1): text = f'{UserInput[0][f"{sectionIndex}"][index] + thickness * 2} Inch'
                             table.add_row((label, text))
                             table.add_hline()
