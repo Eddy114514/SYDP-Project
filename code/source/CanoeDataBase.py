@@ -441,7 +441,7 @@ class CanoeDataBase:
                                 text = f'{UserInput[0][float(sectionIndex)][index]}'
                                 if (index <= 2): text = f'{UserInput[0][float(sectionIndex)][index] + thickness} Inch'
                                 if (index == 1): text = f'{UserInput[0][float(sectionIndex)][index] + thickness * 2} Inch'
-                                if (index == 0 and sectionLabel == "Middle Section Scale"): text = f'{UserInput[0][float(sectionIndex)][index]}'
+                                if (index == 0 and sectionLabel == "Middle Section Scale"): text = f'{UserInput[0][float(sectionIndex)][index]} Inch'
                                 table.add_row((label, text))
                                 table.add_hline()
                         else:
