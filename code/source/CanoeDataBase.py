@@ -328,16 +328,19 @@ class CanoeDataBase:
                             else:
                                 formula_specific = formula_specific.replace(item, str(round(
                                     UserInput[0][float(sectionIndex)][itemIndex], 2)))
-                                if (itemIndex == 0 and sectionIndex == 1 and len(UserInput[0]) == 5):
-                                    outside_formula_specific = outside_formula_specific.replace(item, str(round(
-                                        UserInput[0][float(sectionIndex)][itemIndex], 2)))
-                                else:
+
+                                if (label != "Middle Section Volume Formula" and itemIndex<=2):
                                     outside_formula_specific = outside_formula_specific.replace(item, str(round(
                                         UserInput[0][float(sectionIndex)][itemIndex] + thickness, 2)))
+                                else:
+                                    outside_formula_specific = outside_formula_specific.replace(item, str(round(
+                                        UserInput[0][float(sectionIndex)][itemIndex], 2)))
 
-                        formula_specific = formula_specific.replace("Volume", "Thickness Exclude: " + str(
+
+
+                    formula_specific = formula_specific.replace("Volume", "Thickness Exclude: " + str(
                             round(CanoeDetailDataDict["Volume_Inside"][sectionIndex], 2)))
-                        outside_formula_specific = outside_formula_specific.replace("Volume",
+                    outside_formula_specific = outside_formula_specific.replace("Volume",
                                                                                     "Thickness Include: " + str(
                                                                                         round(CanoeDetailDataDict[
                                                                                                   "Volume_Outside"][
