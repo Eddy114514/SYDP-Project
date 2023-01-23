@@ -25,8 +25,6 @@ class DataCalculation(Calculation):
 
         self.WaterLine = 0
 
-
-
         self.SubmergeBoolean = False
         self.FlowBoolean = False
 
@@ -107,6 +105,8 @@ class DataCalculation(Calculation):
         self.CanoeWeight = (self.Volume_Concrete / 1728) * self.Density
         self.TotalWeight = self.CanoeWeight + self.CrewWeight
 
+
+
     def Canoe_Buoyancy(self):
         # inch_to_meter = 61023.744095 || inch³ ==> m³
         # gravity = 9.8 || Earth
@@ -118,7 +118,7 @@ class DataCalculation(Calculation):
     def Canoe_Flowability(self):
         # kg_to_lbs = 2.205 || kilogram ==> pound mass
         # F = mg ==> m = f/g
-        # (f/g) = kg, kg/2.205 = lbs ==> (f/9.8)/2.205 = 0.225
+        # (f/g) = kg, kg/2.205 = lbs ==> (f/9.8)*2.205 = 0.225
         capability = self.Buoyancy * 0.225
         capability_submerge = self.Buoyancy_Submerge * 0.225
         if (capability > (self.TotalWeight)):

@@ -72,6 +72,7 @@ class DebugBase:
             ProgressSave = "..\\..\\asset\\progressSave"
             ProgressSave1 = "..\\..\\asset\\progressSave\\"
             FilePathGraph = "..\\..\\asset\\ModelGraph"
+            ReportPath = "..\\..\\asset\\DesignReport\\"
         else:
             FilePathlog = '././asset/progressSave/__log.txt'
             FilePathModel = "././asset/ModelFile"
@@ -81,6 +82,7 @@ class DebugBase:
             ProgressSave = "././asset/progressSave"
             ProgressSave1 = "././asset/progressSave/"
             FilePathGraph = "././asset/ModelGraph"
+            ReportPath = "././asset/DesignReport/"
 
         # reset Software Log
         if (input("Reset Software Log? [y/n]") in ["y", "Y"]):
@@ -110,6 +112,11 @@ class DebugBase:
             for file in os.listdir(ProgressSave):
                 if ("csv" in file):
                     os.remove(ProgressSave1 + file)
+
+        if (input("Delete All Report ? [y/n]") in ["y", "Y"]):
+            for file in os.listdir(ReportPath):
+                if("pdf" in file or "tex" in file):
+                    os.remove(ReportPath + file)
 
         print("Reset Done")
 
