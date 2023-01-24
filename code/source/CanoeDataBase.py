@@ -452,7 +452,7 @@ class CanoeDataBase:
                             table.add_hline()
                             for index, label in enumerate(specialLabelList):
                                 text = f'{UserInput[1][index + 1]}'
-                                if index == 0: text += " Cubic Feet/lb"
+                                if index == 0: text += " lbs/cubic feet"
                                 if index == 1: text += " Inch"
                                 if index == 2: text += " lbs"
                                 table.add_row((label, text))
