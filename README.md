@@ -42,7 +42,7 @@ Pillow\
 PyQt5\
 scipy\
 stl\
-pathlib\
+pathlib
 
 #
 
