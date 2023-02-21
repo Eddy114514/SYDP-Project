@@ -24,6 +24,7 @@ class DataCalculation(Calculation):
         self.TotalWeight = 0
 
         self.WaterLine = 0
+        self.centerMass = 0
 
         self.SubmergeBoolean = False
         self.FlowBoolean = False
@@ -52,6 +53,7 @@ class DataCalculation(Calculation):
                 "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
                 "Volume_Concrete": [round(self.Volume_Concrete, 2), "cu in"],
                 "WaterLine": [self.WaterLine, "inch"],
+                "Center of Mass": [self.centerMass, "inch"],
                 "Canoe Weight": [round(self.CanoeWeight, 2), "lbs"],
                 "Total Weight": [round(self.TotalWeight, 2), "lbs"],
                 "Buoyancy": [round(self.Buoyancy, 2), "N"],
@@ -95,6 +97,7 @@ class DataCalculation(Calculation):
         self.Canoe_Buoyancy()
         self.Canoe_Flowability()
         self.Surfacearea()
+        self.CenterOfMass()
 
         """if(self.FlowBoolean and self.SubmergeBoolean):
             self.WaterLine_Caculation()"""
@@ -104,6 +107,31 @@ class DataCalculation(Calculation):
         # inch_to_feet = 1728 || inch³ ==> feet³
         self.CanoeWeight = (self.Volume_Concrete / 1728) * self.Density
         self.TotalWeight = self.CanoeWeight + self.CrewWeight
+
+    def CenterOfMass(self):
+        # inch_to_feet = 1728 || inch³ ==> feet³
+        if(len(self.Length)==1):
+            self.centerMass = self.Length[0]/2
+            return 42
+
+        weightList = []
+        sumMassDistance = 0
+        for inside, outside in zip(self.SectionVolume_Inside, self.SectionVolume_Outside):
+            weightList.append((outside - inside) * self.Density / 1728)
+        # Considering the fact that the canoe has a uniform density, thus the center of mass is the center of the canoe (centroid)
+        for index in range(len(weightList)):
+            centerMass = 0
+            if(self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
+                centerMass = self.Length[index]/2 + sum(self.Length[:index])
+            else:
+                # ((1 + b + c) l)/(2 + b + c)
+                centerMass = sum(self.Length[:index])  + ((1+self.EWidthF[index]+self.EDepthF[index])*self.Length[index])/(2+self.EWidthF[index]+self.EDepthF[index])
+
+            sumMassDistance += weightList[index]*centerMass
+
+        self.centerMass = sumMassDistance/sum(weightList)
+        print(self.centerMass)
+
 
 
 

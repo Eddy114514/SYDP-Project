@@ -481,7 +481,7 @@ class CanoeDataBase:
             labelList = [["Hull Type", ""], ["Hull Property", ""], ["Hull subProperty", ""],
                          ["Surface Area", "Square Inch"],
                          ["Volume_Styrofoam", "Cubic Inch"], ["Volume_Concrete", "Cubic Inch"],
-                         ["Total Weight", pq.pound],
+                         ["Total Weight", pq.pound],["Center of Mass", pq.inch],
                          ["Buoyancy_Submerge", pq.newton], ["Capability", pq.pound], ["Capability_Submerge", pq.pound]]
             with self.doc.create(Tabular('|l|l|')) as table:
                 table.add_hline()
@@ -500,7 +500,8 @@ class CanoeDataBase:
                     table.add_hline()
             sectionLabelList = ["Front Section Data", "Middle Section Data", "Back Section Data"] \
                 if len(UserInput[0]) == 5 else ["Front Section Data", "Back Section Data"]
-            sectionValueLabelList = [["Surface Area by Sections", "Square Inch"], ["Volume_Outside", "Cubic Inch"],
+            sectionValueLabelList = [["Surface Area by Sections", "Square Inch"],
+                                     ["Volume_Outside", "Cubic Inch"],
                                      ["Volume_Inside", "Cubic Inch"]]
             sectionValueLabelDict = {"Surface Area by Sections": "SurfaceArea",
                                      "Volume_Outside": "Volume (Thickness Included)",
