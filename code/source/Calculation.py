@@ -70,10 +70,8 @@ class Calculation:
 
     def CalDataReturn(self):
         # Print the OperationNote
-
         for num in self.Log:
             print(self.LogMenu[num])
-
         self.DataPrint()
 
     @staticmethod

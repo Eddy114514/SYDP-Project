@@ -109,10 +109,14 @@ class DataCalculation(Calculation):
         self.TotalWeight = self.CanoeWeight + self.CrewWeight
 
     def CenterOfMass(self):
+
         # inch_to_feet = 1728 || inch³ ==> feet³
         if(len(self.Length)==1):
-            self.centerMass = self.Length[0]/2
+            self.centerMass = (self.Length[0]+2*self.Thickness)/2
             return 42
+        Length = self.Length + []
+        Length[0] = Length[0] + self.Thickness
+        Length[-1] = Length[-1] + self.Thickness
 
         weightList = []
         sumMassDistance = 0
@@ -122,10 +126,10 @@ class DataCalculation(Calculation):
         for index in range(len(weightList)):
             centerMass = 0
             if(self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
-                centerMass = self.Length[index]/2 + sum(self.Length[:index])
+                centerMass = Length[index]/2 + sum(Length[:index])
             else:
                 # ((1 + b + c) l)/(2 + b + c)
-                centerMass = sum(self.Length[:index])  + ((1+self.EWidthF[index]+self.EDepthF[index])*self.Length[index])/(2+self.EWidthF[index]+self.EDepthF[index])
+                centerMass = sum(Length[:index])  + ((1+self.EWidthF[index]+self.EDepthF[index])*Length[index])/(2+self.EWidthF[index]+self.EDepthF[index])
 
             sumMassDistance += weightList[index]*centerMass
 
@@ -416,7 +420,7 @@ class DataCalculation(Calculation):
 
             elif(self.WidthFList[num] == -1 and self.DepthFList[num] == -1 and self.WidthFList_Outside[num] == -1 and
                         self.DepthFList_Outside[num] == -1):
-                formula, high_range = self.Buildlambda_ArcLength_Constant_Formula(num)
+                formula, high_range = self.BuildLambda_ArcLength_Constant_Formula(num)
                 if(formula ==0):
                     CrossSection_SurfaceArea_Sum +=0
                 else:
@@ -461,7 +465,7 @@ class DataCalculation(Calculation):
 
         return lambda x: (1+(coefficient**2)*(x**(2*(exponent-1))))**(1/2), width
 
-    def Buildlambda_ArcLength_Constant_Formula(self, num):
+    def BuildLambda_ArcLength_Constant_Formula(self, num):
         width = self.SemiWidth[num]+self.Thickness
         depth = self.Depth[num]+self.Thickness
         if (depth == 0):
