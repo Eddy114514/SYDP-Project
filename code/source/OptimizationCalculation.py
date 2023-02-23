@@ -328,7 +328,7 @@ class OptimizationCalculation(Calculation):
             else:
                 if (EWF[num] == 0 and EDF[num] == 0):
                     volume += OptimizationCalculation.QuickIntegralMethod_constant(
-                        self.Depth[num], self.SemiWidth[num], self.Length[num], ECF, CoverL)
+                        self.Depth[num], self.SemiWidth[num], self.Length[num], ECF[num], CoverL)
                 else:
                     volume += OptimizationCalculation.QuickIntegralMethod_Inconstant(
                         self.Depth[num], self.SemiWidth[num], self.Length[num],
