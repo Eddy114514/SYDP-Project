@@ -481,7 +481,7 @@ class CanoeDataBase:
             labelList = [["Hull Type", ""], ["Hull Property", ""], ["Hull subProperty", ""],
                          ["Surface Area", "Square Inch"],
                          ["Volume_Styrofoam", "Cubic Inch"], ["Volume_Concrete", "Cubic Inch"],
-                         ["Total Weight", pq.pound],["Center of Mass", pq.inch],
+                         ["Total Weight", pq.pound],["Center of Mass", pq.inch],["WaterLine", pq.inch],
                          ["Buoyancy_Submerge", pq.newton], ["Capability", pq.pound], ["Capability_Submerge", pq.pound]]
             with self.doc.create(Tabular('|l|l|')) as table:
                 table.add_hline()

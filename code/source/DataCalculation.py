@@ -99,8 +99,8 @@ class DataCalculation(Calculation):
         self.Surfacearea()
         self.CenterOfMass()
 
-        """if(self.FlowBoolean and self.SubmergeBoolean):
-            self.WaterLine_Caculation()"""
+        if(self.FlowBoolean and self.SubmergeBoolean):
+            self.WaterLine_Calculation()
 
 
     def Canoe_Weight(self):
@@ -127,6 +127,9 @@ class DataCalculation(Calculation):
             centerMass = 0
             if(self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
                 centerMass = Length[index]/2 + sum(Length[:index])
+            elif(self.Log[2] == 24 and index == 1):
+                # Assymetric canoe
+                centerMass = sum(Length[:index]) + self.B2_Diff - self.B2_O  + ((1+self.EWidthF[index]+self.EDepthF[index])*(Length[index]+ self.B2_Diff - self.B2_O))/(2+self.EWidthF[index]+self.EDepthF[index])
             else:
                 # ((1 + b + c) l)/(2 + b + c)
                 centerMass = sum(Length[:index])  + ((1+self.EWidthF[index]+self.EDepthF[index])*Length[index])/(2+self.EWidthF[index]+self.EDepthF[index])
@@ -134,7 +137,7 @@ class DataCalculation(Calculation):
             sumMassDistance += weightList[index]*centerMass
 
         self.centerMass = sumMassDistance/sum(weightList)
-        print(self.centerMass)
+        print("center of mass ",self.centerMass)
 
 
 
@@ -318,31 +321,77 @@ class DataCalculation(Calculation):
                               quad(SwDFunction_List[op[0]], 0, op[1])[0]
         return volume
 
-    def WaterLine_Caculation(self):
-        self.WaterLine_TotalCrew = self.WaterLine_Approximate(self.TotalWeight)
-        self.WaterLine_HalfCrew = self.WaterLine_Approximate(self.TotalWeight/2)
-        self.WaterLine_NoneCrew = self.WaterLine_Approximate(self.CanoeWeight)
+    def WaterLine_Calculation(self):
+        t = self.Thickness
+        if(len(self.Length) == 1):
+            self.WaterLine = self.Length[0] + self.Thickness
 
-    def WaterLine_Approximate(self, weight):
-        def margin_median(left, right):
-            return (right-left)/2
+        elif(self.Log[2] == 24):
+            # Asymmetric hull
+            # ((1 + a)*z)/(2*a*u*(((j + p - k (k/(j + p))^(c + n))*s)/(1 + c + n) + (l*w)/(1 + b + c) + (o*x)/(1 + c + m)))
 
-        # Median Depth
-        approx_depth = (self.Depth[0] + self.Thickness)/2
-        approx_weight = self.Depth_Aspect_Capability_Acqurie(approx_depth)
-        # Binary-method finding
-        left_margin = 0
-        right_margin = self.Depth[0] + self.Thickness
+            z = self.TotalWeight
+            u = 0.160111447518*0.225
 
-        while(not abs(weight - approx_weight) <= 0.1):
-            if(approx_weight < weight):
-                left_margin = approx_depth
-                approx_depth = margin_median(left_margin,right_margin)
-            elif(approx_weight > weight):
-                right_margin = approx_depth
-                approx_depth = margin_median(left_margin,right_margin)
+            k = self.B2_O
+            j = self.B2_Diff
 
-        return approx_depth
+            l = self.Length[0] + t
+            p = self.Length[1]
+            o = self.Length[2] + t
+
+            w = self.SemiWidth[0] + t
+            s = self.SemiWidth[1] + t
+            x = self.SemiWidth[2] + t
+
+            a = self.ECurveF[0]
+            b = self.EWidthF[0]
+            c = self.EDepthF[0]
+
+            n = self.EWidthF[1]
+            m = self.EWidthF[2]
+
+            self.WaterLine = ((1 + a)*z)/(2*a*u*(((j + p - k * (k/(j + p))**(c + n))*s)/(1 + c + n) + (l*w)/(1 + b + c) + (o*x)/(1 + c + m)))
+        elif (len(self.Length) == 2):
+            # Long short hull
+            # ((1 + a) (1 + b + c) (1 + c + m) z)/(2 a u ((1 + b + c) ox + l (1 + c + m) w))
+            z = self.TotalWeight
+            u = 0.160111447518 * 0.225
+            w = self.SemiWidth[0] + t
+            x = self.SemiWidth[1] + t
+            a = self.ECurveF[0]
+            b = self.EWidthF[0]
+            c = self.EDepthF[0]
+            m = self.EWidthF[1]
+            l = self.Length[0] + t
+            o = self.Length[1] + t
+
+
+            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * z) / (2 * a * u * ((1 + b + c) * o*x + l * (1 + c + m) * w))
+        else:
+            # Hull with constant mid section
+            # ((1 + a) (1 + b + c) (1 + c + m) z)/(2 a u ((1 + b + c) ox + (1 + c + m) ((1 + b + c) p s + l w)))
+
+            z = self.TotalWeight
+            u = 0.160111447518 * 0.225
+
+            a = self.ECurveF[0]
+            b = self.EWidthF[0]
+            c = self.EDepthF[0]
+
+            l = self.Length[0] + t
+            p = self.Length[1]
+            o = self.Length[2] + t
+
+            w = self.SemiWidth[0] + t
+            s = self.SemiWidth[1] + t
+            x = self.SemiWidth[2] + t
+
+            m = self.EWidthF[2]
+
+            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * self.TotalWeight) / (2 * a * u * ((1 + b + c) * o * x + (1 + c + m) * ((1 + b + c) * p * s + l * w)))
+        print(
+            f"WaterLine is {self.WaterLine} inch")
 
     def Depth_Aspect_Capability_Acqurie(self, depth):
         # Constant is created with the simplifying of the formula, the constant in the front of integral.
@@ -388,14 +437,22 @@ class DataCalculation(Calculation):
         # Reassign the thickness to the 1/2 of thickness and recalculate the outside formulas for the surface Area
         save = self.Thickness
         self.Thickness = self.Thickness/2
-        self.SignFunction_Main()
+        if(self.Log[2] == 24):
+            self.Length[1] = self.Length[1] + self.B2_Diff - self.B2_O
+            saveLength = self.Length[1] + 0
+            self.SignFunction_Main()
+            self.SurfaceArea_Calculation()
+            self.Thickness = save
+            self.Length[1] = saveLength
+            self.SignFunction_Main()
+        else:
+            self.SignFunction_Main()
+            self.SurfaceArea_Calculation()
+            self.Thickness = save
+            self.SignFunction_Main()
 
-        self.SurfaceArea_Calculation()
 
 
-        # Redo the Assign
-        self.Thickness = save
-        self.SignFunction_Main()
 
 
     def SurfaceArea_Calculation(self):
