@@ -161,7 +161,7 @@ def OtherCalculation(UserInput, CanoeDataDict, CanoeDetailDataDict):
     with doc.create(Subsection("Other Calculation")):
         doc.append(NoEscape(r"\textbf{Buoyancy} is donated by: \textbf{AmiArchimedes' principle}"))
         doc.append(Command("begin", "align"))
-        doc.append(NoEscape(r"F_{buoyancy} &=\rho_{liquid}\times Volume\times 0.160111447518 \times g\label{C}"))
+        doc.append(NoEscape(r"F_{buoyancy} &=\rho_{liquid}\times (\frac{Volume}{61023.744095}) \times g\label{C}"))
         doc.append(Command("end", "align"))
         doc.append(NoEscape(r"\textbf{Weight} is donated by: "))
         doc.append(Command("begin", "align"))
@@ -184,7 +184,7 @@ def OtherCalculation(UserInput, CanoeDataDict, CanoeDetailDataDict):
         doc.append(Command("end", "align"))
 
     with doc.create(Subsubsection("Calculation Detail")):
-        physics_formulaList =[r"F_{buoyancy} &=\rho_{liquid}\times Volume\times 0.160111447518 \times g",
+        physics_formulaList =[r"F_{buoyancy} &=\rho_{liquid}\times (\frac{Volume}{61023.744095}) \times g",
                               r"Weight_{lbs} &=(\frac{ConcreteVolume_{inch^2}}{1728})\times Density_{feet^3}",
                               r"Capability_{lbs} &=(\frac{F_{buoyancy}}{g})\times 2.205",
                               r"Result_{flow} &= \forall x\in Capability_{lbs}, \forall y\in TotalWeight_{lbs} (Pass floating test \implies x \geq y)",
@@ -372,7 +372,4 @@ def canoeFormulaGenerate(UserInput):
 
 formula_list = DesignReport(UserInput, CanoeDataDict, CanoeDetailDataDict)
 CalculationReprot(UserInput, CanoeDataDict, CanoeDetailDataDict,formula_list)
-#doc.generate_pdf("test", compiler="pdflatex", clean_tex=False)
-doc.generate_tex("test")
-pdfl = PDFLaTeX.from_texfile('test.tex')
-pdf, log, completed_process = pdfl.create_pdf(keep_pdf_file=True, keep_log_file=False)
+doc.generate_pdf("test", compiler="pdflatex", clean_tex=False)

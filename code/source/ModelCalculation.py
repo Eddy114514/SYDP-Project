@@ -238,20 +238,16 @@ class ModelCalculation(Calculation):
             # construction graph interval setting
             Copy_Section = []
 
-            #process to take off the cover
+            # process to take off the cover
             for check in range(0, len(section)):
-                if(section[check][2][-1] - int(section[check][2][-1]) == 0):
+                if (section[check][2][-1] - int(section[check][2][-1]) == 0):
                     Copy_Section.append(section[check])
 
-
-
-
-
-            for cross_index in range(0, len(Copy_Section),4):
+            for cross_index in range(0, len(Copy_Section), 4):
                 if not (self.EWidthF[Section_Index] == 0 and self.EDepthF[Section_Index] == 0):
                     graph_section_list.append(
                         [Copy_Section[cross_index][0], Copy_Section[cross_index][1], Copy_Section[cross_index][-1]])
-            if([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]] not in graph_section_list):
+            if ([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]] not in graph_section_list):
                 graph_section_list.append([Copy_Section[-1][0], Copy_Section[-1][1], Copy_Section[-1][-1]])
             graph_list.append(graph_section_list)
 
@@ -545,7 +541,7 @@ class ModelCalculation(Calculation):
                 Vertex_O.append([VO[0], VO[-1]])
 
             else:
-                if (VO[0][-1] >= FrontCover and VO[0][-1] <= EndCover):
+                if (FrontCover <= VO[0][-1] <= EndCover):
                     Vertex_O.append([VO[0], VO[-1]])
                 if (VO[0][-1] <= FrontCover or VO[0][-1] >= EndCover):
                     if (VO[0][-1] <= FrontCover):
@@ -593,7 +589,6 @@ class ModelCalculation(Calculation):
                 ylist.append(function(w))
                 zlist.append(zvalue)
 
-            #@TODO: avoid the siutation that i == width.
 
             # get the last one
             xlist.append(width)
@@ -608,7 +603,6 @@ class ModelCalculation(Calculation):
             zlist.append(zvalue)
 
         return (xlist, ylist, zlist)
-
 
     # To generate all z index along the canoe body.
     def LengthIndexGenerate(self):
@@ -626,9 +620,6 @@ class ModelCalculation(Calculation):
 
         # 1.3
         # Since the canoe contain at least one cover, we need to find the index of the cover in either Length and LengthList.
-
-
-
 
         interval = 1
         print(self.Log)
@@ -785,6 +776,7 @@ class ModelCalculation(Calculation):
 
             Len_Sum.append(Sum)
         return Len_Sum
+
     def Symmetriclize(self):
         print("Being Symmetriclize")
         self.Num += 1

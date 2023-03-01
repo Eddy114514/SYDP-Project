@@ -16,7 +16,6 @@ class DataCalculation(Calculation):
         self.SurfaceArea = 0
         self.SurfaceArea_Section = []
 
-
         self.Buoyancy = 0
         self.Buoyancy_Submerge = 0
 
@@ -46,8 +45,8 @@ class DataCalculation(Calculation):
                 "Hull subProperty": OperationNote[2].split('-> ')[-1],
                 "Unit": ["inch", "cubic inch",
                          "lbs", "newton", "square inch"],
-                "Surface Area":[self.SurfaceArea, "sq in"],
-                "Surface Area by Sections":self.SurfaceArea_Section + ["sq in"],
+                "Surface Area": [self.SurfaceArea, "sq in"],
+                "Surface Area by Sections": self.SurfaceArea_Section + ["sq in"],
                 "Volume_Outside": self.SectionVolume_Outside + ["cu in"],
                 "Volume_Inside": self.SectionVolume_Inside + ["cu in"],
                 "Volume_Styrofoam": [round(self.Volume_Styrofoam, 2), "cu in"],
@@ -99,9 +98,8 @@ class DataCalculation(Calculation):
         self.Surfacearea()
         self.CenterOfMass()
 
-        if(self.FlowBoolean and self.SubmergeBoolean):
+        if (self.FlowBoolean and self.SubmergeBoolean):
             self.WaterLine_Calculation()
-
 
     def Canoe_Weight(self):
         # inch_to_feet = 1728 || inch³ ==> feet³
@@ -111,8 +109,8 @@ class DataCalculation(Calculation):
     def CenterOfMass(self):
 
         # inch_to_feet = 1728 || inch³ ==> feet³
-        if(len(self.Length)==1):
-            self.centerMass = (self.Length[0]+2*self.Thickness)/2
+        if (len(self.Length) == 1):
+            self.centerMass = (self.Length[0] + 2 * self.Thickness) / 2
             return 42
         Length = self.Length + []
         Length[0] = Length[0] + self.Thickness
@@ -125,22 +123,23 @@ class DataCalculation(Calculation):
         # Considering the fact that the canoe has a uniform density, thus the center of mass is the center of the canoe (centroid)
         for index in range(len(weightList)):
             centerMass = 0
-            if(self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
-                centerMass = Length[index]/2 + sum(Length[:index])
-            elif(self.Log[2] == 24 and index == 1):
+            if (self.WidthFList[index] == -1 and self.DepthFList[index] == -1):
+                centerMass = Length[index] / 2 + sum(Length[:index])
+            elif (self.Log[2] == 24 and index == 1):
                 # Assymetric canoe
-                centerMass = sum(Length[:index]) + self.B2_Diff - self.B2_O  + ((1+self.EWidthF[index]+self.EDepthF[index])*(Length[index]+ self.B2_Diff - self.B2_O))/(2+self.EWidthF[index]+self.EDepthF[index])
+                centerMass = sum(Length[:index]) + self.B2_Diff - self.B2_O + (
+                            (1 + self.EWidthF[index] + self.EDepthF[index]) * (
+                                Length[index] + self.B2_Diff - self.B2_O)) / (
+                                         2 + self.EWidthF[index] + self.EDepthF[index])
             else:
                 # ((1 + b + c) l)/(2 + b + c)
-                centerMass = sum(Length[:index])  + ((1+self.EWidthF[index]+self.EDepthF[index])*Length[index])/(2+self.EWidthF[index]+self.EDepthF[index])
+                centerMass = sum(Length[:index]) + ((1 + self.EWidthF[index] + self.EDepthF[index]) * Length[index]) / (
+                            2 + self.EWidthF[index] + self.EDepthF[index])
 
-            sumMassDistance += weightList[index]*centerMass
+            sumMassDistance += weightList[index] * centerMass
 
-        self.centerMass = sumMassDistance/sum(weightList)
-        print("center of mass ",self.centerMass)
-
-
-
+        self.centerMass = sumMassDistance / sum(weightList)
+        print("center of mass ", self.centerMass)
 
     def Canoe_Buoyancy(self):
         # inch_to_meter = 61023.744095 || inch³ ==> m³
@@ -323,15 +322,15 @@ class DataCalculation(Calculation):
 
     def WaterLine_Calculation(self):
         t = self.Thickness
-        if(len(self.Length) == 1):
+        if (len(self.Length) == 1):
             self.WaterLine = self.Length[0] + self.Thickness
 
-        elif(self.Log[2] == 24):
+        elif (self.Log[2] == 24):
             # Asymmetric hull
             # ((1 + a)*z)/(2*a*u*(((j + p - k (k/(j + p))^(c + n))*s)/(1 + c + n) + (l*w)/(1 + b + c) + (o*x)/(1 + c + m)))
 
             z = self.TotalWeight
-            u = 0.160111447518*0.225
+            u = 0.160111447518 * 0.225
 
             k = self.B2_O
             j = self.B2_Diff
@@ -351,7 +350,9 @@ class DataCalculation(Calculation):
             n = self.EWidthF[1]
             m = self.EWidthF[2]
 
-            self.WaterLine = ((1 + a)*z)/(2*a*u*(((j + p - k * (k/(j + p))**(c + n))*s)/(1 + c + n) + (l*w)/(1 + b + c) + (o*x)/(1 + c + m)))
+            self.WaterLine = ((1 + a) * z) / (2 * a * u * (
+                        ((j + p - k * (k / (j + p)) ** (c + n)) * s) / (1 + c + n) + (l * w) / (1 + b + c) + (o * x) / (
+                            1 + c + m)))
         elif (len(self.Length) == 2):
             # Long short hull
             # ((1 + a) (1 + b + c) (1 + c + m) z)/(2 a u ((1 + b + c) ox + l (1 + c + m) w))
@@ -366,8 +367,8 @@ class DataCalculation(Calculation):
             l = self.Length[0] + t
             o = self.Length[1] + t
 
-
-            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * z) / (2 * a * u * ((1 + b + c) * o*x + l * (1 + c + m) * w))
+            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * z) / (
+                        2 * a * u * ((1 + b + c) * o * x + l * (1 + c + m) * w))
         else:
             # Hull with constant mid section
             # ((1 + a) (1 + b + c) (1 + c + m) z)/(2 a u ((1 + b + c) ox + (1 + c + m) ((1 + b + c) p s + l w)))
@@ -389,7 +390,8 @@ class DataCalculation(Calculation):
 
             m = self.EWidthF[2]
 
-            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * self.TotalWeight) / (2 * a * u * ((1 + b + c) * o * x + (1 + c + m) * ((1 + b + c) * p * s + l * w)))
+            self.WaterLine = ((1 + a) * (1 + b + c) * (1 + c + m) * self.TotalWeight) / (
+                        2 * a * u * ((1 + b + c) * o * x + (1 + c + m) * ((1 + b + c) * p * s + l * w)))
         print(
             f"WaterLine is {self.WaterLine} inch")
 
@@ -406,38 +408,37 @@ class DataCalculation(Calculation):
 
         sum_capability = 0
         for num in range(len(self.Depth)):
-            if(num != 1):
+            if (num != 1):
                 length = self.Length[num] + self.Thickness
-                #constant2
-                constant = (2 * (self.SemiWidth[num] + self.Thickness) * (length))\
-                           /((self.EWidthF[num]+1)*((self.Depth[num]+self.Thickness)**(1/self.ECurveF[num])))
+                # constant2
+                constant = (2 * (self.SemiWidth[num] + self.Thickness) * (length)) \
+                           / ((self.EWidthF[num] + 1) * ((self.Depth[num] + self.Thickness) ** (1 / self.ECurveF[num])))
                 depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_NonConstant(num)
-                sum_capability += constant*quad(depth_aspect_integral,0,depth)[0]
-            elif(num == 1):
+                sum_capability += constant * quad(depth_aspect_integral, 0, depth)[0]
+            elif (num == 1):
                 length = self.Length[num] if not self.Log[2] == 24 else self.Length[num] + self.B2_Diff - self.B2_O
-                if(self.Log[2] == 24):
+                if (self.Log[2] == 24):
                     # constant2
                     constant = (2 * (self.SemiWidth[num] + self.Thickness) * (length)) \
                                / ((self.EWidthF[num] + 1) * (
-                                (self.Depth[num] + self.Thickness) ** (1 / self.ECurveF[num])))
+                            (self.Depth[num] + self.Thickness) ** (1 / self.ECurveF[num])))
                     depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_NonConstant(num)
                     sum_capability += constant * quad(depth_aspect_integral, 0, depth)[0]
                 else:
-                    #constant1
-                    constant = (2*length*(self.SemiWidth[num]+self.Thickness))/\
-                               ((self.EWidthF[num]+1)*((self.Depth[num]+self.Thickness)**(1/self.ECurveF[num])))
+                    # constant1
+                    constant = (2 * length * (self.SemiWidth[num] + self.Thickness)) / \
+                               ((self.EWidthF[num] + 1) * (
+                                           (self.Depth[num] + self.Thickness) ** (1 / self.ECurveF[num])))
                     depth_aspect_integral = self.BuildLambda_Depth_Aspect_Integral_Constant(num)
                     sum_capability += constant * quad(depth_aspect_integral, 0, depth)[0]
 
-
         return sum_capability
-
 
     def Surfacearea(self):
         # Reassign the thickness to the 1/2 of thickness and recalculate the outside formulas for the surface Area
         save = self.Thickness
-        self.Thickness = self.Thickness/2
-        if(self.Log[2] == 24):
+        self.Thickness = self.Thickness / 2
+        if (self.Log[2] == 24):
             self.Length[1] = self.Length[1] + self.B2_Diff - self.B2_O
             saveLength = self.Length[1] + 0
             self.SignFunction_Main()
@@ -451,10 +452,6 @@ class DataCalculation(Calculation):
             self.Thickness = save
             self.SignFunction_Main()
 
-
-
-
-
     def SurfaceArea_Calculation(self):
         # SurfaceArea Calculation algorithm use approximation method to calculate the arc length of the cross
         # section of canoe per 0.1 inches The arc length is calculated by the arc length formula through
@@ -465,26 +462,26 @@ class DataCalculation(Calculation):
             print(f"Surface Num is {num}")
             # get width, depth at that index by using the self.WidthFlist, then get the length, add up
             CrossSection_SurfaceArea_Sum = 0
-            if(self.Log[2] == 24 and num ==1):
-                for lengthIndex in np.arange(self.B2_O, self.Length[num]+self.B2_Diff, interval):
+            if (self.Log[2] == 24 and num == 1):
+                for lengthIndex in np.arange(self.B2_O, self.Length[num] + self.B2_Diff, interval):
                     formula, high_range = self.BuildLambda_ArcLength_Formula(num, lengthIndex)
-                    if(formula == 0):
-                        CrossSection_SurfaceArea_Sum +=0
+                    if (formula == 0):
+                        CrossSection_SurfaceArea_Sum += 0
                     else:
-                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range)
-                formula, high_range = self.BuildLambda_ArcLength_Formula(num, self.Length[num]+self.B2_Diff)
-                CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range)* interval
+                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0, high_range)
+                formula, high_range = self.BuildLambda_ArcLength_Formula(num, self.Length[num] + self.B2_Diff)
+                CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0, high_range) * interval
 
-            elif(self.WidthFList[num] == -1 and self.DepthFList[num] == -1 and self.WidthFList_Outside[num] == -1 and
-                        self.DepthFList_Outside[num] == -1):
+            elif (self.WidthFList[num] == -1 and self.DepthFList[num] == -1 and self.WidthFList_Outside[num] == -1 and
+                  self.DepthFList_Outside[num] == -1):
                 formula, high_range = self.BuildLambda_ArcLength_Constant_Formula(num)
-                if(formula ==0):
-                    CrossSection_SurfaceArea_Sum +=0
+                if (formula == 0):
+                    CrossSection_SurfaceArea_Sum += 0
                 else:
                     CrossSection_SurfaceArea_Sum += self.Length[num] * self.ArcLength(formula, 0, high_range)
 
             else:
-                for lengthIndex in np.arange(0, self.Length[num] + self.Thickness,interval):
+                for lengthIndex in np.arange(0, self.Length[num] + self.Thickness, interval):
 
                     formula, high_range = self.BuildLambda_ArcLength_Formula(num, lengthIndex)
                     if (formula == 0):
@@ -492,48 +489,48 @@ class DataCalculation(Calculation):
 
                     else:
 
-                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0,high_range) * interval
+                        CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0, high_range) * interval
 
                 formula, high_range = self.BuildLambda_ArcLength_Formula(num, self.Length[num] + self.Thickness)
                 CrossSection_SurfaceArea_Sum += self.ArcLength(formula, 0, high_range)
-
 
             self.SurfaceArea_Section.append(CrossSection_SurfaceArea_Sum)
 
         self.SurfaceArea = sum(self.SurfaceArea_Section)
 
     def BuildLambda_Depth_Aspect_Integral_NonConstant(self, num):
-        exp_a = 1/self.ECurveF[num]
-        exp_b = 1/self.EWidthF[num]
-        return lambda x: (x**exp_a)*(1-((x-self.Depth[num]-self.Thickness)
-                                        /(self.Depth[num]+self.Thickness))**exp_b)
+        exp_a = 1 / self.ECurveF[num]
+        exp_b = 1 / self.EWidthF[num]
+        return lambda x: (x ** exp_a) * (1 - ((x - self.Depth[num] - self.Thickness)
+                                              / (self.Depth[num] + self.Thickness)) ** exp_b)
+
     def BuildLambda_Depth_Aspect_Integral_Constant(self, num):
-        exp_a = 1/self.ECurveF[num]
-        return lambda x: (x**exp_a)
+        exp_a = 1 / self.ECurveF[num]
+        return lambda x: (x ** exp_a)
 
     def BuildLambda_ArcLength_Formula(self, num, lengthIndex):
         width = self.WidthFList_Outside[num](lengthIndex)
-        depth = self.DepthFList_Outside[num](lengthIndex) if type(self.DepthFList_Outside[num]) not in [int,float] else self.Depth[num]
+        depth = self.DepthFList_Outside[num](lengthIndex) if type(self.DepthFList_Outside[num]) not in [int, float] else \
+        self.Depth[num]
 
-        if(depth == 0):
-            return 0,0
-        exponent = self.ECurveF[num]
-        coefficient = (depth * exponent)/(width**exponent)
-
-        return lambda x: (1+(coefficient**2)*(x**(2*(exponent-1))))**(1/2), width
-
-    def BuildLambda_ArcLength_Constant_Formula(self, num):
-        width = self.SemiWidth[num]+self.Thickness
-        depth = self.Depth[num]+self.Thickness
         if (depth == 0):
-            return 0,0
+            return 0, 0
         exponent = self.ECurveF[num]
         coefficient = (depth * exponent) / (width ** exponent)
-        return lambda x: (1+(coefficient**2)*(x**(2*(exponent-1))))**(1/2), width
+
+        return lambda x: (1 + (coefficient ** 2) * (x ** (2 * (exponent - 1)))) ** (1 / 2), width
+
+    def BuildLambda_ArcLength_Constant_Formula(self, num):
+        width = self.SemiWidth[num] + self.Thickness
+        depth = self.Depth[num] + self.Thickness
+        if (depth == 0):
+            return 0, 0
+        exponent = self.ECurveF[num]
+        coefficient = (depth * exponent) / (width ** exponent)
+        return lambda x: (1 + (coefficient ** 2) * (x ** (2 * (exponent - 1)))) ** (1 / 2), width
 
     def ArcLength(self, arc_length_formula, low_range, high_range):
         return 2 * quad(arc_length_formula, low_range, high_range)[0]
-
 
     # Helper Function
     @staticmethod

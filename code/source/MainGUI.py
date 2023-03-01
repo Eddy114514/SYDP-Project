@@ -1,16 +1,18 @@
 import tkinter as tk
-from PIL import Image, ImageTk
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
-from matplotlib.figure import Figure
-from mpl_toolkits import mplot3d
 from pathlib import Path
 from tkinter import StringVar
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import simpledialog
 
+from PIL import Image, ImageTk
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg)
+from matplotlib.figure import Figure
+from mpl_toolkits import mplot3d
+
 # Import other files
 from HealthCheck import *
+
 
 # This is the base GUI class that every other GUI class inherits from and initializes the main window.
 class MainGUI_Base():
@@ -43,6 +45,7 @@ class MainGUI_Base():
             self.root.geometry("1400x800")
             self.root.title("Canoe Design Software")
             MainGUI_Init(self.root)
+
 
 # The initial menu GUI class that is called when the program is first run.
 class MainGUI_Init():
@@ -118,6 +121,7 @@ class MainGUI_Init():
             self.MainGUI_Init_MainFrame, text="Debug",
             command=lambda: [MainGUI_Base.dB.ChangDebug(True), sys.exit()])
         self.Debug_Button.pack(side="bottom", padx=10, pady=self.master.winfo_height() * (3 / 4))
+
     # PgSwitch function will end the current GUI and start a new GUI for specific function.
     def PgSwitch_CreatNew(self):
         self.MainGUI_Init_MainFrame.destroy()
@@ -149,7 +153,7 @@ class MainGUI_Init():
         # Get the file path of the design file.
 
         # recognize the operating system.
-        if(platform.system() == "Windows"):
+        if (platform.system() == "Windows"):
             rootFilePath = "..\\..\\asset\\_designHistory\\"
         else:
             rootFilePath = "../../asset/_designHistory/"
@@ -163,10 +167,6 @@ class MainGUI_Init():
         except:
             messagebox.showwarning("Wrong Folder Choice")
             return ""
-
-
-
-
 
 
 class MainGUI_CreatNEW():
@@ -671,7 +671,7 @@ class MainGUI_Open():
         for element in HallEntryList:
             HullListObject.append(float(element.get()))
 
-        self.CDD = CanoeDataBase(SectionDictObject, HullListObject, B3=self.CDD.GetConstruction())
+        self.CDD = CanoeDataBase(SectionDictObject, HullListObject, b3=self.CDD.GetConstruction())
         try:
             self.DCCO = DataCalculation(self.CDD)
             self.MCCO = ModelCalculation(self.CDD)
@@ -695,7 +695,8 @@ class MainGUI_Open():
         Config_Count = self.InputFile[0]["Config_Count"] + 1
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],Config_Count,
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+                                   Config_Count,
                                    self.GraphSet)
 
     def ResultTableDisplay(self):
@@ -1243,7 +1244,8 @@ class MainGUI_Cut():
         Config_Count = self.InputFile[0]["Config_Count"] + 1
         FileAddress = Path(f"..//..//asset//progressSave//{'Design_' + FileName}.csv")
 
-        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'], Config_Count,
+        self.CDD.WriteDataIntoFile(FileAddress, self.InputFile_Path, self.CanoeData, self.InputFile[0]['Name'],
+                                   Config_Count,
                                    self.GraphSet)
 
 

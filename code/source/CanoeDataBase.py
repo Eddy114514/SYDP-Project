@@ -33,12 +33,12 @@ app.quit()
 class CanoeDataBase:
     # Designed to connect to STL database
 
-    def __init__(self, SectionDataDict, HullDataList, B1=False, B2=False, B3=False):
-        self.SDD = SectionDataDict
-        self.HDL = HullDataList
-        self.SymmetryBoolean = B1
-        self.FSDMode = B2
-        self.Construction = B3
+    def __init__(self, section_data_dict, hull_data_list, b1=False, b2=False, b3=False):
+        self.SDD = section_data_dict
+        self.HDL = hull_data_list
+        self.SymmetryBoolean = b1
+        self.FSDMode = b2
+        self.Construction = b3
 
     def ConfigSYM(self):
         print("Change from ", self.SymmetryBoolean)
@@ -67,11 +67,11 @@ class CanoeDataBase:
     def GetConstruction(self):
         return self.Construction
 
-    def ConstructDict_SDD(self, SectionNum, DataList):
-        self.SDD[SectionNum] = DataList
+    def ConstructDict_SDD(self, section_num, DataList):
+        self.SDD[section_num] = DataList
 
-    def ConstructDict_HDL(self, DataList):
-        self.HDL = DataList
+    def ConstructDict_HDL(self, data_list):
+        self.HDL = data_list
 
     def GetData_SDD(self):
         return (self.SDD)
@@ -97,10 +97,10 @@ class CanoeDataBase:
         # Save Data To SQL
         print('work')
 
-    def WriteDataIntoFile(self, CSVAddress, LogAddress, saveText, logName, Config_Count, GraphSet):
+    def WriteDataIntoFile(self, csv_address, LogAddress, saveText, logName, Config_Count, GraphSet):
         CanoeDetailDataDict = saveText[2]
         CanoeDataDict = saveText[1]
-        with open(CSVAddress, "w") as CSV:
+        with open(csv_address, "w") as CSV:
             writer = csv.writer(CSV)
             for key, value in CanoeDetailDataDict.items():
                 if (type(value) in [tuple, list, set]):
@@ -198,18 +198,20 @@ class CanoeDataBase:
         # set up the user Input
         if len(UserInput[0]) == 3:
             semi = UserInput[0][0]
-            semi[0] = semi[0]/2
-            UserInput[0] = {0.0: semi, 1.0: semi, "Name":UserInput[0]["Name"], "Config_Count": UserInput[0]["Config_Count"]}
+            semi[0] = semi[0] / 2
+            UserInput[0] = {0.0: semi, 1.0: semi, "Name": UserInput[0]["Name"],
+                            "Config_Count": UserInput[0]["Config_Count"]}
 
-            semi_surface = CanoeDetailDataDict["Surface Area by Sections"][0]/2
-            CanoeDetailDataDict["Surface Area by Sections"] = [semi_surface,semi_surface,CanoeDetailDataDict["Surface Area by Sections"][1]]
+            semi_surface = CanoeDetailDataDict["Surface Area by Sections"][0] / 2
+            CanoeDetailDataDict["Surface Area by Sections"] = [semi_surface, semi_surface,
+                                                               CanoeDetailDataDict["Surface Area by Sections"][1]]
 
-            semi_Outside = CanoeDetailDataDict["Volume_Outside"][0]/2
-            CanoeDetailDataDict["Volume_Outside"] = [semi_Outside,semi_Outside,CanoeDetailDataDict["Volume_Outside"][1]]
+            semi_Outside = CanoeDetailDataDict["Volume_Outside"][0] / 2
+            CanoeDetailDataDict["Volume_Outside"] = [semi_Outside, semi_Outside,
+                                                     CanoeDetailDataDict["Volume_Outside"][1]]
 
-            semi_Inside = CanoeDetailDataDict["Volume_Inside"][0]/2
-            CanoeDetailDataDict["Volume_Inside"] = [semi_Inside,semi_Inside,CanoeDetailDataDict["Volume_Inside"][1]]
-
+            semi_Inside = CanoeDetailDataDict["Volume_Inside"][0] / 2
+            CanoeDetailDataDict["Volume_Inside"] = [semi_Inside, semi_Inside, CanoeDetailDataDict["Volume_Inside"][1]]
 
         # -------------Main Property----------------
         geometry_options = {"margin": "0.7in"}
@@ -246,14 +248,14 @@ class CanoeDataBase:
         # ---------------Table----------------------
 
         formula_list = self.DesignReport(UserInput, CanoeDataDict, CanoeDetailDataDict)
-        self.CalculationReprot(UserInput, CanoeDataDict, CanoeDetailDataDict, formula_list)
+        self.CalculationReport(UserInput, CanoeDataDict, CanoeDetailDataDict, formula_list)
 
         # ---------------Table----------------------
         self.doc.generate_pdf(filepath=str(Path(f"../../asset/DesignReport/{fileName}")), compiler="pdflatex",
                               clean_tex=False)
         print(f"Design Report {fileName} Generated")
 
-    def CalculationReprot(self, UserInput, CanoeDataDict, CanoeDetailDataDict, formula_list):
+    def CalculationReport(self, UserInput, CanoeDataDict, CanoeDetailDataDict, formula_list):
         with self.doc.create(Section("Canoe Calculation Process")):
             self.doc.append("Canoe Design Program automize multiples process of Calculation, including: ")
             with self.doc.create(Itemize()) as itemize:
@@ -263,11 +265,11 @@ class CanoeDataBase:
                 itemize.add_item("Buoyancy")
                 itemize.add_item("Capability")
             self.doc.append("Calculation Method, Formula and Process are as follows: ")
-            self.calculationMedthodGenerate()
+            self.calculationMethodGenerate()
             self.formulalistGenerate(UserInput, CanoeDetailDataDict)
             self.OtherCalculation(UserInput, CanoeDataDict, CanoeDetailDataDict)
 
-    def calculationMedthodGenerate(self):
+    def calculationMethodGenerate(self):
 
         with self.doc.create(Subsection("Calculation Method")):
             self.doc.append(
@@ -329,22 +331,20 @@ class CanoeDataBase:
                                 formula_specific = formula_specific.replace(item, str(round(
                                     UserInput[0][float(sectionIndex)][itemIndex], 2)))
 
-                                if (label != "Middle Section Volume Formula" and itemIndex<=2):
+                                if (label != "Middle Section Volume Formula" and itemIndex <= 2):
                                     outside_formula_specific = outside_formula_specific.replace(item, str(round(
                                         UserInput[0][float(sectionIndex)][itemIndex] + thickness, 2)))
                                 else:
                                     outside_formula_specific = outside_formula_specific.replace(item, str(round(
                                         UserInput[0][float(sectionIndex)][itemIndex], 2)))
 
-
-
                     formula_specific = formula_specific.replace("Volume", "Thickness Exclude: " + str(
-                            round(CanoeDetailDataDict["Volume_Inside"][sectionIndex], 2)))
+                        round(CanoeDetailDataDict["Volume_Inside"][sectionIndex], 2)))
                     outside_formula_specific = outside_formula_specific.replace("Volume",
-                                                                                    "Thickness Include: " + str(
-                                                                                        round(CanoeDetailDataDict[
-                                                                                                  "Volume_Outside"][
-                                                                                                  sectionIndex], 2)))
+                                                                                "Thickness Include: " + str(
+                                                                                    round(CanoeDetailDataDict[
+                                                                                              "Volume_Outside"][
+                                                                                              sectionIndex], 2)))
 
                     self.doc.append(Command("begin", "align"))
                     self.doc.append(NoEscape(formula_specific))
@@ -358,7 +358,7 @@ class CanoeDataBase:
             self.doc.append(NoEscape(r"\textbf{Buoyancy} is donated by: \textbf{AmiArchimedes' principle}"))
             self.doc.append(Command("begin", "align"))
             self.doc.append(
-                NoEscape(r"F_{buoyancy} &=\rho_{liquid}\times Volume\times 0.160111447518 \times g\label{C}"))
+                NoEscape(r"F_{buoyancy} &=\rho_{liquid}\times (\frac{Volume}{61023.744095}) \times g\label{C}"))
             self.doc.append(Command("end", "align"))
             self.doc.append(NoEscape(r"\textbf{Weight} is donated by: "))
             self.doc.append(Command("begin", "align"))
@@ -383,7 +383,7 @@ class CanoeDataBase:
             self.doc.append(Command("end", "align"))
 
         with self.doc.create(Subsubsection("Calculation Detail")):
-            physics_formulaList = [r"F_{buoyancy} &=\rho_{liquid}\times Volume\times 0.160111447518 \times g",
+            physics_formulaList = [r"F_{buoyancy} &=\rho_{liquid}\times (\frac{Volume}{61023.744095}) \times g",
                                    r"Weight_{lbs} &=(\frac{ConcreteVolume_{inch^2}}{1728})\times Density_{feet^3}",
                                    r"Capability_{lbs} &=(\frac{F_{buoyancy}}{g})\times 2.205",
                                    r"Result_{flow} &= \forall x\in Capability_{lbs}, \forall y\in TotalWeight_{lbs} (Pass floating test \implies x \geq y)",
@@ -443,8 +443,10 @@ class CanoeDataBase:
                             for index, label in enumerate(labelList):
                                 text = f'{UserInput[0][float(sectionIndex)][index]}'
                                 if (index <= 2): text = f'{UserInput[0][float(sectionIndex)][index] + thickness} Inch'
-                                if (index == 1): text = f'{UserInput[0][float(sectionIndex)][index] + thickness * 2} Inch'
-                                if (index == 0 and sectionLabel == "Middle Section Scale"): text = f'{UserInput[0][float(sectionIndex)][index]} Inch'
+                                if (
+                                        index == 1): text = f'{UserInput[0][float(sectionIndex)][index] + thickness * 2} Inch'
+                                if (
+                                        index == 0 and sectionLabel == "Middle Section Scale"): text = f'{UserInput[0][float(sectionIndex)][index]} Inch'
                                 table.add_row((label, text))
                                 table.add_hline()
                         else:
@@ -481,7 +483,7 @@ class CanoeDataBase:
             labelList = [["Hull Type", ""], ["Hull Property", ""], ["Hull subProperty", ""],
                          ["Surface Area", "Square Inch"],
                          ["Volume_Styrofoam", "Cubic Inch"], ["Volume_Concrete", "Cubic Inch"],
-                         ["Total Weight", pq.pound],["Center of Mass", pq.inch],["WaterLine", pq.inch],
+                         ["Total Weight", pq.pound], ["Center of Mass", pq.inch], ["WaterLine", pq.inch],
                          ["Buoyancy_Submerge", pq.newton], ["Capability", pq.pound], ["Capability_Submerge", pq.pound]]
             with self.doc.create(Tabular('|l|l|')) as table:
                 table.add_hline()
@@ -595,7 +597,6 @@ class CanoeDataBase:
                 graph_path = Path(
                     f"..//..//asset//ModelGraph//{fileName}_ConstructionGraph_Canoe//section_{index}//inch_{crossSection[-1][1]}.png")
                 self.Graph_Generate_Save(crossSection[-1], crossSection[0], crossSection[1], graph_path)
-
 
     def Graph_Generate_Save(self, title, X, Y, path):
         # 1.Change the graph generate mode to semi
